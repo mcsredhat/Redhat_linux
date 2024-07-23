@@ -1,8 +1,8 @@
 
 ### Basic Command Line ###
 
-1. `cal 2009`
-   - Display the calendar for the year 2009.
+1. `cal 2025`
+   - Display the calendar for the year 2025.
 
 2. `cal 01 2018`
    - Display the calendar for January 2018.
