@@ -1,0 +1,59 @@
+### Checksums ###
+
+236. `md5sum 1million.txt`
+     - Compute and display the MD5 checksum of `1million.txt`.
+
+237. `md5sum 1million.txt2`
+     - Compute and display the MD5 checksum of `1million.txt2`.
+
+240. `sha1sum 1million.txt`
+     - Compute and display the SHA-1 checksum of `1million.txt`.
+
+241. `sha1sum 1million.txt > 1million.txt.sha1sums`
+     - Compute the SHA-1 checksum of `1million.txt` and save to `1million.txt.sha1sums`.
+
+242. `cat 1million.txt.sha1sums`
+     - Display the contents of `1million.txt.sha1sums`.
+
+243. `sha1sum -c 1million.txt.sha1sums`
+     - Verify the SHA-1 checksum of `1million.txt` against `1million.txt.sha1sums`.
+
+244. `sha224sum 1million.txt >> 1million.txt.sha224`
+     - Compute the SHA-224 checksum of `1million.txt` and append to `1million.txt.sha224`.
+
+245. `sha224sum 1million.txt.sha224`
+     - Compute and display the SHA-224 checksum of `1million.txt.sha224`.
+
+246. `sha224sum -c 1million.txt.sha224`
+     - Verify the SHA-224 checksum of `1million.txt` against `1million.txt.sha224`.
+
+247. `sha256sum 1million.txt > 1million.txt.sha256`
+     - Compute the SHA-256 checksum of `1million.txt` and save to `1million.txt.sha256`.
+
+248. `sha256sum -c 1million.txt.sha256`
+     - Verify the SHA-256 checksum of `1million.txt` against `1million.txt.sha256`.
+
+249. `sha384sum 1million.txt`
+     - Compute and display the SHA-384 checksum of `1million.txt`.
+
+250. `sha384sum 1million.txt > 1million.txt.sha384`
+     - Compute the SHA-384 checksum of `1million.txt` and save to `1million.txt.sha384`.
+
+251. `sha384sum -c 1million.txt.sha384`
+     - Verify the SHA-384 checksum of `1million.txt` against `1million.txt.sha384`.
+
+252. `sha512sum 1million.txt`
+     - Compute and display the SHA-512 checksum of `1million.txt`.
+
+253. `sha512sum -c 1million.txt.sha512`
+     - Verify the SHA-512 checksum of `1million.txt` against `1million.txt.sha512`.
+
+254. `gpg --verify *asc`
+     - Verify the signature of a file.
+
+
+# Verify checksums of files against a SHA384 checksum file
+sha384sum -c 1million.txt.sha3
+
+# Display the contents of the SHA384 checksum file
+cat 1million.txt.sha3

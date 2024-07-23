@@ -1,0 +1,110 @@
+### 1. Explore Packet Internet Groper (PING)
+- **a.** Identify the package containing `ping`:
+   
+   rpm -qf `/bin/ping`  # Check which package provides the 'ping' command (part of 'iputils' package)
+   ```
+
+- **b.** Send 3 packets of 32 bytes each to `192.168.75.1`:
+   
+   ping -c 3 192.168.75.1 -s 32  # Send 3 packets of 32 bytes (+ 8 bytes ICMP overhead) to the target
+   ```
+
+- **c.** Send 3 packets of 56 bytes to `192.168.75.1`, one every 3 seconds:
+   
+   ping -c 3 -i 3 192.168.75.1  # Send 3 packets of 56 bytes, with a 3-second interval between each packet
+   ```
+   Note: PING might be blocked by L3 devices on your network or the Internet.
+
+### 2. Telnet
+- Use Telnet to test port accessibility (not recommended for SSH access):
+   
+   telnet 192.168.75.1 22  # Test port 22 (SSH) accessibility on host 192.168.75.1
+   ```
+   Install Telnet if necessary:
+   
+   yum install telnet  # Install Telnet if it's not already available
+   ```
+
+### 3. Netstat
+- **a.** Display all sockets with service/port and hostname resolution:
+   
+   netstat -a  # List all sockets (TCP, UDP, Unix) with service/port and hostname resolution
+   ```
+
+- **b.** Display all sockets with service/port without name resolution:
+   
+   netstat -an  # List all sockets with service/port, suppressing name resolution
+   ```
+
+- **c.** Show only TCP sockets and listeners without name resolution:
+   
+   netstat -ntl  # Display TCP sockets and listeners, suppress name resolution
+   ```
+
+- **d.** Show TCP sockets and listeners with program details (requires root):
+   
+   netstat -ntlp  # Display TCP sockets and listeners with program details (requires root)
+   ```
+   Note: Use `-p` option as root to reveal all programs.
+
+- **e.** Display network interfaces:
+   
+   netstat -i  # Show network interfaces and their statistics
+   ```
+
+- **f.** Show all UDP listeners:
+   
+   netstat -nulp  # List all UDP sockets that are listening
+   ```
+
+- **g.** Display kernel routing table:
+   
+   netstat -rn  # Show the kernel routing table
+   ```
+
+### 4. ARP (Address Resolution Protocol)
+- Show ARP cache:
+  
+  arp -a || arp -e  # Display ARP cache entries (may differ based on system)
+  ```
+  Note: ARP is usually self-managing.
+
+### 5. Traceroute
+- **a.** Trace route to `192.168.75.1`:
+  
+  traceroute 192.168.75.1  # Trace the route packets take to reach 192.168.75.1
+  ```
+
+- **b.** Trace route to `www.linuxcbt.com`:
+  
+  traceroute www.linuxcbt.com  # Trace the route packets take to reach www.linuxcbt.com
+  ```
+
+### 6. nslookup
+- Perform DNS lookup for `www.linuxcbt.com`:
+  
+  nslookup www.linuxcbt.com  # Query DNS for the IP address of www.linuxcbt.com
+  ```
+  Note: DNS client tools use `/etc/resolv.conf` to determine which DNS servers to query.
+
+### 7. dig
+- **a.** Perform DNS query for `www.linuxcbt.com`:
+  
+  dig www.linuxcbt.com  # Perform a DNS query to retrieve information about www.linuxcbt.com
+  ```
+
+- **b.** Perform reverse DNS lookup for `71.6.195.206`:
+  
+  dig -x 71.6.195.206  # Perform a reverse DNS lookup for the IP address 71.6.195.206
+  ```
+
+- **c.** Query MX records for `linuxcbt.com`:
+  
+  dig linuxcbt.com mx  # Query DNS for the MX (Mail Exchange) records of linuxcbt.com
+  ```
+
+### 8. whois
+- Retrieve ownership information for `linuxcbt.com`:
+  
+  whois linuxcbt.com  # Fetch IP/domain ownership information for linuxcbt.com
+  ```

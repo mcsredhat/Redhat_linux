@@ -1,0 +1,217 @@
+### NFS ###
+
+# Check which package provides the 'showmount' command
+rpm -qf `which showmount`
+
+# Query NFS utilities package to list its files
+rpm -ql nfs-utils
+
+# List NFS init scripts
+ls -l /etc/init.d/nfs*
+
+# Query which package installed the NFS init script
+rpm -qf /etc/init.d/nfs
+
+# Show NFS exports on the local NFS server (linuxcbtserv2)
+showmount linuxcbtserv2
+
+# Show all NFS mounts on linuxcbtserv2
+showmount --all linuxcbtserv2
+
+# Check NFS service status in chkconfig
+chkconfig --list nfs
+
+# Display contents of NFS exports configuration
+cat /etc/exports
+
+# Enable NFS service to start on boot
+systemctl enable nfs
+
+# Start NFS service
+systemctl start nfs
+
+# Check NFS port status
+netstat -ntl | grep -i '111|2046'
+
+# Check NFS and RPCBIND service status
+netstat -ntlp | grep -i 'nfs|rpcbind'
+
+# Open NFS service in firewall permanently
+firewall-cmd --permanent --add-service nfs
+
+# Open NFS ports 111 and 2049 in firewall permanently (alternative)
+firewall-cmd --permanent --add-port=111,2049/tcp
+
+# Reload firewall rules
+firewall-cmd --reload
+
+# Check SELinux booleans related to NFS
+getsebool -a | grep nfs
+
+# Set SELinux booleans for NFS
+setsebool -P allow_nfsd_anon_write on
+setsebool -P virt_use_nfs on
+setsebool -P xen_use_nfs on
+setsebool -P nfs_export_all_ro=1 nfs_export_all_rw=1 samba_share_nfs=1 httpd_use_nfs=1 use_nfs_home_dirs=1
+
+# Edit NFS exports configuration file to export /projectx directory
+vi /etc/exports
+# Add: /projectx *(rw)
+
+# Create /projectx directory
+mkdir /projectx
+
+# Verify NFS exports configuration
+exportfs -v
+
+# Export all directories listed in /etc/exports
+exportfs -a
+
+# Show NFS exports on linuxcbtserv2
+showmount --exports linuxcbtserv2
+
+# Show mounted NFS shares on linuxcbtserv2
+showmount -e linuxcbtserv2
+
+# Access linuxcbtserv2 via SSH
+ssh root@192.168.75.20
+
+# Create /projectx directory on remote host
+mkdir /projectx
+
+# Mount linuxcbtserv2:/projectx to /projectx locally
+mount -t nfs linuxcbtserv2.linuxcbt.internal:/projectx /projectx
+
+# Edit resolv.conf to set nameserver
+vi /etc/resolv.conf
+# Add: nameserver 192.168.75.21
+
+# Query DNS for linuxcbtserv2.linuxcbt.internal
+dig linuxcbtserv2.linuxcbt.internal
+
+# Remount linuxcbtserv2:/projectx to /projectx
+mount -t nfs linuxcbtserv2.linuxcbt.internal:/projectx /projectx
+
+# Display mounted filesystems
+mount
+
+# Display disk space usage for /projectx
+df -h /projectx
+
+# Append 10000 lines to /projectx/1k.txt on linuxcbtserv1
+seq 10000 >> /projectx/1k.txt
+
+# List details of /projectx/1k.txt
+ls -l /projectx/1k.txt
+
+# Check if nfsnobody user exists in /etc/passwd
+grep nfsnobody /etc/passwd
+
+# Check if nobody group exists in /etc/group
+grep nobody /etc/group
+
+# Edit NFS exports configuration to restrict access to /projectx
+vi /etc/exports
+# Change: /projectx 192.168.75.20(ro) 192.168.75.101(rw)
+
+# Apply changes in /etc/exports
+exportfs -a
+
+# Append 10000 lines to /projectx/1k.txt on linuxcbtserv1
+seq 10000 >> /projectx/1k.txt
+
+# Display current NFS exports configuration
+cat /etc/exports
+
+# Unmount /projectx on linuxcbtserv1
+umount /projectx
+
+# Display currently mounted filesystems
+cat /proc/mounts
+
+# Remount linuxcbtserv2:/projectx to /projectx
+mount -t nfs linuxcbtserv2.linuxcbt.internal:/projectx /projectx
+
+# Append 1000 lines to /projectx/1m.txt
+seq 1000 >> /projectx/1m.txt
+
+# Display currently mounted filesystems
+cat /proc/mounts
+
+# SSH to linuxcbtserv2.linuxcbt.internal as root
+ssh root@192.168.75.101
+
+# Create /project directory
+mkdir /project
+
+# Mount linuxcbtserv2:/projectx to /projectx on remote host
+mount -t nfs linuxcbtserv2.linuxcbt.internal:/projectx /projectx
+
+# Check open network ports
+netstat -ntlp
+
+# Query DNS for linuxcbtserv2.linuxcbt.internal
+dig linuxcbtserv2.linuxcbt.internal
+
+# Display NFS ports in use on linuxcbtserv2
+netstat -ntlp | grep 2049
+
+# Append 10000 lines to /projectx/100k.txt on 192.168.75.101
+seq 10000 >> /projectx/100k.txt
+
+# List permissions of /project directory
+ls -ld /project
+
+# List details of /project/100k.txt on linuxcbtserv2
+ls -l /project/100k.txt
+
+# Append 10000 lines to /projectx/100k.txt on linuxcbtserv1
+seq 10000 >> /projectx/100k.txt
+
+# Edit hosts file to add entry for linuxcbtserv2.linuxcbt.internal
+vi /etc/hosts
+# Add: 192.168.75.21 linuxcbtserv2.linuxcbt.internal linuxcbtserv2
+
+# Edit fstab file to mount linuxcbtserv2:/projectx automatically on boot
+vi /etc/fstab
+# Add: linuxcbtserv2.linuxcbt.internal:/projectx /projectx nfs defaults 0 0
+
+# Unmount /projectx to apply changes in /etc/fstab
+umount /projectx
+
+# Mount all filesystems listed in /etc/fstab
+mount -a
+
+# Show NFS exports from linuxcbtBUIL (192.168.75.101)
+showmount --all 192.168.75.21
+
+# Mount all filesystems listed in /etc/fstab on linuxcbtserv1
+mount -a
+
+# Display currently mounted filesystems
+mount
+
+# Query DNS for linuxcbtserv2.linuxcbt.internal
+dig linuxcbtserv2.linuxcbt.internal
+
+# Show NFS ports in use on linuxcbtserv2
+netstat -ntlp
+
+# Append 10000 lines to /projectx/100k.txt on linuxcbtserv1
+seq 10000 >> /projectx/100k.txt
+
+# Edit NFS exports configuration to allow rw access to /projectx for specific IPs
+vi /etc/exports
+# Add: /projectx 192.168.75.20(rw) 192.168.75.101(rw)
+
+# Apply changes in /etc/exports
+exportfs -av
+
+# Append 10000 lines to /projectx/100k.txt on linuxcbtserv1
+seq 10000 >> /projectx/100k.txt
+
+# Display disk space usage
+df -h
+```
+
+

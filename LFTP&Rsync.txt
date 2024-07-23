@@ -1,0 +1,226 @@
+### LFTP
+
+
+### Check if lftp package is installed using full path ###
+rpm -qa 'which lftp'
+
+### Check if lftp package is installed using grep ###
+rpm -qa | grep lftp
+
+### List files installed by lftp ###
+rpm -ql lftp
+
+### Connect to localhost using lftp ###
+lftp localhost
+
+### Check lftp version on localhost ###
+lftp -v localhost
+
+### Connect to localhost again with lftp ###
+lftp localhost
+
+### List files in long listing format ###
+ls -ltr
+
+### Create a directory named 'temp' ###
+mkdir temp
+
+### Copy files starting with 'cl' to 'temp' directory ###
+cp -iv cl* temp
+
+### List files in 'temp' directory ###
+ls -l temp
+
+### Edit vsftpd configuration file (open for editing) ###
+vi /etc/vsftpd/vsftpd.conf 
+
+### Edit vsftpd configuration file (open for editing) ###
+vi /etc/vsftpd/vsftpd.conf 
+# Modify configurations such as use_localtime=yes, local_max_rate=1000
+
+### Restart vsftpd service ###
+service vsftpd restart
+
+### SSH to another server ###
+ssh 192.168.75.20
+```
+
+### Rsync Usage
+
+
+### Check if rsync package is installed ###
+rpm -qa | grep rsync
+
+### List files installed by rsync ###
+rpm -ql rsync
+
+### List configuration files installed by rsync ###
+rpm -qlc rsync
+
+### Display contents of rsync configuration file ###
+cat /etc/xinetd.d/rsync
+
+### List files in current directory ###
+ls -l
+
+### Transfer 'temp' directory recursively to 'linuxcbtserv2' on 192.168.75.20 ###
+rsync -av temp 192.168.75.20:linuxcbtserv2
+
+### List files in long listing format with human-readable sizes ###
+ls -ltrh
+
+### Change directory to 'temp' inside 'linuxcbt1' ###
+cd linuxcbt1/temp
+
+### List files in current directory ###
+ls -l
+
+### Transfer 'temp' directory recursively to '/home/linuxcbt1/Desktop/' on 192.168.75.20 ###
+rsync -av temp 192.168.75.20:/home/linuxcbt1/Desktop/
+
+### Change directory back to the parent directory ###
+cd ..
+
+### Transfer 'temp' directory recursively to '/' on 192.168.75.20 ###
+rsync -av temp 192.168.75.20:/
+
+### List files in current directory ###
+ls -l
+
+### Check disk usage of 'temp' directory ###
+du -chs temp/
+
+### Change directory to 'temp' ###
+cd temp/
+
+### List files in current directory ###
+ls 
+
+### List files with long listing format and human-readable sizes ###
+ls -lh 
+
+### Check disk usage of current directory ###
+du -chs
+
+### Go back to the parent directory ###
+cd ..
+
+### Transfer 'temp' directory recursively to '/' on 192.168.75.20 ###
+rsync -av temp 192.168.75.20:/
+
+### Append data to file '1million.txt' in 'temp' directory ###
+seq 650000 >> temp/1million.txt2
+
+### List files in 'temp' directory ###
+ls -l temp/
+
+### List files in long listing format with human-readable sizes ###
+ls -ltrh
+
+### Check disk usage of 'temp' directory ###
+du -chs temp/
+
+### Transfer 'temp' directory recursively to '/' on 192.168.75.20 ###
+rsync -av temp 192.168.75.20:/
+
+### Transfer files matching '1million.txt*' in 'temp' directory to '/temp' on 192.168.75.20 ###
+rsync -av temp/1million.txt* 192.168.75.20:/temp
+
+### List files in current directory ###
+ls 
+
+### Create directories 'temp1', 'temp2', 'temp3' ###
+mkdir temp1 temp2 temp3
+
+### List files in current directory ###
+ls 
+
+### Append data to file '1m.txt' in 'temp1' ###
+seq 100000 >> temp1/1m.txt
+
+### Append data to file '1m.txt' in 'temp2' and 'temp3' ###
+seq 100000 >> temp[2,3]/1m.txt
+
+### Transfer 'temp*' directories recursively to '/temp' on 192.168.75.20 ###
+rsync -av temp* 192.168.75.20:/temp
+
+### Check disk usage of current directory ###
+du -chs
+
+### Create directory 'temp4' ###
+mkdir temp4
+
+### Append data to file '1m.txt' in 'temp4' ###
+seq 1000000 >> temp4/1m.txt
+
+### Transfer 'temp*' directories recursively to '/temp' on 192.168.75.20 ###
+rsync -av temp* 192.168.75.20:/temp
+
+### Check disk usage of '1m.txt' in 'temp4' ###
+du -chs temp4/1m.txt 
+
+### Check disk usage of current directory ###
+du -chs 
+
+### List files in current directory ###
+ls -l
+
+### Transfer all files and directories to '/temp' on 192.168.75.20 ###
+rsync -av * 192.168.75.20:/temp
+
+### List files in current directory ###
+ls -l
+
+### Append data to file 'faraj.txt' ###
+seq 1000000 >> faraj.txt
+
+### Transfer all files and directories to '/temp' on 192.168.75.20 ###
+rsync -av * 192.168.75.20:/temp
+
+### Check disk usage of current directory ###
+du -chs
+
+### Sync and delete files on the destination that are not on the source ###
+rsync -av --delete * 192.168.75.20:/temp
+
+### List files in current directory ###
+ls -l
+
+### Change directory back to the home directory ###
+cd ..
+
+### List files in home directory ###
+ls -l
+
+### Sync and delete 'temp' directory on the destination that are not on the source ###
+rsync -av --delete temp 192.168.75.20:/temp
+
+### Change directory to '/home/linuxcbt' ###
+cd /home/linuxcbt
+
+### List files in current directory ###
+ls 
+
+### Change directory to '/tmp/' ###
+cd /tmp/
+
+### Change directory back to the parent directory ###
+cd ..
+
+### Change directory to 'temp' ###
+cd temp
+
+### Change directory to '/home/linuxcbt/temp/' ###
+cd /home/linuxcbt/temp/
+
+### List files in 'temp' directory ###
+ls -l
+
+### Sync and delete 'temp' directory on the destination that are not on the source ###
+rsync -av --delete temp 192.168.75.20:/temp
+
+### Transfer 'temp' directory recursively to '/temp' on 192.168.75.20 ###
+rsync -av temp 192.168.75.20:/temp
+```
+Here are the commands with comments added for each line:
+

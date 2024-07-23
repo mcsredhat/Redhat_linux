@@ -1,0 +1,134 @@
+### GREP ###
+
+# Search for "linux" in /etc/passwd
+grep "linux" /etc/passwd
+
+# Case-insensitive search for "linux" in /etc/passwd
+grep -i "linux" /etc/passwd
+
+# Search for lines containing "2" in /etc/passwd
+grep "2" /etc/passwd
+
+# Search for lines ending with "2011" in /etc/passwd
+grep "2011$" /etc/passwd
+
+# Case-insensitive search for lines starting with "linux" in /etc/passwd
+grep -i "^linux" /etc/passwd
+
+# Search for empty lines in /etc/passwd
+grep -i "" /etc/passwd
+
+# Search for lines starting with "l" followed by any characters and ending with "cbt" in /etc/passwd
+grep -i "^l.*cbt" /etc/passwd
+
+# Search for lines containing "red" or "2011" in /etc/passwd
+grep -i "red|2011" /etc/passwd
+
+# Display lines before and after the line containing "jan 9" in /var/log/messages
+grep -1 '^jan 9' /var/log/messages 
+
+# Display lines before and after lines starting with "jan" in /var/log/messages
+grep -1 '^jan' /var/log/messages 
+  
+### AWK ###
+
+# Print all lines of /etc/passwd
+awk '{print $0}' /etc/passwd
+
+# Print all lines of /etc/passwd followed by the first field
+awk '{print $0,$1}' /etc/passwd
+
+# Print lines containing "red" followed by the first field of /etc/passwd
+awk '/red/ {print $0,$1}' /etc/passwd
+
+# Print lines containing "lin" followed by the first field of /etc/passwd
+awk '/lin/ {print $0,$1}' /etc/passwd
+
+# Print lines containing "lin" followed by "--" and the first field of /etc/passwd
+awk '/lin/ {print $0,"--",$1}' /etc/passwd
+
+# Print lines containing "lin" followed by "--", the first field, "===", and the second field of /etc/passwd
+awk '/lin/ {print $0,"--",$1,"===",$2}' /etc/passwd
+
+# Print "==", all lines of /etc/passwd, "==", the first field, "===", and the second field
+awk '/lin/ {print "==",$0,"==",$1,"===",$2}' /etc/passwd
+
+# Print lines where the second field contains "2017" in /etc/passwd
+awk '{if ($2 ~ /2017/) print $0}' /etc/passwd
+
+# Print lines where any field contains "201" in /etc/passwd
+awk '{ /201/ print $0}' /etc/passwd
+
+# Print lines where any field contains "201" in /etc/passwd
+awk ' /201/ {print $0}' /etc/passwd
+
+# Print the fourth, fifth, and sixth fields of lines where the second field contains "9" in /etc/passwd
+awk '{if ($2 ~ /9/) print $4,$5,$6}' /etc/passwd
+  
+### sed (stream editor)###
+
+# Print the first line of /etc/passwd
+sed -n '1p' /etc/passwd
+
+# Print the second line of /etc/passwd
+sed -n '2p' /etc/passwd
+
+# Print lines 2 to 13 of /etc/passwd
+sed -n 2,13p /etc/passwd
+
+# Print lines 2 to 1 of /etc/passwd (incorrect command, corrected as "sed -n '2,1p' /etc/passwd")
+sed -n '2,1p' /etc/passwd
+
+# Print all lines except lines 2 to 1 of /etc/passwd
+sed -n '2,1!p' /etc/passwd
+
+# Print lines containing "44" in /etc/passwd
+sed -n -e '/44/p' /etc/passwd
+
+# Print lines containing "4" in /etc/passwd
+sed -n -e '/4/p' /etc/passwd
+
+# Print lines ending with "4" in /etc/passwd
+sed -n -e '/4$/p' /etc/passwd
+
+# Print lines starting with "4" in /etc/passwd
+sed -n -e '/^4/p' /etc/passwd
+
+# Print lines starting and ending with "4" in /etc/passwd
+sed -n -e '/^4$/p' /etc/passwd
+
+# Print lines containing any digit in /etc/passwd
+sed -n -e '/[0-9]/p' /etc/passwd
+
+# Print lines ending with a 4-digit number in /etc/passwd
+sed -n -e '/[0-9][0-9][0-9][0-9]$/p' /etc/passwd
+
+# Print lines starting with "d" and ending with "lin" in /etc/passwd
+sed -n -e '/^d/,/lin/p' /etc/passwd
+
+# Print lines starting with "re" and the next 2 lines in /etc/passwd
+sed -n -e '/^re/,+2p' /etc/passwd
+
+# Print lines starting with "li" and the next 2 lines in /etc/passwd
+sed -n -e '/^li/,+2p' /etc/passwd
+
+# Remove blank lines from /etc/passwd and display the result
+sed -e '/^$/d' /etc/passwd
+
+# Substitute "2010" with "2011" in /etc/passwd and print lines with "2011"
+sed -n -e 's/2010/2011/p' /etc/passwd
+  
+### Perl ###
+
+# Print "hello world" using Perl
+perl -e 'print "hello world\n"'
+
+# Print "hello world" using Perl
+perl -e 'print "hello world\n"'
+
+# Print "hello world;" using Perl
+perl -e 'print "hello world\n;"'
+
+# Print "faraj assulai" using Perl
+perl -e '$fname = "faraj"; $lname= "assulai"; print "$fname $lname\n";' -w 
+

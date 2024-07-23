@@ -1,0 +1,91 @@
+### Firewall and IPTables ###
+
+# Check if IPTables package is installed
+rpm -qa | grep iptables
+
+# View current IPTables configuration
+cat /etc/sysconfig/iptables
+
+# List all IPTables rules
+iptables -L
+
+# Allow incoming TCP traffic on port 80 from 192.168.75.0/24 subnet
+iptables -t filter -A INPUT -s 192.168.75.0/24 -p tcp --dport 80 -j ACCEPT
+
+# Accept all incoming traffic from 192.168.75.0/24 on interface ens3*0
+iptables -I INPUT -s 192.168.75.0/24 -i ens3*0 -j ACCEPT
+
+# Delete the rule that drops ICMP packets not going to 192.168.3.3
+iptables -D OUTPUT -d ! 192.168.3.3 -p icmp -j DROP
+
+# Allow forwarding traffic from 192.168.75.21 to 192.168.75.200
+iptables -A FORWARD -s 192.168.75.21 -d 192.168.75.200 -j ACCEPT
+
+# Insert a rule to allow incoming TCP traffic on port 21
+iptables -I INPUT -m state --state NEW -p tcp --dport 21 -j ACCEPT
+
+# Insert a rule to drop outgoing TCP traffic on port 1000
+iptables -I OUTPUT -m state --state NEW -p tcp --dport 1000 -j DROP
+
+# Save the IPTables configuration
+service iptables save
+
+# View the updated IPTables configuration after saving
+cat /etc/sysconfig/iptables
+```
+Here are the commands with comments explaining their purpose:
+
+
+# Create a new custom chain named NEW_CHAIN in iptables
+iptables -N NEW_CHAIN
+
+# Flush all rules in the OUTPUT chain of iptables
+iptables -F OUTPUT
+
+# Start the iptables service
+service iptables start
+
+# Restart the iptables service to apply any changes made
+service iptables restart
+
+# Stop the iptables service
+service iptables stop
+
+# Enable the iptables service to start on boot
+chkconfig iptables on
+
+# Check the current status of the iptables service
+service iptables status
+
+# Start the iptables service
+service iptables start
+
+# Add IP address 192.168.75.21/24 with broadcast address 192.168.75.255 on device ens3*0
+ip addr add 192.168.75.21/24 broadcast 192.168.75.255 dev ens3*0
+
+# Add IP address 192.168.75.15/24 with broadcast address 192.168.75.255 on device ens3*1 and display IP addresses
+ip addr add 192.168.75.15/24 broadcast 192.168.75.255 dev ens3*1 && ip addr
+
+# Display all IP addresses assigned to interfaces
+ip addr
+
+# Add a NAT rule to iptables to masquerade (SNAT) outgoing traffic from subnet 192.168.75.0/24 going out through ens3* interface
+iptables -t nat -A POSTROUTING -o ens3* -s 192.168.75.0/24 -j MASQUERADE
+
+# Save the current iptables configuration
+service iptables save
+
+# Restart the iptables service to apply the saved configuration
+service iptables restart
+
+# Edit the sysctl.conf file to enable IP forwarding
+vi /etc/sysctl.conf
+# Add or modify the following line to enable IP forwarding
+net.ipv4.ip_forward = 1
+
+# Apply the changes in sysctl.conf to enable IP forwarding without rebooting
+sysctl -p
+
+# Edit the resolv.conf file to set the default gateway to 192.168.75.0
+vi /etc/resolv.conf
+# Set the gateway IP address (this is typically done with the 'gateway' 

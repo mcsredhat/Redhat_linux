@@ -1,0 +1,152 @@
+### MAIL Server ###
+
+# Check if postfix is installed
+rpm -qa | grep postfix
+
+# List configuration files for postfix
+rpm -qlc postfix
+
+# Enable postfix service to start on boot
+chkconfig postfix on
+
+# Check SELinux boolean settings related to postfix
+getsebool -a | grep postfix
+
+# Allow postfix to write to the local mail spool directory
+setsebool -P allow_postfix_local_write_mail_spool=1
+
+# Configure firewall to allow SMTP service
+firewall-cmd --permanent --add-service smtp
+firewall-cmd --reload
+
+# Save and restart iptables service (if used)
+# iptables -I INPUT -m tcp -p tcp -s 192.168.75.0/24 --dport 25 -j ACCEPT
+# service iptables save
+# service iptables restart
+
+# Navigate to postfix configuration directory
+cd /etc/postfix/
+
+# Backup the original main.cf file
+cat main.cf >> main.cf.orginal
+
+# Edit the main postfix configuration file
+vi main.cf
+# Set the following parameters:
+# Queue directory location
+queue_directory = /var/spool/postfix
+# Hostname of the mail server
+myhostname = linuxcbtserv2.linuxcbt.internal
+# Domain name
+mydomain = linuxcbt.internal
+# Originating domain
+myorigin = $mydomain
+# Listen on all network interfaces
+inet_interfaces = all
+# Networks that are allowed to relay or send mail
+mynetworks = 192.168.75.0/24, 127.0.0.0/8
+
+# Display non-default postfix settings
+postconf -n
+
+# Display all postfix configurations
+postconf
+
+# Set postfix to start automatically on boot
+# systemctl enable postfix
+
+# Start postfix service
+# systemctl start postfix
+
+# Check postfix service status
+# systemctl status postfix
+
+# Set postfix as the default mail transfer agent
+alternatives --set mta /usr/sbin/sendmail.postfix
+
+# Display current MTA setting
+alternatives --display mta | grep current
+
+# Configure MTA interactively if needed
+alternatives --config mta
+
+# Send test emails
+date | mail -s "localhost test mail" linuxcbt
+date | mail -s "Local Delivery Test" user3
+date | mail -s "localhost test mail" linuxcbt@linuxcbtserv2.linuxcbt.internal
+
+# Check mail queue
+mailq
+
+# Navigate to user's home directory
+cd ~linuxcbt/
+
+# Check mail for the user
+mail
+
+# Check mailbox content for linuxcbt user
+cat /var/spool/mail/linuxcbt
+
+# Check mail queue again
+mailq
+
+# Display contents of postfix sendmail wrapper script
+cat /usr/sbin/sendmail.postfix
+
+# List files in reverse order of modification time
+ls -ltr
+
+# Display root user's mailbox
+cat root
+```
+Here are the commands for configuring postfix to relay mail through a smart host (`linuxcbtserv1.linuxcbt.internal`):
+
+
+### Relay Mail through smart Host ###
+
+# Edit postfix main configuration file
+vi /etc/postfix/main.cf
+
+# Add or modify the following line to specify the smart host
+relayhost = linuxcbtserv1.linuxcbt.internal
+
+# Edit postfix access file to allow relay from specific networks or domains (if needed)
+vi /etc/postfix/access
+# Example entries:
+# 192.168.75.0    RELAY
+# linuxcbt.internal       RELAY
+
+# Check current postfix configuration settings
+postconf -n
+
+# Restart postfix service to apply changes
+service postfix restart
+
+# Configure postfix as the default mail transfer agent (MTA)
+alternatives --config mta /usr/sbin/sendmail.postfix
+
+# Set postfix as the default MTA permanently
+alternatives --set mta /usr/sbin/sendmail.postfix
+
+# Display current MTA setting
+alternatives --display mta | grep current
+
+# If needed, configure MTA interactively
+alternatives --config mta
+
+# Send test email to verify smart host relay
+date | mail -s "RemoteHostMail" linuxcbt1@linuxcbtserv1.linuxcbt.internal
+
+# Navigate to the mail spool directory
+cd /var/spool/mail/
+
+# List mail files for users (replace 'assulai', 'linuxcbt', and 'root' with actual usernames)
+ls -l
+cat assulai 
+cat linuxcbt 
+cat root 
+
+# Check mail queue and postfix configuration files
+ls -ltr /etc/postfix/
+cat root
+```

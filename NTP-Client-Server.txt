@@ -1,0 +1,323 @@
+### Check if chrony package is installed ###
+rpm -qa | grep chrony
+### Check if ntp package is installed ###
+rpm -qa | grep ntp
+
+### Check if ntpstat package is installed ###
+rpm -qa | grep ntpstat
+### Check files installed by ntpdate package ###
+rpm -ql ntpdate
+
+### Check if chrony package is installed ###
+rpm -qa | grep chrony
+### List configuration files installed by ntp package ###
+rpm -qlc ntp
+
+### Display help for ntpstat command ###
+ntpstat --help
+### Display help for ntpdate command ###
+ntpdate --help
+
+### Display current date and time ###
+date
+
+### List files installed by chrony package ###
+rpm -ql chrony
+### List files installed by ntp package ###
+rpm -ql ntp
+
+### Edit chrony configuration file to allow NTP synchronization from 192.168.75.0/24 ###
+vi /etc/chrony.conf
+### Edit ntp configuration file to allow NTP synchronization from 192.168.75.0/24 ###
+vi /etc/ntp.conf
+# Add or modify the line to allow synchronization from 192.168.75.0/24
+
+### Check status of chronyd service ###
+systemctl status chronyd.service
+### Check status of ntpd service ###
+service ntpd status
+
+### Change directory to /etc ###
+cd /etc
+
+### Enable chronyd service to start at boot ###
+systemctl enable chronyd.service
+### Enable ntpd service to start at boot ###
+chkconfig ntpd on
+
+### Check status of chronyd service ###
+systemctl status chronyd.service
+### Check status of ntpd service ###
+service ntpd status
+
+### Start chronyd service ###
+systemctl start chronyd.service
+### Start ntpd service ###
+service ntpd start
+
+### List processes related to chronyd ###
+ps -ef | grep chronyd
+### List processes related to ntp ###
+ps -ef | grep ntp
+
+### Display NTP sources using chronyc ###
+chronyc sources
+### Display NTP sources using ntpq ###
+ntpq -np
+
+### Add firewall rule to allow NTP traffic on UDP port 123 permanently ###
+firewall-cmd --permanent --add-port=123/udp
+### Add firewall rule to allow NTP traffic on UDP port 123 and reload firewall rules ###
+iptables -I INPUT -p udp -m udp --dport 123 -j ACCEPT
+firewall-cmd --reload
+### Save iptables rules and restart iptables service ###
+service iptables save && service iptables restart
+
+### Search for 'pool.ntp' entry in chrony configuration file ###
+grep 'pool.ntp' /etc/chrony.conf
+### Resolve and display IP addresses of '0.centos.pool.ntp.org' ###
+dig 0.centos.pool.ntp.org
+
+### Edit chrony configuration file to add 'server 192.168.75.21' ###
+vi /etc/chrony.conf
+### Edit ntp configuration file to add 'server 192.168.75.21' ###
+vi /etc/ntp.conf
+# Add or modify the line to specify the NTP server
+
+### Restart chronyd service ###
+systemctl restart chronyd.service
+### Restart ntpd service ###
+service ntpd restart
+
+### Display current date and time ###
+date
+
+### Display NTP sources using chronyc ###
+chronyc sources
+### Display NTP sources using ntpq ###
+ntpq -np
+
+### Resolve and display IP addresses of '1.fedora.pool.ntp.org' ###
+dig 1.fedora.pool.ntp.org
+
+### Display NTP sources using chronyc ###
+chronyc sources
+### Display NTP clients using chronyc ###
+chronyc clients
+
+## linuxcbtserv1 ##
+
+### Enable ntpd service to start at boot ###
+systemctl enable ntpd.service
+### Check if ntpd package is installed ###
+rpm -qa | grep ntpd
+
+### Start chronyd service and ntpd service ###
+systemctl start chronyd.service
+service ntpd start
+
+### Display NTP sources using chronyc ###
+chronyc sources
+
+### Display contents of chrony configuration file ###
+cat /etc/chrony.conf
+
+### Restart chronyd service ###
+systemctl restart chronyd.service
+### Restart ntpd service ###
+service ntpd restart
+
+### Display current date and time ###
+date
+
+### Display NTP sources using chronyc ###
+chronyc sources
+
+### Edit chrony configuration file to add 'server 192.168.75.21' ###
+vi /etc/chrony.conf
+### Edit ntp configuration file to add 'server 192.168.75.21' ###
+vi /etc/ntp.conf
+# Add or modify the line to specify the NTP server
+
+### Restart chronyd service ###
+systemctl restart chronyd.service
+### Restart ntpd service ###
+service ntpd restart
+
+### Display NTP sources using chronyc ###
+chronyc sources
+
+### Display current date and time ###
+date
+
+### Edit chrony configuration file to add 'server 192.168.75.21' ###
+vi /etc/chrony.conf
+### Edit ntp configuration file to add 'server 192.168.75.21' ###
+vi /etc/ntp.conf
+# Add or modify the line to specify the NTP server
+
+### Restart chronyd service ###
+systemctl restart chronyd.service
+### Restart ntpd service ###
+/etc/init.d/ntpd restart
+
+### Display NTP sources using chronyc ###
+chronyc sources
+
+### Display current date and time ###
+date
+```
+Here are the commands with comments added for each line:
+
+
+### Check if ntp package is installed ###
+rpm -qa | grep ntp
+
+### Edit chrony configuration file to add NTP servers ###
+vi /etc/chrony.conf
+# Replace 'servertool' with 'server'
+# Add the following lines to specify NTP servers:
+# server 127.127.1.0 # local clock
+# server 192.168.75.21 # local clock
+# Add or modify 'fudge' line:
+# fudge 127.127.1.0 stratum 10
+
+### Restart chronyd service to apply configuration changes ###
+systemctl restart chronyd.service
+# Alternatively, for ntpd:
+# service ntpd restart
+
+### Set timezone to America/Toronto ###
+timedatectl set-timezone America/Toronto
+# Edit timezone configuration file if needed:
+# vi /etc/sysconfig/clock
+# ZONE="America/Toronto"
+
+### Display current date and time ###
+timedatectl
+
+### Enable chronyd service to start at boot ###
+systemctl enable chronyd.service
+# For ntpd, use:
+# chkconfig ntpd on
+
+### Start chronyd service ###
+systemctl start chronyd.service
+# For ntpd, use:
+# service ntpd start
+
+### Add firewall rule to allow NTP traffic on UDP port 123 permanently ###
+firewall-cmd --permanent --add-port=123/udp
+# Alternatively, for iptables:
+# iptables -I INPUT -p udp -m udp --dport 123 -j ACCEPT
+
+### Reload firewall rules to apply changes ###
+firewall-cmd --reload
+# Alternatively, for iptables:
+# service iptables save && service iptables restart
+
+### Display NTP sources to verify synchronization ###
+chronyc sources
+
+### Display current date and time after synchronization ###
+date
+```
+Here are the commands with added comments for each line:
+
+### Setting up NTP as a peer (NTP Server Configuration) ###
+
+
+### Check if ntp package is installed ###
+rpm -qa | grep ntp
+
+### Edit NTP configuration file to add peer ###
+vi /etc/ntp.conf
+# Add the following line to specify the peer:
+# peer 192.168.75.21
+
+### Restart chronyd service to apply configuration changes ###
+systemctl restart chronyd.service
+# Alternatively, for ntpd:
+# service ntpd restart
+
+### Set timezone to America/Toronto ###
+timedatectl set-timezone America/Toronto
+# Edit timezone configuration file if needed:
+# vi /etc/sysconfig/clock
+# ZONE="America/Toronto"
+
+### Display current date and time ###
+timedatectl
+
+### Enable chronyd service to start at boot ###
+Systemctl enable chronyd.service
+# For ntpd, use:
+# chkconfig ntpd on
+
+### Add firewall rule to allow NTP traffic on UDP port 123 permanently ###
+Firewall-cmd --permanent --add-port=123/udp
+# Alternatively, for iptables:
+# iptables -I INPUT -p udp -m udp --dport 123 -j ACCEPT
+
+### Reload firewall rules to apply changes ###
+Firewall-cmd --reload
+# Alternatively, for iptables:
+# service iptables save && service iptables restart
+
+### Display NTP sources to verify synchronization ###
+chronyc sources
+
+### Display current date and time after synchronization ###
+date
+```
+
+### Configuring NTP Client ###
+
+
+### Check if ntp package is installed ###
+rpm -qa | grep ntp
+
+### Edit chrony configuration file to add NTP server ###
+vi /etc/chrony.conf
+# Add or modify 'server' line to specify NTP server:
+# server 192.168.75.21
+
+### Restart chronyd service to apply configuration changes ###
+systemctl restart chronyd.service
+# Alternatively, for ntpd:
+# service ntpd restart
+
+### Set timezone to America/Toronto ###
+timedatectl set-timezone America/Toronto
+# Edit timezone configuration file if needed:
+# vi /etc/sysconfig/clock
+# ZONE="America/Toronto"
+
+### Display current date and time ###
+timedatectl
+
+### Enable chronyd service to start at boot ###
+Systemctl enable chronyd.service
+# For ntpd, use:
+# chkconfig ntpd on
+
+### Add firewall rule to allow NTP traffic on UDP port 123 permanently ###
+Firewall-cmd --permanent --add-port=123/udp
+# Alternatively, for iptables:
+# iptables -I INPUT -p udp -m udp --dport 123 -j ACCEPT
+
+### Reload firewall rules to apply changes ###
+Firewall-cmd --reload
+# Alternatively, for iptables:
+# service iptables save && service iptables restart
+
+### Restart chronyd service to ensure configuration is applied ###
+Systemctl restart chronyd.service
+# For ntpd, use:
+# service ntpd restart
+
+### Display NTP sources to verify synchronization ###
+chronyc sources
+
+### Display current date and time after synchronization ###
+date

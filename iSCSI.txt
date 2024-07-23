@@ -1,0 +1,112 @@
+### Check for iSCSI related packages ###
+rpm -qa | grep iscsi
+
+### Enable and start iscsid service ###
+systemctl enable iscsid.service    # Enable iscsid service to start on boot
+systemctl start iscsid.service     # Start iscsid service immediately
+systemctl status iscsid.service    # Check status of iscsid service
+
+### Discover iSCSI targets ###
+iscsiadm -m discovery -t st -p 192.168.75.20    # Discover iSCSI targets on IP address 192.168.75.20
+iscsiadm -m discovery -t st -p 192.168.75.21    # Discover iSCSI targets on IP address 192.168.75.21
+iscsiadm -m discovery -t st -p linuxcbtserv1.linuxcbt.internal    # Discover iSCSI targets by hostname
+
+### Display help for iscsiadm command ###
+iscsiadm --help
+
+############# Configuration on linuxcbtserv1 #############
+
+### Create a new partition on /dev/sdb ###
+fdisk -l | grep sd    # Check existing disks
+fdisk /dev/sdb        # Start fdisk on /dev/sdb
+n                     # Create a new partition
+p                     # Primary partition
+[press enter]         # Use default starting sector
++1G                   # Allocate 1GB size
+t                     # Change partition type
+82e                   # Change type to Linux swap / Solaris
+p                     # Print partition table
+w                     # Write changes and exit
+partprobe             # Inform kernel of partition changes
+
+### Prepare the partition for LVM ###
+pvcreate /dev/sdb1    # Initialize /dev/sdb1 as a physical volume for LVM
+vgcreate vg_iscsi /dev/sdb1    # Create a volume group named vg_iscsi using /dev/sdb1
+lvcreate -l 100%FREE -n lv_iscsi vg_iscsi    # Create a logical volume lv_iscsi using all available space in vg_iscsi
+
+### Install targetcli and configure iSCSI target ###
+yum install targetcli -y    # Install targetcli package
+targetcli                   # Start targetcli command-line interface
+cd backstores               # Navigate to backstores configuration
+create scsi_disk1_server /dev/vg_iscsi/lv_iscsi    # Create iSCSI disk using the logical volume lv_iscsi
+
+cd /iscsi                   # Navigate to iSCSI configuration
+create iqn.2016-02.local.itzgeek.server:disk1    # Create iSCSI Qualified Name (IQN)
+cd /iscsi/iqn.2016-02.local.itzgeek.server:disk1/tpg1/acls
+create iqn.2016-02.local.itzgeek.server:node1node2    # Create iSCSI access control list (ACL)
+
+cd /iscsi/iqn.2016-02.local.itzgeek.server:disk1/tpg1/luns
+cd /                        # Navigate to root directory
+ls                         # List contents (optional)
+saveconfig                 # Save configuration changes
+exit                       # Exit targetcli
+
+### Enable and restart target service ###
+systemctl enable target.service    # Enable target service to start on boot
+systemctl restart target.service   # Restart target service immediately
+
+### Configure firewall to allow iSCSI traffic ###
+firewall-cmd --permanent --add-port=3260/tcp    # Open TCP port 3260 for iSCSI traffic
+firewall-cmd --reload                           # Reload firewall rules
+
+########## Configuration on linuxcbtserv2 as iSCSI client ###########
+
+### Install iscsi-initiator-utils package ###
+yum install iscsi-initiator-utils -y    # Install iSCSI initiator utils package
+
+### Configure initiator name in initiatorname.iscsi file ###
+vi /etc/iscsi/initiatorname.iscsi
+# Set InitiatorName=iqn.2016-02.local.itzgeek.server:node1node2
+InitiatorName=iqn.2016-02.local.itzgeek.server:node1node2    # Set iSCSI initiator name
+
+### Discover iSCSI targets on the iSCSI server ###
+iscsiadm -m discovery -t st -p 192.168.75.20    # Discover iSCSI targets on IP address 192.168.75.20
+
+### Restart iscsid.service to apply changes ###
+systemctl restart iscsid.service    # Restart iscsid.service
+
+### Enable iscsid.service to start on boot ###
+systemctl enable iscsid.service    # Enable iscsid.service to start on boot
+
+### Log into the iSCSI target ###
+iscsiadm -m node -T iqn.2016-02.local.itzgeek.server:disk1 -p 192.168.75.20 -l    # Log into the iSCSI target
+
+### Check system logs for any iSCSI related messages ###
+cat /var/log/messages
+
+### Verify newly added disk partitions ###
+cat /proc/partitions
+
+### Create filesystem (XFS) on /dev/sdb ###
+mkfs.xfs /dev/sdb    # Create XFS filesystem on /dev/sdb
+
+### Mount the iSCSI disk ###
+mount /dev/sdb /mnt    # Mount /dev/sdb to /mnt
+
+### Check mounted filesystem ###
+df -hT    # Display disk space usage
+
+### Get UUID of /dev/sdb for /etc/fstab entry ###
+blkid /dev/sdb
+
+### Add /etc/fstab entry for persistent mount ###
+vi /etc/fstab
+# Add line: UUID=<UUID from blkid> /mnt xfs _netdev 0 0
+
+### Unmount /mnt to prepare for iSCSI target logout ###
+umount /mnt
+
+### Logout of the iSCSI target ###
+iscsiadm -m node -T iqn.----:disk1 -p 192.168.75.20 -u    # Logout from the iSCSI target
+```
+Here 

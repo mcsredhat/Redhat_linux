@@ -1,0 +1,75 @@
+### Compression Utilities ###
+
+180. `seq 1000 > 1million.txt`
+     - Generate a sequence of numbers from 1 to 1000 and save to `1million.txt`.
+
+181. `gzip -c 1million.txt`
+     - Compress `1million.txt` and write the output to standard output.
+
+182. `gzip -d 1million.txt.gz`
+
+ `gzip -d 1million.txt.gz` to decompress.
+
+183. `gzip -l 1million.txt.gz`
+     - List information about the compressed file `1million.txt.gz`.
+
+184. `gzip -c 1million.txt >> 1million.txt.gz`
+     - Append the compressed `1million.txt` to `1million.txt.gz`.
+
+185. `ls -ltr`
+     - List files in reverse chronological order.
+
+186. `gzip -l 1million.txt.gz`
+     - List information about the compressed file `1million.txt.gz`.
+
+187. `zcat 1million.txt.gz`
+     - Display the contents of `1million.txt.gz` without decompressing to disk.
+
+188. `gunzip 1million.txt.gz`
+     - Decompress `1million.txt.gz`.
+
+189. `gzip -c 1million.txt >> 1million.txt2`
+     - Compress `1million.txt` and append the output to `1million.txt2`.
+
+191. `bzip2 -c 1million.txt >> 1million.txt.bz2`
+     - Compress `1million.txt` and append the output to `1million.txt.bz2`.
+
+192. `ls -lte`
+     - List files sorted by modification time.
+
+193. `ls -ltr`
+     - List files in reverse chronological order.
+
+194. `bunzip2 -c 1million.txt.bz2 > 1million.txt3`
+     - Decompress `1million.txt.bz2` to `1million.txt3`.
+
+195. `bzcat 1million.txt.bz2`
+     - Display the contents of `1million.txt.bz2` without decompressing to disk.
+
+196. `zip 1million.txt.zip 1million.txt`
+     - Compress `1million.txt` into `1million.txt.zip`.
+
+197. `unzip 1million.txt.zip`
+     - Decompress `1million.txt.zip`.
+
+198. `zcat 1million.txt.zip`
+     - Invalid usage; should be `unzip`.
+
+199. `tar -cvf temp.tar temp/`
+     - Create a tarball `temp.tar` from the `temp/` directory.
+
+200. `tar -tvf temp.tar`
+     - List the contents of `temp.tar`.
+
+201. `tar -cvjf temp.tar.gz temp/`
+     - Create a bzip2 compressed tarball `temp.tar.bz2` from `temp/`.
+
+202. `tar -cvjf temp.tar.bz2 temp/`
+     - Create a bzip2 compressed tarball `temp.tar.bz2` from `temp/`.
+
+203. `tar -xvf temp.tar.gz`
+     - Extract the contents of `temp.tar.gz`.
+
+204. `du -ch`
+     - Summarize disk usage of each file and directory, displaying a total at the end.
+

@@ -1,0 +1,538 @@
+
+### Basic Command Line ###
+
+1. `cal 2025`
+   - Display the calendar for the year 2025.
+
+2. `cal 01 2018`
+   - Display the calendar for January 2018.
+
+3. `ls`
+   - List files and directories in the current directory.
+
+4. `ls -l`
+   - List files and directories with detailed information.
+
+5. `ls -lF`
+   - List files and directories with detailed information, appending a character indicating the file type.
+
+6. `ls -lt`
+   - List files and directories sorted by modification time, newest first.
+
+7. `ls -lh`
+   - List files and directories with detailed information in human-readable format.
+
+8. `ls -la`
+   - List all files and directories, including hidden ones, with detailed information.
+
+9. `ls -R /etc`
+   - List all files and directories in `/etc` recursively.
+
+10. `pwd`
+    - Print the current working directory.
+
+11. `cd /usr/bin`
+    - Change the current directory to `/usr/bin`.
+
+12. `cd`
+    - Change to the home directory.
+
+13. `ls`
+    - List files and directories in the current directory (home directory after the previous `cd`).
+
+14. `cd ~/dir1`
+    - Change to the `dir1` directory in the user's home directory.
+
+15. `cd ~assulai`
+    - Change to the home directory of the user `assulai`.
+
+16. `cd /`
+    - Change to the root directory.
+
+17. `cd ..`
+    - Change to the parent directory.
+
+18. `cd -`
+    - Change to the previous directory.
+
+19. `tty`
+    - Print the file name of the terminal connected to standard input.
+
+20. `who`
+    - Show who is logged on.
+
+21. `who am i`
+    - Show who is logged on and from where.
+
+22. `w`
+    - Show who is logged on and what they are doing.
+
+23. `whoami`
+    - Print the effective user ID.
+
+24. `logname`
+    - Print the user's login name.
+
+25. `id`
+    - Print user and group information.
+
+26. `groups`
+    - Print the groups a user is in.
+
+27. `uname`
+    - Print system information.
+
+28. `uname -a`
+    - Print all system information.
+
+29. `uname -v`
+    - Print the kernel version.
+
+30. `uname -s`
+    - Print the kernel name.
+
+32. `uname -p`
+    - Print the processor type.
+
+
+34. `uname -r`
+    - Print the kernel release.
+
+35. `uname -m`
+    - Print the machine hardware name.
+
+36. `uname -i`
+    - Print the hardware platform.
+
+37. `uname -o`
+    - Print the operating system.
+
+38. `clear`
+    - Clear the terminal screen.
+
+39. `date`
+    - Display the current date and time.
+
+40. `hwclock`
+    - Query and set the hardware clock (RTC).
+
+41. `cal`
+    - Display the current month's calendar.
+
+42. `uptime`
+    - Show how long the system has been running.
+
+43. `which openssh`
+    - Show the path of the `openssh` command.
+
+44. `whereis openssh`
+    - Locate the binary, source, and manual page files for `openssh`.
+
+45. `wc /etc`
+    - Count lines, words, and bytes in `/etc` (not typically useful for directories).
+
+46. `wc /etc/profile`
+    - Count lines, words, and bytes in `/etc/profile`.
+
+47. `wc -n /etc/profile`
+    - Invalid option; should be `-c` for bytes.
+
+48. `wc -l /etc/profile`
+    - Count lines in `/etc/profile`.
+
+49. `wall`
+    - Write a message to all users.
+
+50. `file .bash_profile`
+    - Determine the file type of `.bash_profile`.
+
+51. `ls`
+    - List files and directories in the current directory.
+
+52. `file srv`
+    - Determine the file type of `srv`.
+
+53. `cd srv`
+    - Change to the `srv` directory.
+
+54. `ls`
+    - List files and directories in the `srv` directory.
+
+55. `cd`
+    - Change to the home directory.
+
+56. `file .bash_profile`
+    - Determine the file type of `.bash_profile`.
+
+57. `file /usr/bin/who`
+    - Determine the file type of `/usr/bin/who`.
+
+58. `ll /dev/sd*`
+    - List detailed information about devices matching `/dev/sd*`.
+
+59. `ll /dev/tty*`
+    - List detailed information about devices matching `/dev/tty*`.
+
+60. `touch file1`
+    - Create an empty file named `file1` or update its timestamp.
+
+61. `cat > file2`
+    - Create a file named `file2` and write content to it from standard input.
+
+62. `ll file2`
+    - List detailed information about `file2`.
+
+63. `mkdir scripts1`
+    - Create a directory named `scripts1`.
+
+64. `ll`
+    - List detailed information about files and directories.
+
+65. `ls -ltr`
+    - List files and directories sorted by modification time, oldest first.
+
+66. `cat /home/linuxcbt/.bash_profile`
+    - Display the content of `/home/linuxcbt/.bash_profile`.
+
+67. `more /home/linuxcbt/.bash_profile`
+    - View the content of `/home/linuxcbt/.bash_profile` one screen at a time.
+
+68. `less /home/linuxcbt/.bash_profile`
+    - View the content of `/home/linuxcbt/.bash_profile` with navigation capabilities.
+
+69. `head /home/linuxcbt/.bash_profile`
+    - Display the first 10 lines of `/home/linuxcbt/.bash_profile`.
+
+70. `head -3 /home/linuxcbt/.bash_profile`
+    - Display the first 3 lines of `/home/linuxcbt/.bash_profile`.
+
+71. `tail -3 /home/linuxcbt/.bash_profile`
+    - Display the last 3 lines of `/home/linuxcbt/.bash_profile`.
+
+72. `tail -f /var/log/messages`
+    - Display the last lines of `/var/log/messages` and follow new additions.
+
+73. `vi /home/linuxcbt/.bash_profile`
+    - Edit `/home/linuxcbt/.bash_profile` using the `vi` editor.
+
+74. `echo`
+    - Print a blank line.
+
+75. `echo ?`
+    - Print the value of `?`, which expands to the status of the last command.
+
+76. `cat file2`
+    - Display the content of `file2`.
+
+77. `cat file2 file1 > file3`
+    - Concatenate `file2` and `file1` and write the output to `file3`.
+
+78. `id`
+    - Print user and group information.
+
+79. `mkdir temp`
+    - Create a directory named `temp`.
+
+80. `rm -rf temp`
+    - Remove the `temp` directory and its contents recursively and forcefully.
+
+81. `uniq /home/linuxcbt/.bash_profile`
+    - Filter out repeated lines from `/home/linuxcbt/.bash_profile`.
+
+82. `strings /bin/cat`
+    - Print the printable character sequences in the `/bin/cat` binary.
+
+83. `string /home/linuxcbt/.bash_profile`
+    - Invalid command; should be `strings`.
+
+84. `strings /home/linuxcbt/.bash_profile`
+    - Print the printable character sequences in `/home/linuxcbt/.bash_profile`.
+
+85. `cp file1 newfile1`
+    - Copy `file1` to `newfile1`.
+
+86. `cp file scripts1/`
+    - Copy `file` to the `scripts1` directory.
+
+87. `ls`
+    - List files and directories in the current directory.
+
+88. `cp newfile1 scripts1/`
+    - Copy `newfile1` to the `scripts1` directory.
+
+89. `cp -i newfile1 file1`
+    - Copy `newfile1` to `file1`, prompting before overwriting.
+
+90. `mkdir subdir1`
+    - Create a directory named `subdir1`.
+
+91. `cp -r scripts1 subdir1`
+    - Copy `scripts1` directory and its contents recursively to `subdir1`.
+
+92. `mv -i file1 subdir1/`
+    - Move `file1` to `subdir1/`, prompting before overwriting.
+
+93. `mv file3 file4`
+    - Rename `file3` to `file4`.
+
+94. `mv scripts1 scripts2`
+    - Rename `scripts1` directory to `scripts2`.
+
+95. `ls`
+    - List files and directories in the current directory.
+
+96. `mv scripts1 scripts10`
+    - Rename `scripts1` directory to `scripts10`.
+
+97. `mv scripts2 scripts10`
+    - Rename `scripts2` directory to `scripts10`.
+
+98. `rm newfile1`
+    - Remove the file `newfile1`.
+
+99. `mkdir subdir100`
+    - Create a directory named `subdir100`.
+
+100. `rmdir subdir100`
+    - Remove the empty directory `subdir100`.
+
+101. `mkdir -p subdir100/subdir101`
+    - Create the `subdir100` directory and its subdirectory
+
+ `subdir101`.
+
+102. `rm -ri subdir100`
+     - Remove the `subdir100` directory and its contents recursively, prompting before each removal.
+
+103. `stat install.log`
+     - Display detailed information about `install.log`.
+
+104. `stat -f /usr`
+     - Display file system information for `/usr`.
+
+######### attr Command line #################"
+
+105. `lsattr install.log`
+     - Display file attributes on a Linux second extended file system.
+
+106. `chattr -i install.log`
+     - Remove the immutable attribute from `install.log`.
+
+107. `chattr +i install.log`
+     - Add the immutable attribute to `install.log`.
+
+108. `lsattr install.log`
+     - Display file attributes on `install.log`.
+
+109. `rm install.log`
+     - Remove `install.log`. (If immutable, this will fail.)
+
+110. `chattr +a install.log`
+     - Add the append-only attribute to `install.log`.
+
+111. `cat /etc/fstab >> file1`
+     - Append the contents of `/etc/fstab` to `file1`.
+
+112. `chattr -ia file1`
+     - Remove the immutable and append-only attributes from `file1`.
+
+113. `chattr =ia file1`
+     - Set the attributes of `file1` to immutable and append-only.
+
+############GREP Command line ##############################
+
+114. `grep user1 /etc/passwd`
+     - Search for `user1` in `/etc/passwd`.
+
+115. `grep user1 /etc/passwd /etc/group`
+     - Search for `user1` in `/etc/passwd` and `/etc/group`.
+
+116. `grep -l user1 /etc/passwd /etc/group`
+     - List the file names containing `user1`.
+
+117. `grep -n user1 /etc/passwd /etc/group`
+     - Show the line numbers of matches for `user1` in `/etc/passwd` and `/etc/group`.
+
+118. `grep -n root /etc/passwd /etc/group`
+     - Show the line numbers of matches for `root` in `/etc/passwd` and `/etc/group`.
+
+119. `grep -l root /etc/passwd /etc/group`
+     - List the file names containing `root`.
+
+120. `grep -v root /etc/passwd /etc/group`
+     - Display lines not containing `root`.
+
+121. `grep ^root /etc/passwd /etc/group`
+     - Display lines starting with `root`.
+
+122. `grep bash$ /etc/passwd /etc/group`
+     - Display lines ending with `bash`.
+
+123. `grep ^$ /etc/passwd /etc/group`
+     - Display empty lines.
+
+124. `grep ^root$ /etc/passwd /etc/group`
+     - Display lines containing only `root`.
+
+125. `grep -i root /etc/passwd /etc/group`
+     - Case-insensitive search for `root` in `/etc/passwd` and `/etc/group`.
+
+126. `ll /etc | grep -E "drwx|xin"`
+     - List detailed information about directories and files in `/etc` matching `drwx` or `xin`.
+
+####################### diff & find command line #####################
+
+127. `diff -c file1`
+     - Invalid usage; should be `diff -c file1 file2` for context comparison.
+
+128. `diff -c file1 file2`
+     - Compare `file1` and `file2` with context output.
+
+129. `find /dev -iname vol*`
+     - Find files in `/dev` with names matching `vol*`, case-insensitive.
+
+130. `find .-name file2 -print`
+     - Invalid usage; should be `find . -name file2 -print`.
+
+131. `find ~ -size -1G`
+     - Find files in the home directory smaller than 1GB.
+
+132. `find /home -user linuxcbt -group root`
+     - Find files in `/home` owned by `linuxcbt` and belonging to the `root` group.
+
+133. `find / -name core -not -user root`
+     - Find files named `core` not owned by `root`.
+
+134. `find /etc/rc.d -mine +120`
+     - Invalid usage; should be `-mmin` for minutes or `-mtime` for days.
+
+135. `find /etc/rc.d -mtime +120`
+     - Find files in `/etc/rc.d` modified more than 120 days ago.
+
+136. `find /etc/rc.d -mtime -90`
+     - Find files in `/etc/rc.d` modified within the last 90 days.
+
+137. `find /dev -type c -perm 666`
+     - Find character devices in `/dev` with permissions 666.
+
+138. `find /dev -type c -perm 777`
+     - Find character devices in `/dev` with permissions 777.
+
+139. `find /dev -type l -perm 777`
+     - Find symbolic links in `/dev` with permissions 777.
+
+140. `find /dev -type l -perm 444`
+     - Find symbolic links in `/dev` with permissions 444.
+
+141. `find /dev -type -perm 444`
+     - Invalid usage; should specify the type.
+
+142. `find /usr -perm -444`
+     - Find files in `/usr` with at least read permissions for all.
+
+143. `find /dev -type c -perm -222`
+     - Find character devices in `/dev` with at least write permissions for all.
+
+144. `find /dev -type c -perm +222`
+     - Find character devices in `/dev` with at least one write permission bit set.
+
+145. `find / -name core -exec rm {} \;`
+     - Find and remove files named `core`.
+
+146. `locate passwd`
+     - Find files with names containing `passwd`.
+
+147. `locate -n 3 passwd`
+     - Find up to 3 files with names containing `passwd`.
+
+148. `locate -n 5 .sh`
+     - Find up to 5 files with names containing `.sh`.
+
+149. `vi file10`
+     - Edit `file10` using the `vi` editor.
+
+150. `sort file10`
+     - Sort the contents of `file10`.
+
+151. `sort -k 2 -n file10`
+     - Sort `file10` numerically by the second column.
+
+152. `sort -k 2 -nr file10`
+     - Sort `file10` numerically by the second column in reverse order.
+
+############ list file ########################
+
+153. `ll | sort`
+     - List detailed information about files and directories, then sort the output.
+
+154. `ll -a /etc/skel/ | sort -k 6M`
+     - List detailed information about files in `/etc/skel/` and sort by the sixth column (modification time).
+
+155. `ll -a /etc/skel/ | sort -k 6M -o /tmp/sort.out`
+     - List detailed information about files in `/etc/skel/`, sort by the sixth column, and save the output to `/tmp/sort.out`.
+
+156. `history`
+     - Display the command history.
+
+157. `export`
+     - List or set environment variables.
+
+160. `mkdir temp && cp -v file1 temp/ && ls -l temp`
+     - Create a `temp` directory, copy `file1` to `temp` with verbose output, and list detailed information about `temp`.
+
+161. `dmseg | grep -i cp`
+     - Invalid command; should be `dmesg`.
+
+162. `dmseg | grep -i 'cp'`
+     - Invalid command; should be `dmesg`.
+
+163. `ps`
+     - Display currently running processes.
+
+164. `top`
+     - Display real-time system information and process list.
+
+165. `free`
+     - Display memory usage.
+
+166. `df`
+     - Display disk space usage.
+
+167. `df -h`
+     - Display disk space usage in human-readable format.
+
+168. `cat /proc/cpuinfo`
+     - Display CPU information.
+
+169. `ls`
+     - List files and directories in the current directory.
+
+170. `touch file1`
+     - Create an empty file named `file1` or update its timestamp.
+
+171. `ln -s file1 file10`
+     - Create a symbolic link `file10` pointing to `file1`.
+
+172. `ln -s file1 file11`
+     - Create a symbolic link `file11` pointing to `file1`.
+
+173. `ls -l`
+     - List detailed information about files and directories.
+
+174. `stat file1`
+     - Display detailed information about `file1`.
+
+175. `stat file11`
+     - Display detailed information about `file11`.
+
+176. `ln file2 file22`
+     - Create a hard link `file22` pointing to `file2`.
+
+177. `ll`
+     - List detailed information about files and directories.
+
+178. `stat file2`
+     - Display detailed information about `file2`.
+
+179. `stat file22`
+     - Display detailed information about `file22`.

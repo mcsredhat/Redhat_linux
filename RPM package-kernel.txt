@@ -1,0 +1,663 @@
+### RPM package list
+
+1. **List all packages related to `named` (DNS server):**
+   
+   rpm -qa | grep named
+   ```
+   This command lists all installed packages that include "named" in their names.
+
+2. **List files provided by `nfs` package:**
+   
+   rpm -ql nfs
+   ```
+   This command lists all files provided by the `nfs` package.
+
+3. **List configuration files provided by `nfs` package:**
+   
+   rpm -qlc nfs
+   ```
+   This command lists configuration files provided by the `nfs` package.
+
+4. **List files provided by `named` package:**
+   
+   rpm -ql named
+   ```
+   This command lists all files provided by the `named` package.
+
+5. **Query information about an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -qa /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+   Queries if the RPM package `dcraw-8.91-1.fc11.i586.rpm` is installed.
+
+6. **List files provided by an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -ql /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+   Lists all files provided by the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+7. **List configuration files provided by an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -qlc /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+   Lists configuration files provided by the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+8. **List documentation files provided by an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -qd /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+   Lists documentation files provided by the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+9. **Find dependencies of an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -R /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+   Lists dependencies required by the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+10. **Upgrade an RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm -U /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+    Upgrades the RPM package `dcraw-8.91-1.fc11.i586.rpm` if a newer version is available.
+
+11. **Query information about an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm -qi /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+    Displays detailed information about the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+12. **Verify integrity of files in an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm -V /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+    Verifies the integrity of files in the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+13. **Import a GPG key from an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm --import /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+    Imports the GPG key provided by the RPM package `dcraw-8.91-1.fc11.i586.rpm`.
+
+14. **Force install an RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm --force /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+    Forces installation of the RPM package `dcraw-8.91-1.fc11.i586.rpm` even if conflicts exist.
+
+15. **Remove an RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm -e /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+    Removes the RPM package `dcraw-8.91-1.fc11.i586.rpm` from the system.
+
+### RPM install package from cdrom
+
+1. **Mount CD-ROM (`/dev/cdrom`) to `/mnt`:**
+   
+   mount /dev/cdrom /mnt
+   ```
+
+2. **Verify mount status:**
+   
+   mount | grep /mnt
+   ```
+
+3. **List packages containing `dcrow` or `dcraw` in their names from CD-ROM:**
+   
+   ll /mnt/Packages | grep dcrow
+   ll /mnt/Packages | grep dcraw
+   ```
+
+4. **Verify integrity of the RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -K /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+5. **Install the RPM package (`dcraw-8.91-1.fc11.i586.rpm`) with verbose output:**
+   
+   rpm -ivh /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+6. **Verify integrity of files in the installed RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -V /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+7. **Query information about the installed RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -iq /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+8. **List files provided by the installed RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -lq /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+9. **List configuration files provided by the installed RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -ql /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+10. **List configuration files provided by the installed RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm -qc /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+
+11. **List documentation files provided by the installed RPM package (`dcraw-8.91-1.fc11.i586.rpm`):**
+    
+    rpm -qd /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+
+12. **Install the RPM package (`dcraw-8.91-1.fc11.i586.rpm`) with verbose output:**
+    
+    rpm -ivh /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+    ```
+
+13. **Remove the RPM package named `dcraw`:**
+    
+    rpm -e dcraw
+    ```
+
+14. **Query documentation files of the removed RPM package (`dcraw`):**
+    
+    rpm -qd dcraw
+    ```
+Here's how to install an RPM package from a CD-ROM, create a local YUM repository, and use it:
+
+### RPM install package from CD-ROM
+
+1. **Mount CD-ROM (`/dev/cdrom`) to `/mnt`:**
+   
+   mount /dev/cdrom /mnt
+   ```
+
+2. **List packages containing `dcraw` in their names from CD-ROM:**
+   
+   ll /mnt/Packages | grep dcraw
+   ```
+
+3. **Verify integrity of the RPM file (`dcraw-8.91-1.fc11.i586.rpm`):**
+   
+   rpm -K /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+4. **Install the RPM package (`dcraw-8.91-1.fc11.i586.rpm`) with verbose output:**
+   
+   rpm -ivh /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm
+   ```
+
+5. **Verify integrity of files in the installed RPM package (`dcraw`):**
+   
+   rpm -V dcraw
+   ```
+
+6. **Query information about the installed RPM package (`dcraw`):**
+   
+   rpm -qi dcraw
+   ```
+
+7. **List files provided by the installed RPM package (`dcraw`):**
+   
+   rpm -ql dcraw
+   ```
+
+8. **List configuration files provided by the installed RPM package (`dcraw`):**
+   
+   rpm -qlc dcraw
+   ```
+
+9. **List documentation files provided by the installed RPM package (`dcraw`):**
+   
+   rpm -qd dcraw
+   ```
+
+10. **Remove the installed RPM package (`dcraw`):**
+    
+    rpm -e dcraw
+    ```
+
+### Create local YUM repository
+
+1. **Install `createrepo` tool:**
+   
+   yum -y install createrepo
+   ```
+
+2. **Create a directory for the local YUM repository:**
+   
+   mkdir -p /var/yum/repos.d/local
+   cd /var/yum/repos.d/local
+   ```
+
+3. **Copy the RPM package (`dcraw-8.91-1.fc11.i586.rpm`) to the local repository directory:**
+   
+   cp /mnt/Packages/dcraw-8.91-1.fc11.i586.rpm /var/yum/repos.d/local/
+   ```
+
+4. **Verify the copied file:**
+   
+   ls -l
+   ```
+
+5. **Create YUM repository metadata:**
+   
+   createrepo -v /var/yum/repos.d/local
+   ```
+
+6. **List the generated metadata files (`repodata/`):**
+   
+   ll repodata/
+   ```
+
+7. **Create a YUM repository configuration file (`local.repo`):**
+   
+   vi /etc/yum.repos.d/local.repo
+   ```
+   Add the following content:
+   ```
+   [local]
+   name=local yum repository
+   baseurl=file:///var/yum/repos.d/local/
+   enabled=1
+   gpgcheck=0
+   ```
+
+8. **Clean YUM cache:**
+   
+   yum clean all
+   ```
+
+9. **List available YUM repositories:**
+   
+   yum repolist
+   ```
+
+10. **Verify the local YUM repository (`local`):**
+    
+    yum repolist local
+    ```
+To share a DVD using FTP and HTTPD on your CentOS system, follow these steps for each mens3*od:
+
+### Share DVD using FTP
+
+1. **Check if `vsftpd` is installed:**
+   
+   rpm -qa | grep vsftpd
+   ```
+
+2. **Create a directory for FTP server:**
+   
+   mkdir -p /var/ftp/pub/rhel6
+   ```
+
+3. **Unmount the CD-ROM if it's already mounted:**
+   
+   umount /dev/cdrom
+   ```
+
+4. **Mount the CD-ROM to copy its contents:**
+   
+   mount /dev/cdrom /mnt/
+   cd /mnt/
+   ```
+
+5. **Copy contents from CD-ROM to FTP directory:**
+   
+   cp -r /mnt/* /var/ftp/pub/rhel6/
+   ```
+
+6. **Unmount and eject the CD-ROM:**
+   
+   umount /mnt
+   eject
+   ```
+
+7. **Set SELinux context recursively for FTP directory:**
+   
+   chcon -Rv --reference=/var/ftp/pub/ /var/ftp/pub/rhel6/
+   ```
+
+8. **Set SELinux file context type for FTP directory:**
+   
+   semanage fcontext -a -s system_u -t public_content_t /var/ftp/pub/rhel6
+   ```
+
+9. **Configure iptables to allow FTP access from your subnet (`192.168.75.0/24`):**
+   
+   iptables -I INPUT -m tcp -p tcp -s 192.168.75.0/24 --dport 21 -j ACCEPT
+   ```
+
+10. **Save iptables rules:**
+    
+    service iptables save
+    ```
+
+11. **Restart iptables service:**
+    
+    service iptables restart
+    ```
+
+12. **Restart `vsftpd` service:**
+    
+    service vsftpd restart
+    ```
+
+13. **Set `vsftpd` to start at boot:**
+    
+    chkconfig vsftpd on
+    ```
+
+14. **Access FTP share using a client:**
+    ```
+    ftp://192.168.75.21/rhel6
+    ```
+
+### Share DVD using HTTPD
+
+1. **Check if `httpd` is installed:**
+   
+   rpm -qa | grep httpd
+   ```
+
+2. **Create a directory for HTTPD server:**
+   
+   mkdir -p /var/www/html/rhel6
+   ```
+
+3. **Unmount the CD-ROM if it's already mounted:**
+   
+   umount /dev/cdrom
+   ```
+
+4. **Mount the CD-ROM to copy its contents:**
+   
+   mount /dev/cdrom /mnt/
+   cd /mnt/
+   ```
+
+5. **Copy contents from CD-ROM to HTTPD directory:**
+   
+   cp -r /mnt/* /var/www/html/rhel6/
+   ```
+
+6. **Unmount and eject the CD-ROM:**
+   
+   umount /mnt
+   eject
+   ```
+
+7. **Set SELinux context recursively for HTTPD directory:**
+   
+   chcon -Rv --reference=/var/www/html/ /var/www/html/rhel6/
+   ```
+
+8. **Set SELinux file context type for HTTPD directory:**
+   
+   semanage fcontext -a -s system_u -t public_content_t /var/www/html/rhel6
+   ```
+
+9. **Configure iptables to allow HTTP access from your subnet (`192.168.75.0/24`):**
+   
+   iptables -I INPUT -m tcp -p tcp -s 192.168.75.0/24 --dport 80 -j ACCEPT
+   ```
+
+10. **Save iptables rules:**
+    
+    service iptables save
+    ```
+
+11. **Restart iptables service:**
+    
+    service iptables restart
+    ```
+
+12. **Restart `httpd` service:**
+    
+    service httpd restart
+    ```
+
+13. **Set `httpd` to start at boot:**
+    
+    chkconfig httpd on
+    ```
+
+14. **Access HTTP share using a web browser:**
+    ```
+    http://192.168.75.21/rhel6
+    ```
+Here are the commands and outputs for exploring the Linux kernel and related modules:
+
+1. **Check the current kernel version:**
+   
+   uname -r
+   ```
+   Output example: `2.6.29.4-167.fc11.i586`
+
+2. **Query installed kernel packages:**
+   
+   rpm -q kernel
+   ```
+   Output example:
+   ```
+   kernel-2.6.29.4-167.fc11.i586
+   ```
+
+3. **List contents of `/boot` directory:**
+   
+   ll /boot/
+   ```
+   This will show files related to the boot process including kernels, initramfs images, and boot configuration.
+
+4. **List contents of `/boot/grub` directory:**
+   
+   ll /boot/grub
+   ```
+   This directory contains configuration files and modules used by GRUB (Grand Unified Bootloader).
+
+5. **Explore `/proc` directory:**
+   
+   ll /proc
+   ```
+   This virtual directory contains runtime system information.
+
+6. **View CPU information:**
+   
+   ll /proc/cpuinfo
+   ```
+   This file provides detailed information about the CPU(s) installed on the system.
+
+7. **List kernel modules for a specific kernel version:**
+   
+   ll /lib/modules/2.6.29.4-167.fc11.i586/
+   ```
+   This directory contains kernel modules specific to the indicated kernel version.
+
+8. **List all installed kernel modules:**
+   
+   ll /lib/modules
+   ```
+   This directory contains subdirectories for each installed kernel version, each containing kernel modules.
+
+9. **List kernel drivers for a specific kernel version:**
+   
+   ll /lib/modules/2.6.29.4-167.fc11.i586/kernel/drivers/
+   ```
+   This directory contains kernel drivers specific to the indicated kernel version.
+
+10. **Explore `/usr/src/` directory:**
+    
+    ll /usr/src/
+    ```
+    This directory typically contains kernel headers and source code.
+
+11. **List kernel source directories:**
+    
+    ll /usr/src/kernels/
+    ```
+    This directory contains source code for installed kernel versions.
+
+12. **List loaded kernel modules:**
+    
+    lsmod
+    ```
+    This command lists all currently loaded kernel modules.
+
+13. **Update module dependency files:**
+    
+    depmod
+    ```
+    This updates the module dependency files based on the current kernel.
+
+14. **Update module dependencies for a specific module (e.g., `e1000`):**
+    
+    depmod e1000
+    ```
+
+15. **View contents of `/etc/modprobe.conf` (if present):**
+    
+    cat /etc/modprobe.conf
+    ```
+    This file contains configuration options for kernel modules.
+
+16. **Remove a kernel module (e.g., `e1000`):**
+    
+    depmod -r e1000
+    ```
+
+17. **List USB-related modules and their dependencies:**
+    
+    modprobe -lt usb
+    ```
+
+18. **Display information about a specific kernel module (e.g., `e1000`):**
+    
+    modinfo e1000
+    ```
+Certainly! Here are the commands with comments added for each line:
+
+
+### Adding module to initial Ram Disk ###
+
+# Navigate to the /boot directory
+cd /boot/
+# List all files starting with initrd- to find the initramfs file(s)
+ll initrd-*
+
+# Extract the contents of the initramfs file to inspect its contents
+zcat initrd-* | cpio -ivt
+
+# Create a new initramfs with Bluetooth module included
+mkinitrd --with=bluetooth initrd-bluetooth-`uname -r` `uname -r`
+
+# Edit the GRUB configuration file to point to the new initramfs file
+vi /boot/grub/grub.conf
+# Modify the line to include the new initramfs file
+# Example: initrd /initrd-bluetooth-2.6.18-92.el5
+
+# Check if the Bluetooth module is loaded
+lsmod | grep Bluetooth
+
+
+### Updating kernel ###
+
+# Update the kernel using YUM package manager
+yum -y update kernel
+
+# Alternatively, upgrade the kernel using RPM
+rpm -Uvh /var/yum/repos.d/kernal/kernel-2.6.18-128.1.6.el5.rpm
+
+
+### Upgrade kernel ###
+
+# Install a new kernel using YUM
+yum -y install kernel
+
+# Alternatively, install a new kernel using RPM
+rpm -ivh /var/yum/repos.d/kernal/kernel-2.6.18-128.1.6.el5.rpm
+
+
+### Patching kernel ###
+
+# Navigate to the temporary directory where the patch file is located
+cd /var/tmp
+
+# Decompress the patch file
+gunzip patch-2.6.28.gz
+
+# Apply the patch to the kernel source code
+patch -p0 patch-2.6.28
+
+Here's the step-by-step process with comments added for clarity:
+
+
+### Modifying kernel ###
+
+# View the contents of sysctl configuration file
+cat /etc/sysctl.conf
+
+# Display all current sysctl settings
+sysctl -a
+
+# Example command to modify a specific sysctl parameter (replace tcp_abc with actual parameter)
+sysctl net.ipv4.tcp_abc
+
+# Set a sysctl parameter temporarily (valid until next reboot)
+echo 10 > /proc/sys/net/ipv4/tcp_abc
+
+# Edit sysctl.conf to make changes persistent across reboots
+vi /etc/sysctl.conf
+# Add or modify the parameter as needed, e.g., net.ipv4.tcp_abc = 10
+
+# Apply the changes from sysctl.conf
+sysctl -p
+
+
+### Building new kernel from source code ###
+
+# Install necessary build tools and dependencies
+yum -y install binutils cpp gcc glib2-devel glibc-devel glibc-headers gtk2-devel libglade2-devel ncurses ncurses-devel gt-devel tcl
+
+# Navigate to the directory where kernel source RPM is installed
+cd /var/tmp
+rpm -ivh kernel-2*
+
+# Create necessary directories for building the kernel
+mkdir /usr/src/fedora/BUILD
+mkdir -p /usr/src/fedora/SPECS
+
+# Change directory to kernel source RPM SPECS directory
+cd /usr/src/fedora/SPECS
+
+# Extract the source code of the kernel using rpmbuild
+rpmbuild -bp --target=i386 kernel-2.6-spec
+
+
+### Building new kernel ###
+
+# Change directory to the extracted kernel source code directory
+cd /usr/src/fedora/BUILD/kernel-2.6.18/linux-2.6.18.i386
+
+# Edit the makefile to modify kernel version if necessary
+vi Makefile
+# Example: EXTRAVERSION = -NEW-Kernel-1
+
+# Clean the kernel source tree
+make mrproper
+
+# Build the kernel and kernel modules
+make
+
+# Install the kernel modules
+make modules_install
+
+# Install the new kernel
+make install
+
+# View the GRUB configuration file to ensure the new kernel is added
+cat /boot/grub/grub.conf
+
+# Create a new initramfs image for the new kernel version
+mkinitrd /boot/initrd-2.6.18-NEW-Kernel-1.img 2.6.18-NEW-Kernel-1
+
+# Reboot the system to boot into the new kernel
+reboot

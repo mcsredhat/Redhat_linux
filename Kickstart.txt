@@ -1,0 +1,20 @@
+### Creating Kickstart Configuration
+
+1. **Copy Anaconda Kickstart File**:
+   
+   cp /root/anaconda-ks.cfg /root/ks.cfg  # Copying Anaconda Kickstart configuration to ks.cfg
+   ```
+
+2. **View Kickstart File with Line Numbers**:
+   
+   nl /root/ks.cfg  # Displaying Kickstart file with line numbers
+   ```
+
+3. **Edit Kickstart Configuration File**:
+   
+   vi /root/ks.cfg  # Editing Kickstart configuration file using vi editor
+   ```
+
+4. **Validate Kickstart Configuration Syntax**:
+   
+   ksvalidator /root/ks.cfg  # Validating Kickstart configuration syntax

@@ -1,0 +1,129 @@
+### PHP ###
+
+# Check installed PHP packages
+rpm -qa | grep php
+
+# Search for MySQL related packages
+yum search mysql
+
+# Install PHP MySQL extension
+yum -y install php-mysql
+
+# Query information about the installed php-mysql package
+rpm -qi php-mysql
+
+# List files installed by php-mysql package
+rpm -ql php-mysql
+
+# View MySQL configuration for PHP
+less /etc/php.d/mysql.ini
+less /etc/php.d/mysqli.ini
+
+# Access MySQL database and execute a query to select all records from 'contacts' table
+mysql -pabc123 -e 'select * from contacts' addressBook
+
+# List detailed information about /var/www/html/ directory
+ls -ld /var/www/html/
+
+# Create a new directory for the PHP script
+mkdir /var/www/html/addressbook
+
+# Edit the PHP script to display database records (addressbook.php)
+vi /var/www/html/addressbook/addressbook.php
+
+<?php 
+#initiate instance of MYSQLI module
+# this step is toutmount to using mysql from the CLI to connect to the server
+$mysqli = new mysqli(`127.0.0.1`,`root`,`abc123`,`addressBook`);
+# connection check routine
+If (mysali_connect_errno())
+{printf (“connection failed:%s\n”, mysql_connect_error());
+Exit();
+}
+ # define the query that is to be executed 
+$query1 = `SELECT * from contacts`;
+Echo `<table><tr>
+<td>Firest Name</td>
+<td>Last Name</td>
+<td>Business Phone 1</td>
+<td>E-Mail</td>
+</tr>;
+#Excute the query
+If ($result = $mysqli->query($query1))
+{ while ($row =$result->fetch_assoc())
+$fname=$row [“fname”];
+$lname=$row [“lname”];
+$bus_phone1=$row [“bus_phone1”];
+$email=$row [“email”];
+#open row
+Echo `<tr>`;
+#open cells
+Echo `<td>, $fname,</td>`;
+Echo `<td>, $lname,</td>`;
+Echo `<td>, $bus_phone1,</td>`;
+Echo `<td>, $email,</td>`;
+#close row
+Echo `</tr>`;
+}}#closes entire records 
+# close the table state
+Echo `</table>`;
+#end
+?>
+
+# Change ownership of the directory to 'linuxcbt' user
+chown linuxcbt /var/www/html/addressbook/
+
+# Open a web browser and navigate to http://localhost/addressbook/addressbook.php
+# This step should display the PHP script output
+
+# Access MySQL database interactively and show tables in 'addressBook' database
+mysql -pabc123 -h 127.0.0.1 addressBook
+mysql> show tables;
+mysql> exit
+
+# Restart Apache HTTP server to apply any configuration changes
+systemctl restart httpd
+
+# Check loaded Apache modules
+httpd -M
+
+# View Apache error log for any issues
+tail /etc/httpd/logs/error_log
+
+# View the PHP script error log
+cd /var/www/html/addressbook/addressbook.php
+tail /etc/httpd/logs/error_log
+
+# Check if MySQL is listening on port 3306
+netstat -ntl | grep 3306
+
+# View MySQL configuration file
+less /etc/my.cnf 
+
+# Check SELinux booleans related to MySQL and HTTPD
+getsebool -a | grep mysql
+setsebool -P mysql_connect_any on
+setsebool -P allow_user_mysql_connect on
+getsebool -a | grep -i mysql
+getsebool -a | grep httpd
+setsebool -P httpd_can_network_connect_db on
+
+# Open the PHP script in a browser again to verify after SELinux changes
+# http://localhost/addressbook/addressbook.php
+
+# Display the content of the PHP script file
+cat /var/www/html/addressbook/addressbook.php
+
+# Access MySQL client without specifying a database (interactive mode)
+mysql -pabc123
+mysql> \q
+
+# Disable SELinux booleans after testing (if needed)
+setsebool -P mysql_connect_any off
+setsebool -P allow_user_mysql_connect off
+
+# Restart Apache HTTP server after SELinux changes
+systemctl restart httpd
+
+# Open the PHP script in a browser again to verify after SELinux changes
+# http://localhost/addressbook/addressbook.php

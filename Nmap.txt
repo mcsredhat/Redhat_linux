@@ -1,0 +1,209 @@
+### Using Nmap
+
+5. **Search for Nmap Package in Yum**:
+   
+   yum search nmap  # Searching for Nmap package in Yum repositories
+   ```
+
+6. **Install Nmap Package**:
+   
+   yum install nmap -y  # Installing Nmap package with confirmation
+   ```
+
+7. **List Files Installed by Nmap Package**:
+   
+   rpm -ql nmap  # Listing files installed by the Nmap package
+   ```
+
+8. **View /etc/services File**:
+   
+   less /etc/services  # Viewing contents of /etc/services file
+   ```
+
+9. **View Nmap Services File**:
+   
+   less /usr/share/nmap/nmap-services  # Viewing contents of Nmap services file
+   ```
+
+10. **View Nmap Protocols File**:
+    
+    less /usr/share/nmap/nmap-protocols  # Viewing contents of Nmap protocols file
+    ```
+
+11. **Perform Network Discovery (Ping Scan)**:
+    
+    nmap -v 192.168.75.0/24  # Performing verbose network discovery scan on subnet 192.168.75.0/24
+    ```
+
+12. **Display Nmap Help Manual**:
+    
+    nmap --help  # Displaying Nmap help manual
+    ```
+
+13. **Perform Ping Scan with Verbose Output**:
+    
+    nmap -v -sP 192.168.75.20  # Performing verbose ping scan on host 192.168.75.20
+    ```
+
+14. **Perform TCP SYN Scan with Verbose Output**:
+    
+    nmap -v -sS 192.168.75.20  # Performing verbose TCP SYN scan on host 192.168.75.20
+    ```
+
+15. **List Files in /usr/share/nmap Directory**:
+    
+    ls -l /usr/share/nmap  # Listing files in /usr/share/nmap directory
+    ```
+
+16. **View Nmap MAC Prefixes File**:
+    
+    less /usr/share/nmap/nmap-mac-prefixes  # Viewing contents of Nmap MAC prefixes file
+    ```
+
+17. **Search for MAC Prefix '0011' in Nmap MAC Prefixes File**:
+    
+    grep '0011' /usr/share/nmap/nmap-mac-prefixes  # Searching for MAC prefix '0011' in Nmap MAC prefixes file
+    ```
+
+18. **Search for MAC Prefix '001143' (specific example) in Nmap MAC Prefixes File**:
+    
+    grep '001143' /usr/share/nmap/nmap-mac-prefixes  # Searching for MAC prefix '001143' in Nmap MAC prefixes file
+    ```
+
+19. **Search for Manufacturer Name 'Dell' in Nmap MAC Prefixes File**:
+    
+    grep -i 'Dell' /usr/share/nmap/nmap-mac-prefixes  # Searching for manufacturer name 'Dell' in Nmap MAC prefixes file
+    ```
+
+20. **Perform Ping Scan with Verbose Output** (example repeated for clarity):
+    
+    nmap -v -sP 192.168.75.20  # Performing verbose ping scan on host 192.168.75.20
+    ```
+
+It seems like you've provided a series of commands related to network scanning, configuration, and management tasks. Let's add comments to each command to clarify their purpose:
+
+
+arp -a  # Display ARP cache table
+
+nmap -v -sV 192.168.75.20  # Perform verbose service version scan on host 192.168.75.20
+
+rpm -qa | grep ssh  # List installed packages and grep for SSH related packages
+
+grep -i signature /etc/httpd/conf/httpd/httpd.conf  # Search for 'signature' keyword in Apache HTTP server configuration file
+
+### linuxcbtserv1 configuration ###
+
+vi /etc/httpd/conf/httpd.conf  # Edit Apache HTTP server configuration file
+# classroom – Linuxcbt
+ServerSignature Off  # Disable server signature
+Systemctl restart httpd  # Restart Apache HTTP server
+
+### linuxcbtserv2 configuration ###
+
+vi /etc/httpd/conf/httpd.conf  # Edit Apache HTTP server configuration file
+# classroom – Linuxcbt
+ServerSignature Off  # Disable server signature
+Systemctl restart httpd  # Restart Apache HTTP server
+
+nmap -v -sV 192.168.75.1  # Perform verbose service version scan on router (192.168.75.1)
+
+dig @192.168.75.1 www.linuxcbt.com  # Perform DNS lookup for www.linuxcbt.com using specified DNS server
+
+grep -i 'cisco' /usr/share/nmap/nmap-mac-prefixes  # Search for 'cisco' in Nmap MAC prefixes file
+
+ssh linuxcbt@192.168.75.1  # SSH into host 192.168.75.1 as user 'linuxcbt'
+
+# Configuration on router (assuming Cisco IOS commands)
+
+sh ru  # Show running configuration
+conf t  # Enter global configuration mode
+line vty 0 4  # Configure virtual terminal lines 0 to 4
+transport input ssh  # Allow SSH as transport input mens3*od for VT lines
+line vty 5 15  # Configure virtual terminal lines 5 to 15
+transport input ssh  # Allow SSH as transport input mens3*od for VT lines
+wr mem  # Write configuration changes to memory (save)
+exit  # Exit from configuration mode
+
+nmap -v -sV 192.168.75.1  # Perform verbose service version scan on router (192.168.75.1) again
+
+nmap  # Display nmap usage/help information
+
+nmap -v -sV -oA linuxcbtrouter1.nmap.scan.`date +%F` 192.168.75.1  # Perform verbose service version scan on router (192.168.75.1) and save results with timestamp
+
+ls -ltr  # List files in long format with timestamp, sorted by time
+
+less linuxcbtrouter1.nmap.scan.date.xml  # View XML output of Nmap scan results
+
+less linuxcbtrouter1.nmap.scan.date.nmap  # View Nmap scan results in plain text
+
+less linuxcbtrouter1.nmap.scan.date.gmap  # View graphical representation (if available) of Nmap scan results
+
+dig linuxcbt@linuxcbtserv1.linuxcbt.internal  # Perform DNS lookup for linuxcbtserv1.linuxcbt.internal
+
+nmap -v -6 -sV linuxcbtserv1.linuxcbt.internal  # Perform verbose IPv6 service version scan on host linuxcbtserv1.linuxcbt.internal
+
+nmap -v -sV -p 22 -oN linuxcbtrouter1.nmap.scan.`date +%F` 192.168.75.1  # Perform verbose service version scan on port 22 of router (192.168.75.1) and save results with timestamp in plain text format
+
+ls -ltr  # List files in long format with timestamp, sorted by time
+
+less linuxcbtrouter1.nmap.scan.date  # View plain text output of Nmap scan results
+
+less linuxcbtrouter1.nmap.scan.date.xml  # View XML output of Nmap scan results
+
+less linuxcbtrouter1.nmap.scan.date.nmap  # View Nmap scan results in plain text
+
+less linuxcbtrouter1.nmap.scan.date.gmap  # View graphical representation (if available) of Nmap scan results
+
+# Open the browser and visit https://localhost/var/www/html/test2.txt
+
+nmap -p 80 -v -sV 192.168.75.21  # Perform verbose service version scan on port 80 of host 192.168.75.21
+```
+Certainly! Here are the commands with comments added to explain their purpose:
+
+
+rpm -qf  | grep tcpdump  # Query which package provides tcpdump
+rpm -qf `which tcpdump`  # Query which package provides the tcpdump binary
+which tcpdump  # Show location of the tcpdump binary
+rpm -ql tcpdump  # List files installed by the tcpdump package
+ls -l /usr/sbin/tcpdump  # List detailed information about the tcpdump executable
+
+ifconfig  # Display network interface configuration
+tcpdump -v  # Run tcpdump with verbose output
+netstat -i  # Show network interfaces and statistics
+tcpdump -i ens3*0  # Capture packets on ens3*0 interface
+tcpdump -D  # List available network interfaces for tcpdump
+
+cd ~linuxcbt/temp  # Change directory to ~/linuxcbt/temp (assuming linuxcbt is a user)
+tcpdump -i ens3*0 -w tcpdump.full.log.`date +%F`  # Capture packets on ens3*0 interface and write to tcpdump.full.log with current date
+file tcpdump.full.log...  # Display file type information for tcpdump.full.log (replace ... with actual filename)
+
+tcpdump -r tcpdump.full.log...  # Read packets from tcpdump.full.log (replace ... with actual filename)
+tcpdump -e -r tcpdump.full.log...  # Read packets with ens3*ernet header from tcpdump.full.log
+tcpdump -A -r tcpdump.full.log...  # Read and display packet contents in ASCII from tcpdump.full.log
+tcpdump -n -A -r tcpdump.full.log...  # Read and display packet contents in ASCII without DNS resolution from tcpdump.full.log
+
+grep -i 5902 /etc/services  # Search for port 5902 in /etc/services
+
+tcpdump -w tcpdump.bpf.sans.vnc.1 not port 5902  # Capture packets into tcpdump.bpf.sans.vnc.1 excluding port 5902
+tcpdump -Aer tcpdump.bpf.sans.vnc.1  # Read and display ASCII packet contents with ens3*ernet header from tcpdump.bpf.sans.vnc.1
+tcpdump -w tcpdump.bpf.sans.vnc.1 not tcp and port 5902  # Capture packets into tcpdump.bpf.sans.vnc.1 excluding TCP port 5902
+tcpdump -w not tcp and port 5902  # Capture packets into a file named 'not' excluding TCP port 5902
+ssh 192.168.75.20  # SSH into host 192.168.75.20
+
+tcpdump -w not tcp port 5902  # Capture packets into a file named 'not' excluding TCP port 5902
+ssh 192.168.75.20  # SSH into host 192.168.75.20
+
+tcpdump -w tcpdump.bpf.sans.vnc.1 not tcp port 5902  # Capture packets into tcpdump.bpf.sans.vnc.1 excluding TCP port 5902
+tcpdump --help  # Display tcpdump command help
+man tcpdump  # Display tcpdump manual page
+
+tcpdump -G -w tcpdump.bpf.sans.vnc.2 not tcp port 5902  # Rotate capture files every few seconds, capturing into tcpdump.bpf.sans.vnc.2 excluding TCP port 5902
+tcpdump -r tcpdump.bpf.sans.vnc.2  # Read packets from tcpdump.bpf.sans.vnc.2
+
+tcpdump -v -w tcpdump.dns.capture.1 udp port 53  # Capture verbose packets into tcpdump.dns.capture.1 on UDP port 53
+
+# linuxcbtserv1 configuration
+dig @linuxcbtserv2.linuxcbt.internal mail.linuxcbt.internal  # Perform DNS query for mail.linuxcbt.internal using linuxcbtserv2 DNS server
+tcpdump -r tcpdump.dns.capture.1  # Read packets from tcpdump.dns.capture.1
+tcpdump -v -r tcpdump.dns.capture.1  # Read verbose packets from tcpdump.dns.capture.1
+```

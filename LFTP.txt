@@ -1,0 +1,322 @@
+# Start LFTP interactive shell
+lftp
+
+# Display all settings and filter for ftp related settings
+lftp > set -a | grep ftp
+
+# Exit LFTP shell
+lftp > exit
+
+# Edit LFTP configuration file
+vi ~/.lftprc
+
+# Enable debugging in LFTP
+debug
+
+# Set FTP settings for SSL/TLS
+set ftp:ssl-force yes
+set ftp:ssl-protect-data yes
+
+# Connect to localhost using LFTP as user linuxcbt
+lftp -u linuxcbt localhost
+
+# List directory contents in LFTP
+lftp linuxcbt@localhost > ls
+
+# Open a new terminal and start capturing FTP traffic on port 21 using tcpdump
+# Command executed outside this script
+
+# SSH into 192.168.75.20 as root
+ssh root@192.168.75.20
+
+# Connect to localhost using LFTP as user linuxcbt
+lftp -u linuxcbt localhost
+
+# List directory contents in LFTP
+lftp linuxcbt@localhost > ls
+
+# Exit LFTP session on linuxcbtserv2
+\q
+
+# List files in /etc/pki/tls/certs directory
+ls -l /etc/pki/tls/certs
+
+# View contents of /etc/pki/tls/certs/linuxcbtserv2.linuxcbt.internal.crt
+less /etc/pki/tls/certs/linuxcbtserv2.linuxcbt.internal.crt
+
+# Display available ciphers supported by OpenSSL
+openssl ciphers -v
+
+# Display manual page for vsftpd.conf
+man vsftpd.conf
+
+# Search for DES-CBC3-SHA cipher in available ciphers supported by OpenSSL
+openssl ciphers -v | grep 'DES-CBC3-SHA'
+
+# Edit vsftpd configuration file
+vi /etc/vsftpd/vsftpd.conf
+# Enable SSL/TLS settings in vsftpd.conf
+ssl_enable=yes
+ssl_tlsv1=yes
+rsa_cert_file=/etc/pki/tls/certs/linuxcbtserv2.linuxcbt.internal.crt
+
+# Restart vsftpd service
+systemctl restart vsftpd.service
+
+# Exit vi editor after editing .lftprc
+exit
+
+# Display contents of .lftprc file
+cat .lftprc
+
+# Start LFTP and connect to localhost
+lftp linuxcbt@localhost
+
+# Open a new terminal and start capturing FTP traffic on loopback interface (lo) on port 21
+# Command executed outside this script
+
+# Navigate to directory temp2 in LFTP
+lftp linuxcbt@localhost:~ > cd temp2
+
+# List directory contents in LFTP
+lftp linuxcbt@localhost:~/temp2 > ls
+
+# Exit LFTP session
+lftp linuxcbt@localhost:~/temp2 > \q
+
+# Ping linuxcbtserv2.linuxcbt.internal three times
+ping -c 3 linuxcbtserv2.linuxcbt.internal
+
+# Start LFTP and connect to linuxcbtserv2.linuxcbt.internal
+lftp linuxcbtserv2.linuxcbt.internal
+
+# List directory contents in LFTP
+lftp linuxcbtserv2.linuxcbt.internal :~> ls
+
+# Exit LFTP session
+lftp linuxcbtserv2.linuxcbt.internal :~> quit
+
+# Edit .lftprc to disable SSL/TLS settings
+vi ~/.lftprc
+
+# Set FTP settings to disable SSL/TLS
+set ftp:ssl-force no
+set ftp:ssl-protect-data no
+
+# Start LFTP and connect to linuxcbtserv2.linuxcbt.internal
+lftp linuxcbtserv2.linuxcbt.internal
+
+# List directory contents in LFTP
+lftp linuxcbtserv2.linuxcbt.internal :~> ls
+
+# Exit LFTP session
+lftp linuxcbtserv2.linuxcbt.internal :~> \q
+
+# Edit .lftprc to allow SSL/TLS connections
+vi ~/.lftprc
+
+# Set FTP settings to allow SSL/TLS
+set ftp:ssl-allow yes
+
+# Start LFTP and connect to linuxcbtserv2.linuxcbt.internal
+lftp linuxcbtserv2.linuxcbt.internal
+
+# List directory contents in LFTP
+lftp linuxcbtserv2.linuxcbt.internal :~> ls
+
+# Exit LFTP session
+lftp linuxcbtserv2.linuxcbt.internal :~> \q
+
+# Connect to linuxcbtserv2.linuxcbt.internal using Windows FileZilla or similar FTP client
+# Instructions outside the scope of this script
+
+# Connect to linuxcbtserv2.linuxcbt.internal using rdesktop with full screen option (-f)
+rdesktop -f ip
+
+# Edit vsftpd configuration file
+vi /etc/vsftpd/vsftpd.conf
+# Comment out SSL/TLS settings in vsftpd.conf
+# ssl_enable=yes
+# ssl_tlsv1=yes
+
+# Restart vsftpd service
+systemctl restart vsftpd
+
+# Display contents of .lftprc file
+cat ~/.lftprc
+
+# Start LFTP and connect to linuxcbtserv2.linuxcbt.internal
+lftp linuxcbtserv2.linuxcbt.internal
+
+# List directory contents in LFTP
+lftp linuxcbtserv2.linuxcbt.internal :~> ls
+
+# Exit LFTP session
+lftp linuxcbtserv2.linuxcbt.internal :~> \q
+
+Here are the commands with comments added to explain their purpose:
+
+
+# Display network interfaces and their configurations
+ifconfig -a
+
+# Remove secondary IP address 192.168.75.22 from ens3*0:1 interface
+ifcfg ens3*0:1 del 192.168.75.22
+
+# Display current network interface configurations
+ifconfig
+
+# Navigate to network configuration scripts directory
+cd /etc/sysconfig/network-scripts/
+
+# Display contents of ifcfg-ens3*0:* files (wildcard used to show all configurations)
+cat ifcfg-ens3*0\:*
+
+# Edit ifcfg-ens3*0:1 configuration file to set ONBOOT=no
+vi ifcfg-ens3*0:1
+# ONBOOT="no"
+
+# Edit ifcfg-ens3*1 configuration file to set ONBOOT=no
+vi ifcfg-ens3*1
+# ONBOOT="no"
+
+# Stop ens3*1 interface
+ifcfg ens3*1 stop
+
+# Display network interfaces after changes
+ifconfig
+
+# Scan localhost for open TCP and UDP ports using SYN and UDP scans
+nmap -v -sS -sU localhost
+
+# Display all listening TCP ports with their associated processes
+netstat -ntulp
+
+# Display processes listening on TCP port 25 (SMTP)
+netstat -ntlp | grep 25
+
+# Edit MySQL configuration file to bind MySQL to localhost (127.0.0.1)
+vi /etc/my.cnf
+# Bind=127.0.0.1
+
+# Restart MySQL service
+systemctl restart mysqld
+
+# Verify MySQL is listening on port 3306
+netstat -ntlp | grep 3306
+
+# Verify RPC bind service is stopped and disabled
+netstat -ntlp | grep 111
+systemctl stop rpcbind && systemctl disable rpcbind
+netstat -ntlp | grep 111
+
+# Stop NFS services and disable them
+systemctl stop nfs && systemctl disable nfs && systemctl status nfs
+netstat -ntlp | grep 2049
+
+# Stop Samba (SMB) services and disable them
+systemctl stop smb && systemctl disable smb && systemctl status smb
+netstat -ntlp | grep 445
+
+# Stop NetBIOS Name Service (nmb) and disable it
+netstat -ntlp | grep 139
+systemctl stop nmb && systemctl disable nmb && systemctl status nmb
+netstat -ntlp | grep 137
+
+# Stop Winbind service and disable it
+systemctl stop winbind && systemctl disable winbind && systemctl status winbind
+
+# Scan localhost for open TCP and UDP ports using SYN and UDP scans
+nmap -v -sS -sU localhost
+
+# Stop DHCP server and disable it
+systemctl stop dhcpd && systemctl disable dhcpd && systemctl status dhcpd
+
+# Stop lftp service and disable it
+systemctl stop lftp && systemctl disable lftp && systemctl status lftp
+
+# List UDP services and search for TFTP (port 69), then disable it in configuration
+netstat -nulp | grep 69
+cat /etc/xinetd.d/tftp
+# tftp disable = yes
+
+# List telnet configuration and disable it
+cat /etc/xinetd.d/telnet
+# telnet disable = yes
+
+# Edit vsftpd configuration file to disable anonymous FTP and enforce local logins with SSL
+vi /etc/vsftpd/vsftpd.conf
+# Anonymous_enable=NO
+# Force_local_logins_ssl=yes
+# Force_local_data_ssl=yes
+
+# Restart vsftpd service
+systemctl restart vsftpd
+
+# Edit LFTP configuration file (~/.lftprc) to disallow SSL connections
+vi ~/.lftprc
+# Set ftp:ssl-allow no
+
+# Start LFTP and connect to localhost as linuxcbt user
+lftp linuxcbt@localhost
+
+# List directory contents in LFTP
+lftp linuxcbt@localhost:~> ls
+
+# Exit LFTP session
+lftp linuxcbt@localhost:~> exit
+
+# Edit SSH server configuration file to restrict SSH connections
+vi /etc/ssh/sshd_config
+# AllowUsers root linuxcbt
+
+# Restart SSH service
+systemctl restart sshd
+
+# Test SSH connection to localhost
+ssh localhost
+
+# Verify SSH service listening on port 22
+netstat -ant | grep 22
+
+# Attempt SSH connection as root to localhost
+ssh root@localhost
+
+# Verify SSH service listening on port 22
+netstat -ant | grep 22
+
+# Attempt SSH connection as user2 to localhost
+ssh user2@localhost
+
+# Verify SSH service listening on port 22
+netstat -ant | grep 22
+
+# Edit SSH server configuration file to restrict SSH connections further
+vi /etc/ssh/sshd_config
+# AllowUsers linuxcbt linuxcbt2
+# PermitRootLogin no
+
+# Restart SSH service
+systemctl restart sshd
+
+# Verify SSH connection as linuxcbt user with verbose output
+ssh -vv linuxcbt@localhost
+
+# Attempt SSH connection as root to localhost
+ssh -vv root@localhost
+
+# Scan localhost for open TCP and UDP ports using SYN and UDP scans
+nmap -v -sS -sU localhost
+
+# Attempt SSH connection as root to 192.168.75.20
+ssh root@192.168.75.20
+
+# Scan 192.168.75.21 for open TCP and UDP ports using SYN and UDP scans
+nmap -v -sS -sU 192.168.75.21
+
+# Check if IPv6 addresses are configured on interfaces
+ifconfig | grep inet6
+
+# Scan localhost for open TCP and UDP ports using IPv6
+nmap -v -6 (IPV6…..)
+```

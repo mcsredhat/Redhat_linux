@@ -1,0 +1,217 @@
+### File Permission Types ###
+
+# Add execute permission for the owner to file1
+chmod u+x file1
+
+# Add write permission for the owner to file1
+chmod u+w file1
+
+# Add write permission for the group and others to file1
+chmod go+w file1
+
+# Remove write permission for others from file1
+chmod o-w file1
+
+# Set read, write, and execute permissions for owner, group, and others to file1
+chmod a=rwx file1
+
+# Set permissions 544 (owner: read and execute, group: read, others: read) to file2
+chmod 544 file2
+
+# Set permissions 744 (owner: read, write, and execute, group: read, others: read) to file2
+chmod 744 file2
+
+# Set permissions 774 (owner: read, write, and execute, group: read and write, others: read) to file2
+chmod 774 file2
+
+# Set permissions 776 (owner: read, write, and execute, group: read and write, others: read and write) to file2
+chmod 776 file2
+
+# Set permissions 764 (owner: read, write, and execute, group: read, others: read) to file2
+chmod 764 file2
+
+# Display permissions of file2
+ls -l file2
+
+# Set permissions 777 (owner: read, write, and execute, group: read, write, and execute, others: read, write, and execute) to file2
+chmod 777 file2
+
+# Display the current umask value
+umask 
+
+# Display the umask value in symbolic notation
+umask -S
+
+# Display permissions of file10
+ls -n file10
+
+# Create directory dir10
+mkdir dir10
+
+# Display details of directory dir10
+ls -d dir10
+
+# Display numerical permissions of file10
+ls -n file10
+
+# Add user user2
+useradd user2
+
+# Change owner of file10 to user2
+chown user2 file10
+
+# Display permissions and owner/group of file10
+ls -l file10
+
+# Change group of file10 to user2
+chgrp user2 file10
+
+# Display permissions and owner/group of file10
+ls -l file10
+
+# Change owner and group of file10 to root
+chown root:root file10
+
+# Display permissions and owner/group of file10
+ls -l file10
+
+# Display contents of current directory
+ls
+
+# List contents of directory scripts10
+ls scripts10/
+
+# Create nested directories scripts10/script1.script3
+mkdir -p scripts10/script1.script3
+
+# Change owner and group of scripts10 and its contents to user2
+chown -R user2:user2 scripts10
+
+# Display details of /bin/su
+ls /bin/su
+
+Here are the remaining commands with comments added:
+
+
+# Set permissions 755 (owner: read, write, and execute, group: read and execute, others: read and execute) to /bin/su
+chmod 755 /bin/su
+
+# Display permissions and details of /bin/su
+ls -l /bin/su
+
+# Set permissions 4755 (owner: read, write, and execute, group: read and execute with setuid bit, others: read and execute with setuid bit) to /bin/su
+chmod 4755 /bin/su
+
+# Display permissions and details of /bin/su
+ls -l /bin/su
+
+# Set permissions 2555 (owner: read and execute, group: read and execute, others: read and execute with setgid bit) to file10
+chmod 2555 file10
+
+# Display permissions and details of file10
+ls -l file10
+
+# Remove the setgid bit from file10
+chmod g-s file10
+
+# Display permissions and details of file10
+ls -l file10
+
+# Add the setgid bit to file10
+chmod g+s file10
+
+# Display permissions and details of file10
+ls -l file10
+
+# Create directory /sdata
+mkdir /sdata
+
+# Add the sticky bit to /sdata (allowing only owners to delete their own files within /sdata)
+chmod o+s /sdata/
+
+# Display permissions and details of /sdata
+ls -ld /sdata/
+
+# Set permissions 2770 (owner: read, write, and execute, group: read, write, and execute with sticky bit, others: no permissions) to /sdata
+chmod 2770 /sdata/
+
+# Display permissions and details of /sdata
+ls -ld /sdata/
+
+# Add the sticky bit to /tmp (allowing only owners to delete their own files within /tmp)
+chmod o+t /tmp
+
+# Display permissions and details of /tmp
+ls -ld /tmp/
+
+# Add the sticky bit to /sdata (allowing only owners to delete their own files within /sdata)
+chmod o+t /sdata/
+
+# Display permissions and details of /sdata
+ls -ld /sdata/
+
+# Create a symbolic link file11 pointing to file1
+ln -s file1 file11
+
+# Create a symbolic link file111 pointing to file1
+ln -s file1 file111
+
+# Display details of file111 (symbolic link)
+ls -l file111
+
+# Create a hard link file222 pointing to file2
+ln file2 file222
+
+# Display details of file2 and file222
+ls file2 file222
+
+# Create a hard link file444 pointing to file4
+ln file4 file444
+
+# Display details of file4 and file444
+ls -l file4
+```
+Here are the commands related to user and group management with added comments:
+
+
+# Display contents of /etc/passwd file
+cat /etc/passwd
+
+# Display contents of /etc/group file
+cat /etc/group
+
+# Display contents of /etc/shadow file (contains password hashes)
+cat /etc/shadow
+
+# Display contents of /etc/gshadow file (contains group password hashes)
+cat /etc/gshadow
+
+# Check the integrity of password files
+pwck
+
+# Run pwck again to verify integrity
+pwck
+
+# Convert the password file to shadow passwords
+pwconv
+
+# Display permissions and details of /etc/shadow file
+ls -l /etc/shadow
+
+# Revert back from shadow passwords to traditional password file
+pwunconv
+
+# Display permissions and details of /etc/shadow file after reverting
+ls -l /etc/shadow
+
+# Convert group file to gshadow file
+grpconv
+
+# Display permissions and details of /etc/gshadow file
+ls -l /etc/gshadow
+
+# Revert back from gshadow to group file
+grpunconv
+
+# Display permissions and details of /etc/gshadow file after reverting
+ls -l /etc/gshadow

@@ -1,0 +1,80 @@
+### Backup and Restore ###
+
+206. `dump`
+     - Perform filesystem backups (usage requires more options).
+
+207. `dump 0uvf /dev/pt1 /boot`
+     - Perform a level 0 (full) dump of `/boot` to `/dev/pt1`.
+
+208. `cat /etc/dumpdates`
+     - Display the dump date records.
+
+209. `dump 2uvf /dev/pt1 /boot`
+     - Perform a level 2 dump of `/boot` to `/dev/pt1`.
+
+210. `dump 1uvf /dev/pt1 /boot`
+     - Perform a level 1 dump of `/boot` to `/dev/pt1`.
+
+211. `cd /tmp`
+     - Change directory to `/tmp`.
+
+212. `restore rf /dev/pt1`
+     - Restore a file system from a dump tape.
+
+213. `cd /var/tmp/`
+     - Change directory to `/var/tmp/`.
+
+214. `restore xf /dev/pt1 /boot/grub//grub.conf`
+     - Restore `/boot/grub/grub.conf` from a dump tape.
+
+215. `restore if /dev/pt1`
+     - Interactive restore from a dump tape.
+
+216. `tar cvf /dev/pt1 /home/`
+     - Create a tarball of `/home` on `/dev/pt1`.
+
+221. `tar cvf /tmp/firstbootX.log.tar file1 fil2`
+     - Create a tarball `/tmp/firstbootX.log.tar` from `file1` and `fil2`.
+
+222. `tar tvf /dev/pt1`
+     - List the contents of a tarball on `/dev/pt1`.
+
+223. `tar xvf /dev/pt1`
+     - Extract the contents of a tarball on `/dev/pt1`.
+
+224. `tar cvjf /dev/pt1 /home`
+     - Create a bzip2 compressed tarball of `/home` on `/dev/pt1`.
+
+225. `rsync -avz /boot/grub/grub.conf /home`
+     - Synchronize `/boot/grub/grub.conf` to `/home`.
+
+226. `rsync -av /boot/grub/grub.conf /tmp`
+     - Synchronize `/boot/grub/grub.conf` to `/tmp`.
+
+227. `rsync -av /boot/grub/grub.conf linuxcbtserv1:/tmp`
+     - Synchronize `/boot/grub/grub.conf` to a remote host.
+
+228. `scp /boot/grub/grub.conf 192.168.75.20:/home`
+     - Securely copy `/boot/grub/grub.conf` to a remote host.
+
+229. `rsync -av linuxcbtserv1:/boot/grub/grub.conf  /home/`
+     - Synchronize from a remote host to `/home`.
+
+230. `scp linuxcbtserv1:/boot/grub/grub.conf /home`
+     - Securely copy from a remote host to `/home`.
+
+231. `ls -ltr /home/`
+     - List detailed information about files in `/home` in reverse chronological order.
+
+232. `find .| cpio -ov > /dev/pt1`
+     - Find files in the current directory and archive them to `/dev/pt1` using `cpio`.
+
+233. `find .-mtime -7 | cpio -ov > /tmp/mod.cpio`
+     - Find files modified in the last 7 days and archive them to `/tmp/mod.cpio`.
+
+234. `cpio -itv`
+     - List the contents of a `cpio` archive (input required).
+
+235. `cpio -iv`
+     - Extract files from a `cpio` archive (input required).
+

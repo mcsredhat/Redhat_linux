@@ -1,0 +1,123 @@
+### IPv4 Configuration
+
+#### 1. Explore key: Directories & Files
+
+- **a.** `/etc/sysconfig/network`
+   
+   # View system-wide network settings, including hostname, gateway, and enabled/disabled status
+   less /etc/sysconfig/network
+   ```
+
+- **b.** `/etc/sysconfig/networking`
+   
+   # This directory is controlled by the 'system-config-network' tool. Avoid manual edits.
+   less /etc/sysconfig/networking
+   ```
+
+- **c.** `/etc/hosts`
+   
+   # Local name database; ensure it includes essential entries like localhost
+   less /etc/hosts
+   ```
+
+   Example contents of `/etc/hosts`:
+   ```
+   192.168.75.21	linuxcbtserv2.linuxcbt.internal	linuxcbtserv2	# Added by NetworkManager
+   127.0.0.1	localhost.localdomain	localhost
+   ::1		localhost6.localdomain6	localhost6
+   ```
+
+   Note: Add hosts to `/etc/hosts` for which DNS resolution is unavailable or not desirable.
+
+- **d.** `/etc/sysconfig/network-scripts`
+   - **d1.** Interface configuration files
+     
+     # Describes up/down configuration of interfaces (e.g., ens3*)
+     less /etc/sysconfig/network-scripts/ifcfg-ens3*
+     cat /etc/sysconfig/network-scripts/ifcfg-ens3*
+
+     ```
+
+   - **d2.** Control files
+     
+     # Scripts that control how interfaces are brought up/down
+     less /etc/sysconfig/network-scripts/ifup-ens3*
+     less /etc/sysconfig/network-scripts/ifdown-ens3*
+     ```
+
+   - **d3.** Network function files
+     
+     # Contains key network information required for the network stack
+     less /etc/sysconfig/network-scripts/network-functions
+     ```
+
+   - **d4.** `ifup-ens3*` and `ifdown-ens3*`
+     
+     # Commands to bring up or down ens3*ernet interfaces like ens3*, ens3*1, etc.
+     ifup ens3*
+     ifdown ens3*0
+     nmcli device connect ens3*0
+     nmcli device disconnect ens3*0
+
+     ```
+
+- **e.** `ifconfig`
+   - **e1.** View configuration of interfaces
+     
+     # Enumerates current configuration of all interfaces
+     ifconfig
+     ip addr show
+
+     ```
+
+   - **e2.** Create additional IP alias on ens3*0
+     
+     # Create an additional IP alias on ens3*0 with address 192.168.75.22
+     sudo ip addr add 192.168.75.22/24 dev ens3*0
+     ifconfig ens3*0:1 192.168.75.22 netmask 255.255.255.0
+     ```
+
+     - **e2.1.** Test connectivity from specific IP
+       
+       # Ping using source IP 192.168.75.22 to target 192.168.75.21
+       ping -c 3 -I 192.168.75.22 192.168.75.21
+       ```
+
+   - **e3.** Add another IP alias on ens3*0
+     
+     # Create another IP alias on ens3*0 with address 192.168.75.23
+     	sudo ip addr add 192.168.75.23/24 dev ens3*0
+	ifconfig ens3*0:2 192.168.75.23 netmask 255.255.255.0
+     ```
+
+   - **e4.** Preserve changes across system restart or NetworkManager service restart
+     
+     # Copy existing ens3*0 configuration to ens3*0:1 to preserve changes
+     sudo nmcli connection modify ens3*0 +ipv4.addresses 192.168.75.22/24
+     sudo nmcli connection up ens3*0
+     cp -v /etc/sysconfig/network-scripts/ifcfg-ens3*0 /etc/sysconfig/network-scripts/ifcfg-ens3*0:1
+     ```
+
+- **f.** Add and remove IP aliases dynamically
+   - **f1.** Add an IP alias using `ifcfg`
+     
+     # Add a new IP alias 192.168.75.24/24 to ens3*0:3 and perform duplicate address detection
+     sudo nmcli connection modify ens3*0 +ipv4.addresses 192.168.75.24/24
+     sudo nmcli connection up ens3*0
+     ifcfg ens3*0:3 add 192.168.75.24/24
+     ```
+
+   - **f2.** Remove the sub-interface ens3*0:1
+     
+     # Delete the sub-interface ens3*0:1 with IP address 192.168.75.22
+     sudo ip addr del 192.168.75.22/24 dev ens3*0
+
+     ifcfg ens3*0:1 delete 192.168.75.22/24
+     ```
+
+   - **f3.** Remove the sub-interface ens3*0:3
+     
+     # Delete the sub-interface ens3*0:3 with IP address 192.168.75.24
+     sudo ip addr del 192.168.75.24/24 dev ens3*0
+     ifconfig ens3*0:3 del 192.168.75.24
+     ```

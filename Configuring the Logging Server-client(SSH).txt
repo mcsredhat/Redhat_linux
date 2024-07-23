@@ -1,0 +1,107 @@
+### Configuring the Logging Server (Receiving End)
+
+1. **SSH into the logging server:**
+
+   
+   ssh 192.168.75.20
+   ```
+
+2. **Edit `rsyslog` configuration file:**
+
+   
+   vi /etc/rsyslog.conf
+   ```
+
+3. **Enable UDP listener for `rsyslog`:**
+
+   Add or uncomment the following lines in `rsyslog.conf` to enable UDP listener on port 514:
+
+   
+   $ModLoad imudp.so
+   $UDPServerRun 514
+   ```
+
+4. **Open firewall port for UDP 514:**
+
+   
+   firewall-cmd --permanent --add-port=514/udp
+   firewall-cmd --reload
+   ```
+
+   This command allows incoming UDP traffic on port 514, which is used by `rsyslog` for receiving log messages.
+
+5. **Start and enable `rsyslog` service:**
+
+   
+   systemctl start rsyslog.service
+   systemctl enable rsyslog.service
+   ```
+
+   Ensure that `rsyslog` is running and set to start automatically on system boot.
+
+### Configuring the Client (Sending End)
+
+1. **Edit `rsyslog` configuration file on the client:**
+
+   
+   vi /etc/rsyslog.conf
+   ```
+
+2. **Forward all log messages to the logging server:**
+
+   Add the following line at the end of `rsyslog.conf` on the client to forward all log messages to the logging server (`192.168.75.20`) via UDP port 514:
+
+   
+   *.* @192.168.75.20:514
+   ```
+
+   - `*.*` indicates all facilities and priorities. Adjust this as needed based on your logging requirements.
+
+3. **Restart `rsyslog` service on the client:**
+
+   
+   systemctl restart rsyslog.service
+   ```
+
+4. **Open firewall port for UDP 514 (if not already open):**
+
+   
+   firewall-cmd --permanent --add-port=514/udp
+   firewall-cmd --reload
+   ```
+
+5. **Verify the UDP port configuration:**
+
+   
+   firewall-cmd --list-ports
+   ```
+
+   Ensure that port 514/udp is listed to confirm that the firewall rule is applied correctly.
+
+6. **Send a test log message from the client:**
+
+   
+   logger -i "This is a test log message from the client"
+   ```
+
+7. **Check the logs on the logging server:**
+
+   SSH back into the logging server:
+
+   
+   ssh 192.168.75.20
+   ```
+
+   View the incoming log messages in `/var/log/messages` or the appropriate log file based on your `rsyslog` configuration:
+
+   
+   tail -f /var/log/messages
+   ```
+
+   This command allows you to monitor incoming log messages in real-time.
+
+### Notes:
+
+- **rsyslog Configuration**: Make sure you configure `rsyslog` correctly on both the client and the server to ensure proper log forwarding.
+- **Firewall**: Adjust firewall rules (`firewall-cmd`) as necessary to allow UDP traffic on port 514.
+- **Testing**: Use `logger` command on the client to send test log messages and verify their reception on the logging server.

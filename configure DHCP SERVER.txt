@@ -1,0 +1,173 @@
+#### configure DHCP SERVER ####
+
+### Linuxcbtserv2 ###
+
+# Edit network interface configuration file for ens3*1
+vi /etc/sysconfig/network-scripts/ifcfg-ens3*1
+PREFIX=27
+
+# Disable NetworkManager service
+systemctl stop NetworkManager
+
+# Start NetworkManager service
+systemctl start NetworkManager
+
+# Display network interface details
+ifconfig en0ps
+
+# Search for DHCP package in YUM repositories
+yum search dhcp
+
+# Install dhcp-server package with automatic confirmation
+yum install dhcp-server -y
+
+# Query installed files from dhcp package
+rpm -ql dhcp
+
+# Edit rsyslog configuration to log DHCP events to dhcpd.log
+vi /etc/rsyslog.conf
+local6.*   /var/log/dhcpd.log
+
+# Copy DHCP server sample configuration file to dhcpd.conf
+cp -v /usr/share/doc/dhcp-server/dhcpd.conf.sample /etc/dhcp/dhcpd.conf
+
+# Edit DHCP server configuration file
+vi /etc/dhcp/dhcpd.conf
+option domain-name "linuxcbt.internal";
+option domain-name-servers 192.168.75.101;
+authoritative;
+log-facility local6;
+
+# DHCP server configuration for subnet 192.168.76.0/27
+### Classroom ###
+subnet 192.168.76.0 netmask 255.255.255.224 {
+    range 192.168.76.1 192.168.76.20;
+    option broadcast-address 192.168.76.31;
+    # Uncomment and modify additional options as needed
+    # option routers rtr-239-0-1.example.org;
+    # subnet 10.254.239.0 netmask 255.255.255.224 {
+    #     range dynamic-bootp 10.254.239.40 192.168.75.60;
+    #     option broadcast-address 10.254.239.31;
+    #     option routers rtr-239-0-1.example.org;
+    # }
+    # Comment out sections not needed
+    # comment all subnet mask we do not need
+    # comment all host passacaglia
+    # comment all shared-network we do not need
+}
+
+# Check DHCP service status
+systemctl status dhcpd.service
+
+# Enable DHCP service to start on boot
+systemctl enable dhcpd.service
+
+# Start DHCP service
+systemctl start dhcpd.service
+
+# List DHCP-related logs sorted by time
+ls -ltr /var/log/rsyslog
+
+# List processes related to DHCP using grep
+ps -ef | grep dhcp
+
+# Check UDP listening ports related to DHCP
+netstat -nulp | grep dhcp
+
+# Add UDP port 67 to firewall zone (assuming 'public' zone)
+firewall-cmd --zone=public --permanent --add-port=67/udp
+
+# Add DHCP service to firewall zone (assuming 'public' zone)
+firewall-cmd --zone=public --permanent --add-service=dhcp
+
+# Reload firewall to apply changes
+firewall-cmd --reload
+
+# List services enabled in firewall
+firewall-cmd --list-services
+
+# List DHCP server log file
+ls -ltr /var/log/dhcpd.log
+
+# Display DHCP leases file
+cat /var/lib/dhcpd/dhcpd.leases
+
+
+### linuxcbtserv1 ###
+
+# Display network interface configuration
+ifconfig
+
+# View network interface configuration file for en**
+cat /etc/sysconfig/network-scripts/ifcfg-en**
+
+# Bring up network interface en**
+ifup en**
+
+# Display network interface details for en**
+ifconfig en**
+
+# Ping 192.168.76.21 to test network connectivity
+ping -c 3 192.168.76.21
+
+# Trace route to 192.168.76.21
+traceroute 192.168.76.21
+
+# Display routing table
+netstat -rn
+
+
+### linuxcbtserv2 ###
+
+# Display DHCP leases file
+cat /var/lib/dhcpd/dhcpd.leases
+
+# Display network configuration details for specific interface
+ifconfig | grep -i '*****'
+
+# Edit DHCP server configuration file dhcpd.conf
+vi /etc/dhcp/dhcpd.conf
+
+# Uncomment host fantasia in dhcpd.conf
+## Classroom linuxcbt – reservation for linuxcbtserv1 ##
+host linuxcbtserv1 {
+    hardware ens3*ernet (mac address of server linuxcbtserv1) 00:00:****;
+    fixed-address 192.167.76.20;
+}
+
+# Reload DHCP service to apply configuration changes
+systemctl reload dhcpd.service
+
+# Display DHCP server log file
+cat /var/log/dhcpd.log
+
+
+### linuxcbtserv1 ###
+
+# Display network interface configuration
+ifconfig 
+
+# Bring down network interface en**
+ifdown en**
+
+# Bring up network interface en**
+ifup en**
+
+# Display network interface details
+ifconfig
+
+
+### linuxcbtserv2 ###
+
+# Display DHCP server log file
+cat /var/log/dhcpd.log
+
+# Check DHCP service status using init.d script (if applicable)
+/etc/init.d/dhcpd status
+
+# List all services managed by systemctl, filtering for dhcpd service
+systemctl --list-services | grep dhcpd
+
+# View DHCP server configuration file dhcpd.conf
+less /etc/dhcp/dhcpd.conf
+```
