@@ -1,0 +1,106 @@
+---
+- hosts: linuxcbtserv2
+  become: yes
+  vars:
+    primary_ip: "{{ ansible_default_ipv4.address }}"  # Dynamically fetch the primary IP address
+
+  tasks:
+  
+    ### Configuring the zone file /var/named/linuxcbt.internal ###
+    - name: Check if linuxcbtserv1 NS entry exists in /var/named/linuxcbt.internal
+      shell: grep 'IN NS linuxcbtserv1.linuxcbt.internal.' /var/named/linuxcbt.internal
+      register: ns_entry_check
+      ignore_errors: yes
+
+    - name: Add NS record for linuxcbtserv1 if not present
+      lineinfile:
+        path: /var/named/linuxcbt.internal
+        line: "@ IN NS linuxcbtserv1.linuxcbt.internal."
+        state: present
+      when: ns_entry_check.rc != 0
+
+    ### Configuring /etc/named.conf for 'linuxcbt.external' ###
+    - name: Check if zone 'linuxcbt.external' exists in /etc/named.conf
+      shell: grep 'zone "linuxcbt.external"' /etc/named.conf
+      register: external_zone_check
+      ignore_errors: yes
+
+    - name: Backup /etc/named.conf before modifying
+      copy:
+        src: /etc/named.conf
+        dest: /etc/named.conf.bak
+        remote_src: yes
+      when: external_zone_check.rc != 0  # Only back up if modification is needed
+
+    - name: Add slave zone for linuxcbt.external if not present
+      blockinfile:
+        path: /etc/named.conf
+        marker: "### Added by Ansible ###"
+        block: |
+          zone "linuxcbt.external" IN {
+              type slave;
+              masters { {{ primary_ip }}; };
+              allow-update { none; };
+          }
+      when: external_zone_check.rc != 0
+
+    ### Restarting named service ###
+    - name: Restart the named service
+      systemd:
+        name: named
+        state: restarted
+
+    ### Checking named service logs ###
+    - name: Check the named service logs for errors
+      shell: tail -n 20 /var/named/data/named.run
+      register: named_logs
+
+    - debug:
+        msg: "{{ named_logs.stdout }}"
+
+    ### DNS Queries ###
+    - name: Query localhost for 'ftp.linuxcbt.internal'
+      command: dig @localhost ftp.linuxcbt.internal
+      register: dig_ftp
+    - debug:
+        msg: "{{ dig_ftp.stdout }}"
+
+    - name: Query localhost for 'sftp.linuxcbt.internal'
+      command: dig @localhost sftp.linuxcbt.internal
+      register: dig_sftp
+    - debug:
+        msg: "{{ dig_sftp.stdout }}"
+
+    ### Adding CNAME records for sftp and mail to linuxcbt.internal ###
+    - name: Check if 'sftp' CNAME record exists in linuxcbt.internal
+      shell: grep 'sftp IN CNAME' /var/named/linuxcbt.internal
+      register: cname_check
+      ignore_errors: yes
+
+    - name: Add CNAME records for 'sftp' and 'mail' to linuxcbt.internal if not present
+      blockinfile:
+        path: /var/named/linuxcbt.internal
+        block: |
+          sftp IN CNAME linuxcbtserv2.linuxcbt.internal.
+          mail IN CNAME linuxcbtserv2.linuxcbt.internal.
+        marker: "### CNAME Added by Ansible ###"
+      when: cname_check.rc != 0
+
+    ### Restarting named service after modifying CNAME records ###
+    - name: Restart the named service after modifying CNAME records
+      systemd:
+        name: named
+        state: restarted
+
+    ### Querying CNAME records ###
+    - name: Query localhost for 'sftp.linuxcbt.internal'
+      command: dig @localhost sftp.linuxcbt.internal
+      register: dig_cname_sftp
+    - debug:
+        msg: "{{ dig_cname_sftp.stdout }}"
+
+    - name: Query localhost for 'mail.linuxcbt.internal'
+      command: dig @localhost mail.linuxcbt.internal
+      register: dig_cname_mail
+    - debug:
+        msg: "{{ dig_cname_mail.stdout }}"

@@ -1,0 +1,653 @@
+# Display partitions of all disks
+fdisk -l
+
+# Partition /dev/***
+fdisk /dev/nvme1n1p
+# Enter the following interactive commands:
+n        # Create a new partition
+1        # Partition number
+p        # Primary partition
+        # Press Enter to accept default start sector
++1G      # Allocate 1GB space for the partition
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+# Create directory for mounting
+mkdir /sdb1
+
+# Format partition /dev/sdb1 with ext4 filesystem
+mkfs.ext4 -j /dev/nvme1n1p
+
+# Mount /dev/sdb1 to /sdb1
+mount -t ext4 /dev/nvme1n1p /sdb1
+
+# Mount all filesystems listed in /etc/fstab
+mount -a
+
+# Display currently mounted filesystems
+mount
+
+### Delete partitions ###
+
+# Unmount /dev/sdb1 and /sdb1
+umount /dev/nvme1n1p /sdb1
+
+# Remount filesystems listed in /etc/fstab
+mount -a
+
+# Display currently mounted filesystems
+mount
+
+# Partition /dev/sdb to create swap partition
+fdisk /dev/nvme1n1p
+# Enter the following interactive commands:
+d        # Delete partition
+1        # Partition number to delete
+p        # Print partition table to verify deletion
+w        # Write changes to disk and exit
+
+# Display currently mounted filesystems
+mount
+
+### Provision swap partitions ###
+
+# Partition /dev/nvme1n1p to create swap partition
+fdisk /dev/nvme1n1p
+# Enter the following interactive commands:
+n        # Create a new partition
+p        # Primary partition
+4        # Partition number
+t        # Change partition type
+4        # Partition number
+82       # Linux swap
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+# Format /dev/sda4 as swap
+mkswap /dev/nvme1n1p
+
+# Display swap usage summary
+swapon -s
+
+
+# Display partitions of all disks
+fdisk -l
+
+# Activate swap partition /dev/sda4
+swapon -v /dev/nvme1n1p
+
+# Deactivate swap partition /dev/sda4
+swapoff /dev/sda4
+
+# Create a 1GB swap file /swapfile1G filled with zeros
+dd if=/dev/zero of=/swapfile1G bs=1024 count=1048576
+
+# Format /swapfile1G as swap
+mkswap /swapfile1G
+
+# Activate swap file /swapfile1G
+swapon -v /swapfile1G
+
+### Logical Volume Management ###
+
+# Partition /dev/nvme1n1p for LVM
+sudo fdisk /dev/nvme1n1p
+# Enter the following interactive commands:
+n        # Create a new partition
+p        # Primary partition
+        # Press Enter to accept default start sector
++1G      # Allocate 1GB space for the partition
+t        # Change partition type
+82e      # Set partition type to Linux swap (LVM)
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+# Create physical volumes (PVs) on /dev/sdb1 and /dev/sdb2
+pvcreate /dev/nvme1n1p1 /dev/nvme2n1p1 
+
+# Display physical volume information
+pvdisplay
+
+# Create volume group (VG) 'volgroupvar' using /dev/sdb1 and /dev/sdb2
+sudo vgcreate volgroupvar /dev/nvme1n1p1 /dev/nvme2n1p1 
+
+# Display volume group information including logical volumes (LVs)
+sudo vgdisplay -v
+
+# Create logical volume (LV) 'logvolvar' of size 3GB in volume group 'volgroupvar'
+sudo lvcreate -L 3GB -n logvolvar volgroupvar
+
+# Create logical volume (LV) 'logvolvar' with size specified in extents (alternative syntax)
+sudo lvcreate -l 3GB -n logvolvar volgroupvar
+
+# Create directory for mounting LV
+sudo mkdir /lvmvar1
+
+# Format logical volume /dev/volgroupvar/logvolvar with ext4 filesystem
+sudo mkfs.ext4 -j /dev/volgroupvar/logvolvar
+
+# Mount logical volume /dev/volgroupvar/logvolvar to /lvmvar1
+mount /dev/volgroupvar/logvolvar /lvmvar1
+
+# Mount all filesystems listed in /etc/fstab
+mount -a
+
+# Display currently mounted filesystems
+mount
+
+# Resize logical volume /dev/volgroupvar/logvolvar to 1GB
+sudo lvresize -L 1GB /dev/volgroupvar/logvolvar
+
+# Rename logical volume 'logvolvar' to 'logvolopt' in volume group 'volgroupvar'
+sudo lvrename volgroupvar logvolvar logvolopt
+
+# Rename volume group 'volgroupvar' to 'volgroupopt'
+sudo vgrename volgroupvar volgroupopt
+```
+
+
+***Steps to Delete LVM****
+sudo umount /dev/volgroupopt/logvolopt /lvmvar1
+sudo lvdisplay -v
+sudo lvchange -an /dev/volgroupopt/logvolopt
+sudo lvremove /dev/volgroupopt/logvolopt
+sudo vgdisplay -v
+sudo vgremove volgroupopt
+sudo pvdisplay -v
+sudo pvremove /dev/nvme1n1p1 
+sudo pvremove /dev/nvme2n1p1 
+sudo fdisk /dev/nvme1n1
+p
+d
++1
+p
+w
+partprobe
+sudo fdisk -l
+
+sudo fdisk /dev/nvme2n1
+p
+d
++1
+p
+w
+partprobe
+sudo fdisk -l
+
+### RAID ###
+sudo fdisk -l 
+/dev/nvme2n1
+/dev/nvme2n1p1         2048 1026047 1024000  500M 83 Linux
+/dev/nvme2n1p2      1026048 4194303 3168256  1.5G  5 Extended
+/dev/nvme2n1p5      1028096 1847295  819200  400M 83 Linux
+/dev/nvme2n1p6      1849344 2668543  819200  400M 83 Linux
+/dev/nvme2n1p7      2670592 3489791  819200  400M 83 Linux
+/dev/nvme2n1p8      3491840 4194303  702464  343M 83 Linux
+
+/dev/nvme0n1
+
+/dev/nvme0n1p1         2048  821247  819200  400M 83 Linux
+/dev/nvme0n1p2       821248 4194303 3373056  1.6G  5 Extended
+/dev/nvme0n1p5       823296 1642495  819200  400M 83 Linux
+/dev/nvme0n1p6      1644544 2463743  819200  400M 83 Linux
+/dev/nvme0n1p7      2465792 3489791 1024000  500M 83 Linux
+/dev/nvme0n1p8      3491840 4194303  702464  343M 83 Linux
+
+# Partition /dev/sdc
+fdisk /dev/nvme0n1
+# Enter the following interactive commands:
+n        # Create a new partition
+e        # Extended partition type
+1        # Partition number
+n        # Create a new logical partition
+l        # Logical partition type
+        # Press Enter to accept default start sector
++1G      # Allocate 1GB space for the partition
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+**after repeate to create the disk partition many times will look like the following down****
+/dev/nvme2n1
+/dev/nvme2n1p1         2048 1026047 1024000  500M 83 Linux
+/dev/nvme2n1p2      1026048 4194303 3168256  1.5G  5 Extended
+/dev/nvme2n1p5      1028096 1847295  819200  400M 83 Linux
+/dev/nvme2n1p6      1849344 2668543  819200  400M 83 Linux
+/dev/nvme2n1p7      2670592 3489791  819200  400M 83 Linux
+/dev/nvme2n1p8      3491840 4194303  702464  343M 83 Linux
+
+/dev/nvme0n1
+
+/dev/nvme0n1p1         2048  821247  819200  400M 83 Linux
+/dev/nvme0n1p2       821248 4194303 3373056  1.6G  5 Extended
+/dev/nvme0n1p5       823296 1642495  819200  400M 83 Linux
+/dev/nvme0n1p6      1644544 2463743  819200  400M 83 Linux
+/dev/nvme0n1p7      2465792 3489791 1024000  500M 83 Linux
+/dev/nvme0n1p8      3491840 4194303  702464  343M 83 Linux
+
+
+# Create RAID 0 (striping) array /dev/md0 with 2 devices (/dev/nvme0n1p5, /dev/nvme2n1p5)
+sudo mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/nvme2n1p5 /dev/nvme0n1p5
+
+# Format /dev/md0 with ext4 filesystem
+sudo mkfs.ext4 /dev/md0
+
+# Create mount point for /dev/md0
+sudo mkdir /md0
+
+# Mount /dev/md0 to /md0
+sudo mount /dev/md0 /md0
+
+# Mount all filesystems listed in /etc/fstab
+sudo mount -a
+sudo chmod 777 /md0
+
+# Append sequence of numbers to file /md- and list files in /md0 directory
+sudo seq 1000000 >> /md0/output.txt 
+sudo ls –l /md0
+
+# Display partitions of all disks
+sudo fdisk -l
+
+# display the content of raid disk
+sudo mdadm --detail /dev/md0
+cat /proc/mdstat
+
+
+# Create RAID 1 (mirroring) array /dev/md1 with 2 devices (/dev/nvme0n1p6, /dev/nvme2n1p6)
+sudo mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/nvme0n1p6 /dev/nvme2n1p6 
+
+# Format /dev/md1 with ext4 filesystem (correcting the command syntax)
+sudo mkfs.ext4 /dev/md1
+
+# Create mount point for /dev/md1
+sudo mkdir /md1
+
+# Mount /dev/md1 to /md1
+sudo mount /dev/md1 /md1
+
+# Mount all filesystems listed in /etc/fstab
+sudo mount -a
+sudo chmod 777 /md1
+
+# Append sequence of numbers to /md1 file and list files in /md1 directory
+seq 1000000 >> /md1/ouptut.txt && ls –l /md1
+
+# Display partitions of all disks
+sudo fdisk -l
+
+# display the content of raid disk
+sudo mdadm --detail /dev/md1
+cat /proc/mdstat
+
+
+# Create RAID 5 array /dev/md5 with 4 devices (/dev/nvme0n1p7, /dev/nvme0n1p8, /dev/nvme2n1p7, /dev/nvme2n1p8)
+sudo mdadm --create /dev/md5 --level=5 --raid-devices=4 /dev/nvme0n1p7 /dev/nvme0n1p8 /dev/nvme2n1p7 /dev/nvme2n1p8
+
+# Format /dev/md5 with ext4 filesystem (correcting the command syntax)
+sudo mkfs.ext4 /dev/md5
+
+# Create mount point for /dev/md5
+sudo mkdir /md5
+
+# Mount /dev/md5 to /md5 and mount all filesystems listed in /etc/fstab
+sudo mount /dev/md5 /md5 
+sudo mount –a
+sudo chmod 777 /md5
+
+# Append sequence of numbers to /md5 file and list files in /md5 directory
+sudo seq 1000000 >> /md5/output.txt 
+sudo ls –l /md5
+
+# Display partitions of all disks
+sudo fdisk -l
+
+# display the content of raid disk
+sudo mdadm --detail /dev/md5
+cat /proc/mdstat
+
+```
+
+##delete the RAID Array###
+#delete raid array 0#
+sudo umount /md0
+sudo mdadm --stop /dev/md0
+sudo mdadm --remove /dev/md0
+sudo mdadm --zero-superblock  /dev/nvme2n1p5 
+sudo mdadm --zero-superblock  /dev/nvme0n1p5
+
+#delete raid array 1#
+sudo umount /md1
+sudo mdadm --stop /dev/md1
+sudo mdadm --remove /dev/md1
+sudo mdadm --zero-superblock  /dev/nvme2n1p6 
+sudo mdadm --zero-superblock  /dev/nvme0n1p6
+
+#delete raid array 5#
+sudo umount /md5
+sudo mdadm --stop /dev/md5
+sudo mdadm --remove /dev/md5
+sudo mdadm --zero-superblock  /dev/nvme2n1p7 
+sudo mdadm --zero-superblock  /dev/nvme2n1p8
+sudo mdadm --zero-superblock  /dev/nvme0n1p7
+sudo mdadm --zero-superblock  /dev/nvme0n1p8
+
+ sudo mdadm --remove /dev/md5
+mdadm: error opening /dev/md5: No such file or directory
+
+
+### Access Control List (ACL) ###
+
+
+# Display ACL of file1
+getfacl file1
+
+# Create file1
+touch file1
+
+# Display ACL of file1
+getfacl file1
+
+# Partition /dev/sdb
+fdisk /dev/sdb
+
+# Update partition table
+partprobe
+
+# Format /dev/sdb9 with ext4 filesystem
+mkfs.ext4 /dev/sdb9
+
+# Create directory /home
+mkdir /home
+
+# Mount /dev/sdb9 to /home with ext4 filesystem
+mount /dev/sb9 /home
+
+# Remount /dev/sdb9 to /home with ext4 filesystem
+mount -t ext4 /dev/sb9 /home
+
+# Remount /dev/sdb9 to /home with ext4 filesystem enabling ACL
+mount -o remount,acl /home
+
+# Enable ACL on /dev/sdb9
+tune2fs /dev/sdb9 -o acl
+
+# Set ACL for user2 on file1
+setfacl -m u:user2:7 file1
+
+# Display ACL of file1
+getfacl file1
+
+# Set ACL for linuxcbt on /home
+setfacl -m u:linuxcbt:7 /home
+
+# Display ACL of /home
+getfacl /home
+
+# Set ACL for user1 on /home with read and write permissions
+setfacl -m u:user1:rw /home
+
+# Display ACL of /home
+getfacl /home/
+
+# Remove ACL entry for user1 on /home
+setfacl -x u:user1 /home
+
+# Display ACL of /home
+getfacl /home
+
+# Remove all ACL entries from file1
+setfacl -b file1
+
+# Display ACL of file1
+getfacl file1
+
+# Set complex ACL on /home with default permissions
+setfacl -m u::rwx,g::6,u:linuxcbt:7,g:user2:7,o:4 /home
+
+# Display ACL of /home
+getfacl /home/
+
+# List files in current directory
+ls
+
+# Set default ACL for user1 and user2 on /home/lost+found/
+setfacl -m d:u:user1:6,d:user2:4 /home/lost+found/
+
+# Display ACL of /home/lost+found/
+getfacl /home/lost+found/
+
+# Remove default ACL entries from /home/
+setfacl -m d:u:user1:6,d:user2:7,d:g:linuxcbt:6,d:g:user2:4,d:o:6 /home/
+
+# Display ACL of /home/
+getfacl /home/
+```
+It seems like you've provided a detailed set of commands for configuring disk quotas, but some parts of the instructions are a bit unclear or contain syntax errors. Let's correct and clarify them step by step:
+
+### Disk Quota Configuration ###
+
+1. **Partition and Format Disk:**
+   
+   
+   # Partition /dev/sdc
+   fdisk /dev/sdc
+   # Enter the following interactive commands:
+   n        # Create a new partition
+   p        # Primary partition type
+   1        # Partition number
+   (press Enter to accept default values for start and end sectors)
+   p        # Print partition table to verify
+   w        # Write changes to disk and exit
+
+   # Update partition table
+   partprobe
+
+   # Format /dev/sdb1 with ext4 filesystem
+   mkfs.ext4 /dev/sdb1
+   ```
+
+2. **Create Mount Point and Mount Partition:**
+   
+   
+   # Create mount point for /dev/sdb1
+   mkdir /rhcelab
+
+   # Mount /dev/sdb1 to /rhcelab
+   mount /dev/sdb1 /rhcelab
+   ```
+
+3. **User and Group Setup:**
+
+   Assuming you've already added users `a`, `b`, `c`, `d`, `linuxcbt`, and `assulai` to the system with their respective passwords.
+
+4. **Edit /etc/fstab to Enable Quotas:**
+   
+   Edit `/etc/fstab` to include quota options for `/rhcelab`:
+
+   
+   vi /etc/fstab
+   # Add or modify the entry for /rhcelab to include usrquota and grpquota options:
+   /dev/sdb1   /rhcelab   ext4   defaults,usrquota,grpquota   1 2
+   ```
+
+   Or remount `/rhcelab` to enable quotas:
+
+   
+   mount -o remount,acl,usrquota,grpquota /rhcelab
+   ```
+
+5. **Initialize Quota Database:**
+   
+   
+   # Check and initialize the quota database for /rhcelab
+   quotacheck -cgu /rhcelab
+   ```
+
+6. **Set User Quotas:**
+   
+   
+   # Set quotas for user 'a'
+   edquota -u a
+
+   # Example of setting quotas using setquota:
+   setquota -u a 100000 200000 0 0 /rhcelab
+
+   # Set quotas for user 'b'
+   edquota -u b
+   setquota -u b 200000 200000 0 0 /rhcelab
+   ```
+
+7. **Set Group Quotas:**
+   
+   
+   # Set quotas for group 'quotatest'
+   edquota -g quotatest
+
+   # Example of setting quotas using setquota for group:
+   setquota -g quotatest 1000000 1500000 0 0 /rhcelab
+   ```
+
+8. **Adjust Time-Based Quotas:**
+   
+   Time-based quotas can be set using the `-T` flag with `edquota` for users and groups.
+
+9. **Manage Quotas and Usage:**
+   
+   
+   # Enable quotas on /rhcelab
+   quotaon -ugv /rhcelab
+
+   # Check quotas for user 'a'
+   quota a
+
+   # Check quotas for user 'b'
+   quota b
+
+   # Check quotas for group 'quotatest'
+   quota -g quotatest
+
+   # Display quota usage for all users and groups
+   repquota -a
+
+   # Create directories under /rhcelab for users and groups
+   mkdir /rhcelab/user-a /rhcelab/user-b /rhcelab/group-quotatest
+
+   # Set ownership and permissions for directories
+   chown -R a:a /rhcelab/user-a
+   chown -R b:b /rhcelab/user-b
+   chgrp -R quotatest /rhcelab/group-quotatest
+   
+Let's continue from where we left off with configuring and testing disk quotas for users and groups on your system.
+
+### Continuing Disk Quota Configuration and Testing ###
+
+1. **List Contents of `/rhcelab`:**
+
+   After setting up the directories and files, let's list the contents to ensure everything is in place.
+
+   
+   ls -l /rhcelab
+   ```
+
+2. **User `a` Operations:**
+
+   Switch to user `a`, create directories, and create files to test disk quota limits.
+
+   
+   su a
+   cd /rhcelab
+   mkdir d1 d2 d3 d4 d6
+   touch f5 f1 f2 f4
+   ```
+
+3. **Exceed Disk Quota with File Creation:**
+
+   Attempt to create a file (`f6`) that exceeds the allocated quota for user `a`. This will simulate a scenario where the disk quota is exceeded.
+
+   
+   touch f6
+   # You mentioned an error message here, which indicates the disk quota exceeded.
+   ```
+
+4. **Check Disk Usage (`du`) and Quota (`quota`) for User `a`:**
+
+   Before and after attempting to exceed the quota, check the disk usage and quota status for user `a`.
+
+   
+   du -h *
+   # This will show the disk usage of files and directories in human-readable format.
+
+   # Check quota for user 'a'
+   quota a
+   ```
+
+5. **Switch Users and Perform Operations:**
+
+   Exit from user `a` and switch users to perform further operations and check quotas.
+
+   
+   exit  # Exit from user 'a'
+   
+   # Switch users to perform more operations
+   su a
+   cd /rhcelab/user-a
+   date
+   exit
+   ```
+
+6. **Final Quota Check for User `a`:**
+
+   After performing operations and potentially removing files to free up space, check the quota status again for user `a`.
+
+   
+   su a
+   exit  # Exit from user 'a'
+   
+   # Check quota for user 'a' again
+   quota a
+   ```
+
+7. **Configure Group Quota (`quotatest`):**
+
+   Configure and test group quotas (`quotatest`) by assigning permissions and performing operations that exceed the group quota.
+
+   
+   # Check group 'quotatest' and user IDs for 'c' and 'd'
+   grep quotatest /etc/group
+   id c
+   id d
+
+   # Set permissions on /rhcelab/group-quotatest directory
+   chmod -R 770 /rhcelab/group-quotatest
+   ls -l /rhcelab
+
+   # Create test files for group 'quotatest'
+   touch /rhcelab/test_{1..80}.txt
+
+   # Switch to user 'c' and 'd' to perform operations
+   su c
+   cd /rhcelab/group-quotatest
+   dd if=/dev/zero of=c-file-1 count=80 bs=1M
+   exit
+   
+   su d
+   cd /rhcelab/group-quotatest
+   dd if=/dev/zero of=d-file-1 count=300 bs=1M
+   ls
+   exit
+
+   # Check quota usage for group 'quotatest'
+   quota -g quotatest
+   ```

@@ -1,0 +1,158 @@
+### Installation and Basic Configuration of VSFTPD
+
+1. **Install VSFTPD and FTP Client:**
+   sudo yum install vsftpd ftp -y
+   
+2. **Verify VSFTPD Installation:**
+
+   
+  sudo  rpm -qa vsftpd
+   ```
+
+3. **Check VSFTPD Package Files:**
+
+   
+   sudo rpm -ql vsftpd
+   ```
+
+4. **Review Log Rotation for VSFTPD:**
+
+   
+   sudo less /etc/logrotate.d/vsftpd
+   ```
+
+   This file specifies how logs for VSFTPD are rotated.
+
+5. **Review Global Log Rotation Configuration:**
+
+   
+   sudo less /etc/logrotate.conf
+   ```
+
+   Ensure log rotation settings are appropriate for your environment.
+
+6. **Review PAM Configuration for VSFTPD:**
+
+   
+   sudo less /etc/pam.d/vsftpd
+   ```
+
+   PAM (Pluggable Authentication Modules) configuration defines authentication rules for VSFTPD.
+
+7. **Check VSFTPD Service Status:**
+
+   
+   sudo systemctl status vsftpd.service
+   ```
+
+8. **Enable VSFTPD to Start on Boot:**
+
+   
+   sudo systemctl enable vsftpd.service
+   ```
+
+9. **Verify VSFTPD Init Script:**
+
+   
+   sudo ls -ltr /etc/init.d/vsftpd
+   ```
+
+10. **Check Runlevel Symbolic Links for VSFTPD:**
+
+    
+    ls -ltr /etc/rc3.d/*vsftpd
+    ```
+
+    This shows which runlevel scripts start VSFTPD.
+
+11. **Start VSFTPD Service:**
+
+    
+    sudo systemctl start vsftpd.service
+    ```
+
+12. **Check Listening Ports:**
+
+    
+    sudo netstat -ntlp | grep vsftpd
+    ```
+
+    Ensure that VSFTPD is listening on ports 20 and 21.
+
+13. **Configure Firewall (Firewalld) for FTP (Ports 20-21):**
+
+    
+    sudo firewall-cmd --permanent --add-port=20-21/tcp
+    sudo firewall-cmd --reload
+    ```
+
+    Alternatively, for older systems using `iptables`:
+
+    
+    iptables -I INPUT -m tcp -p tcp --dport 21 -j ACCEPT
+    service iptables save && service iptables restart
+    ```
+
+14. **Navigate to VSFTPD Configuration Directory:**
+
+    
+    sudo cd /etc/vsftpd/
+    ```
+
+15. **Review and Modify VSFTPD Configuration (`vsftpd.conf`):**
+
+    
+    vi vsftpd.conf
+    ```
+
+    Adjust the configuration as needed. Example settings might include:
+
+    anonymous_enable=NO
+    local_enable=YES
+    write_enable=YES
+    chroot_local_user=YES
+    ```
+
+    Save and exit the editor (`vi`).
+
+16. **Restart VSFTPD Service to Apply Changes:**
+
+    
+    sudo systemctl restart vsftpd.service
+    ```
+
+17. **Test FTP Connectivity:**
+
+    
+    sudo ftp localhost
+    ```
+
+    Use FTP commands (`ls`, `cd`, `put`, `get`, etc.) to verify functionality.
+
+18. **Verify FTP Directory:**
+
+    
+    cd /var/ftp/
+    ls -l
+    ```
+
+    Ensure permissions and contents are appropriate.
+
+19. **Upload a Test File:**
+
+    
+    cd pub/
+    seq 10000 >> 100k.txt
+    ls -l
+    ```
+
+    This command creates a 100KB file named `100k.txt` for testing purposes.
+
+20. **Test FTP Access from Localhost:**
+
+    
+    ftp localhost
+    ```
+
+    Confirm that you can connect and perform operations on the FTP server.
+

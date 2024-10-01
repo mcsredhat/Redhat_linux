@@ -46,6 +46,7 @@ umask -S
 ls -n file10
 
 # Create directory dir10
+sudo mkdir file{2..10}
 mkdir dir10
 
 # Display details of directory dir10
@@ -215,3 +216,4 @@ grpunconv
 
 # Display permissions and details of /etc/gshadow file after reverting
 ls -l /etc/gshadow
+u

@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Function to check if a command executed successfully
+check_status() {
+    if [ $? -ne 0 ]; then
+        echo "Error executing: $1"
+        exit 1
+    fi
+}
+
+### Variables ###
+PRIMARY_IP=$(hostname -I | awk '{print $1}')  # Get the primary IP address dynamically
+
+### Configure /var/named/linuxcbt.internal zone file ###
+echo "Configuring the zone file /var/named/linuxcbt.internal for linuxcbtserv2..."
+
+if grep -q 'IN NS linuxcbtserv1.linuxcbt.internal.' /var/named/linuxcbt.internal; then
+    echo "/var/named/linuxcbt.internal already contains NS entry for linuxcbtserv1."
+else
+    # Append the NS record for linuxcbtserv1
+    echo "@ IN NS linuxcbtserv1.linuxcbt.internal." >> /var/named/linuxcbt.internal
+    echo "NS record added to /var/named/linuxcbt.internal."
+fi
+
+### Edit /etc/named.conf to configure secondary zone linuxcbt.external ###
+echo "Configuring /etc/named.conf for 'linuxcbt.external'..."
+
+if grep -q 'zone "linuxcbt.external"' /etc/named.conf; then
+    echo "Zone 'linuxcbt.external' already exists in /etc/named.conf."
+else
+    # Backup the current named.conf
+    cp /etc/named.conf /etc/named.conf.bak
+
+    # Append the slave zone configuration for linuxcbt.external
+    cat << EOF >> /etc/named.conf
+
+zone "linuxcbt.external" IN {
+    type slave;
+    masters { $PRIMARY_IP; };
+    allow-update { none; };
+};
+EOF
+    echo "Slave zone for 'linuxcbt.external' added to /etc/named.conf."
+fi
+
+### Restarting named service on linuxcbtserv2 ###
+echo "Restarting 'named' service on linuxcbtserv2..."
+systemctl restart named.service
+check_status "systemctl restart named.service"
+
+### Checking named service logs for errors ###
+echo "Checking the named service logs for errors..."
+tail -n 20 /var/named/data/named.run
+
+### DNS Queries ###
+echo "Querying localhost for 'ftp.linuxcbt.internal'..."
+dig @localhost ftp.linuxcbt.internal
+
+echo "Querying localhost for 'sftp.linuxcbt.internal'..."
+dig @localhost sftp.linuxcbt.internal
+
+### Adding CNAME records to linuxcbt.internal ###
+echo "Adding CNAME records for sftp and mail to linuxcbt.internal..."
+
+if grep -q 'sftp IN CNAME' /var/named/linuxcbt.internal; then
+    echo "'sftp' CNAME record already exists in linuxcbt.internal."
+else
+    echo "sftp IN CNAME linuxcbtserv2.linuxcbt.internal." >> /var/named/linuxcbt.internal
+    echo "mail IN CNAME linuxcbtserv2.linuxcbt.internal." >> /var/named/linuxcbt.internal
+    echo "CNAME records added for 'sftp' and 'mail'."
+fi
+
+### Restarting named service after modification ###
+echo "Restarting 'named' service after modifying CNAME records..."
+systemctl restart named.service
+check_status "systemctl restart named.service"
+
+### Querying CNAME records ###
+echo "Querying localhost for 'sftp.linuxcbt.internal'..."
+dig @localhost sftp.linuxcbt.internal
+
+echo "Querying localhost for 'mail.linuxcbt.internal'..."
+dig @localhost mail.linuxcbt.internal

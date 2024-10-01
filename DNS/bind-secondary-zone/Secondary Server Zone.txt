@@ -1,0 +1,169 @@
+### Secondary Server Zone ###
+
+###linuxcbtserv2###
+# Navigate to the BIND directory
+cd /var/named
+
+# Edit the zone file linuxcbt.internal
+vi linuxcbt.internal
+(@ IN NS linuxcbtserv1.linuxcbt.internal.)
+
+###linuxcbtserv1###
+# Edit /etc/named.conf to configure the secondary zone linuxcbt.internal
+vi /etc/named.conf
+#####classroom ##
+comment out the master zone definition and make sure the slave zone
+#####classroom ##
+#zone "linuxcbt.internal" IN {
+   # type master;
+   # file "/var/named/linuxcbt.internal";
+   # allow-update { none; };
+#};
+and add the following 
+#####classroom ##
+zone "linuxcbt.internal" IN {
+    type slave;
+    file "/var/named/slaves/linuxcbt.internal";  # Specify the file name for the slave zone data.
+    masters { 172.31.108.225; };
+};
+
+###linuxcbtserv2###
+# Restart named service to apply changes
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+###linuxcbtserv1###
+# Restart named service to apply changes
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# List files in the slave directory
+ls -l slave/
+
+# List files in the dynamic directory
+ls -l dynamic/
+
+# List files in the data directory
+ls -l data/
+
+# Query localhost DNS server for www.linuxcbt.internal
+dig @localhost www.linuxcbt.internal
+
+# Query 192.168.75.20 DNS server for www.linuxcbt.internal
+dig @192.168.75.20 www.linuxcbt.internal
+
+# Query 192.168.75.20 DNS server for MX record of linuxcbt.external
+dig @192.168.75.20 linuxcbt.external MX
+
+###linuxcbtserv2###
+# Edit /etc/named.conf to configure the secondary zone linuxcbt.external
+vi /etc/named.conf
+#####classroom ##
+zone "linuxcbt.external" IN {
+    type slave;
+    masters {192.168.75.20;};
+    #file "linuxcbt.external";
+    allow-update { none; };
+};
+
+###linuxcbtserv1###
+# Navigate to /var/named directory
+cd /var/named/
+
+# Edit linuxcbt.external zone file
+vi linuxcbt.external
+(@ IN NS linuxcbtserv2.linuxcbt.external.)
+
+# Check named configuration syntax
+named-checkconf /etc/named.conf
+ sudo named-checkzone linuxcbt.external /var/named/linuxcbt.external
+
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+###linuxcbtserv2###
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# Query localhost DNS server for linuxcbtserv2.linuxcbt.external
+dig @localhost linuxcbtserv2.linuxcbt.external
+
+# Query localhost DNS server for linuxcbtserv1.linuxcbt.external
+dig @localhost linuxcbtserv1.linuxcbt.external
+
+# Edit linuxcbt.internal zone file on linuxcbtserv2
+vi linuxcbt.internal
+(ftp IN CNAME linuxcbtserv2.linuxcbt.internal.)
+
+# Check named configuration syntax
+
+sudo named-checkconf /etc/named.conf
+ sudo named-checkzone linuxcbt.internal /var/named/linuxcbt.internal
+
+
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+sudo systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# Query localhost DNS server for ftp.linuxcbt.internal
+dig @localhost ftp.linuxcbt.internal
+
+###linuxcbtserv1###
+# Query 192.168.75.20 DNS server for ftp.linuxcbt.internal
+dig @192.168.75.20 ftp.linuxcbt.internal
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+###linuxcbtserv2###
+# Edit linuxcbt.internal zone file on linuxcbtserv2
+vi linuxcbt.internal
+sftp IN CNAME linuxcbtserv2.linuxcbt.internal.
+mail IN CNAME linuxcbtserv2.linuxcbt.internal.
+
+# Check named configuration syntax
+named-checkconf /etc/named.conf
+ sudo named-checkzone linuxcbt.internal /var/named/linuxcbt.internal
+
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+###linuxcbtserv1###
+# Edit linuxcbt.external zone file on linuxcbtserv1
+vi linuxcbt.external
+sftp IN CNAME linuxcbtserv2.linuxcbt.external.
+mail IN CNAME linuxcbtserv2.linuxcbt.external.
+
+# Check named configuration syntax
+sudo named-checkconf /etc/named.conf
+ sudo named-checkzone linuxcbt.external /var/named/linuxcbt.external
+
+
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# Query 192.168.75.21 DNS server for ftp.linuxcbt.external
+dig @192.168.75.21 ftp.linuxcbt.external
+
+# Query 192.168.75.21 DNS server for mail.linuxcbt.external
+dig @192.168.75.21 mail.linuxcbt.external
+
+

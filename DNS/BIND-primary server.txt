@@ -1,0 +1,216 @@
+### BIND-primary server ###
+####linuxcbtserv2###
+
+# Edit the BIND configuration file
+vi /etc/named.conf
+
+# View the RFC 1912 zone files
+cat /etc/named.rfc1912.zones
+systemctl enable named 
+systemctl start named 
+# Configure firewall to allow DNS traffic over TCP and UDP ports 53
+firewall-cmd --permanent --add-port=53/tcp
+iptables -I INPUT -p udp -m udp --dport 53 -j ACCEPT
+
+# Reload firewall rules to apply changes
+firewall-cmd --reload
+service iptables save
+
+# Edit named.conf to define the zone for linuxcbt.internal
+vi /etc/named.conf
+#####classroom ##
+zone "linuxcbt.internal" IN {
+    type master;
+    file "/var/named/linuxcbt.internal";
+    allow-update { none; };
+};
+
+###check the named.conf configuration ## 
+named-checkconf /etc/named.conf
+# Navigate to the directory where BIND stores zone files
+cd /var/named/
+
+# List files to check for named.localhost
+ls -l
+
+# View named.localhost file contents
+cat named.localhost
+
+# Copy named.localhost to linuxcbt.internal to create a new zone file
+cp named.localhost linuxcbt.internal
+
+# Edit linuxcbt.internal zone file to define DNS records
+vi linuxcbt.internal
+$TTL 60
+@   IN SOA  linuxcbt.internal. vdns-admin.linuxcbt.internal. (
+               2017121506  ; serial
+               1D          ; refresh
+               1H          ; retry
+               1W          ; expire
+               3H )        ; minimum
+           IN NS   linuxcbtserv2.linuxcbt.internal.
+linuxcbtserv2   IN A    172.31.97.38
+www    IN A        172.31.97.38
+       IN MX  2    linuxcbtserv1.linuxcbt.internal.
+linuxcbtserv1   IN A    172.31.108.225
+@   IN NS   linuxcbtserv1.linuxcbt.internal.
+#www    IN CNAME    linuxcbtserv2.linuxcbt.internal.
+
+###check the zone configuration ## 
+sudo named-checkzone linuxcbt.internal /var/named/linuxcbt.internal
+# Change ownership of the zone file to root.named
+sudo chown named:named /var/named/linuxcbt.internal
+sudo chmod 640 /var/named/linuxcbt.internal
+####SELinux Configuration###
+sudo restorecon -v /var/named/linuxcbt.internal
+sudo chcon -t named_zone_t /var/named/linuxcbt.internal
+# Restart the named (BIND) service
+service named restart
+systemctl start named 
+
+# Check running named processes
+ps -ef | grep -i named
+
+# View open TCP connections to verify BIND is listening
+netstat -ant
+
+# List files in the directory to verify ownership
+ls -l
+
+# Restart the named service to apply changes
+systemctl restart named.service
+
+# View the end of named service logs to check for errors
+tail data/named.run
+
+
+###linuxcbtsev1###
+
+# Query localhost DNS server for linuxcbtserv2.linuxcbt.internal
+dig @localhost linuxcbtserv2.linuxcbt.internal
+
+# Query DNS server at 192.168.75.21 for NS records of linuxcbt.internal
+dig @192.168.75.21 linuxcbt.internal NS
+
+
+###linuxcbtsev2###
+
+# Change ownership of the zone file to root.named
+chown root.named /var/named/linuxcbt.internal
+
+# Restart named service again to apply ownership changes
+systemctl restart named.service
+
+# View the end of named service logs again
+tail data/named.run
+
+# Query localhost DNS server for NS, MX, CNAME records of linuxcbt.internal
+dig @localhost linuxcbt.internal NS
+dig @localhost linuxcbt.internal MX
+dig @localhost linuxcbt.internal CNAME
+dig @localhost www.linuxcbt.internal
+
+# Query localhost DNS server for MX record of linuxcbt.internal
+dig @localhost linuxcbt.internal MX
+
+# Query localhost DNS server for A record of linuxcbtserv1.linuxcbt.internal
+dig @localhost linuxcbtserv1.linuxcbt.internal
+
+# View the end of named service logs to check for errors
+tail data/named.run
+
+
+
+Here's the continuation with comments for each command line:
+
+
+# Restart named service to apply DNS configuration changes
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# Query localhost DNS server for A record of linuxcbtserv1.linuxcbt.internal
+dig @localhost linuxcbtserv1.linuxcbt.internal
+
+# Query localhost DNS server for A record of linuxcbtserv2.linuxcbt.internal
+dig @localhost linuxcbtserv2.linuxcbt.internal
+
+# Query localhost DNS server for MX record of linuxcbt.internal
+dig @localhost linuxcbt.internal MX
+###configure openssh on linuxcbtserv1 and linuxcbtserv2
+ linuxcbtserv2
+ssh-keygen -t rsa -b 4096
+ssh-copy-id -i /home/cloud_user/.ssh/id_rsa.pub cloud_user@172.31.108.225
+ssh cloud_user@172.31.108.225
+##linuxcbtserv1##
+ssh-keygen -t rsa -b 4096
+ssh-copy-id -i /home/cloud_user/.ssh/id_rsa.pub cloud_user@172.31.97.38
+ssh cloud_user@172.31.97.38
+
+# Secure copy (scp) linuxcbt.internal zone file to 192.168.75.20 server
+sudo scp /var/named/linuxcbt.internal cloud_user@172.31.108.225:/tmp/
+
+
+###linuxcbtsev1###
+# Install BIND package on linuxcbtsev1 server using Yum package manager
+yum -y install bind bind-utils unbound firwalld systemd 
+# Edit /etc/named.conf to configure BIND settings
+vi /etc/named.conf
+#listen-on port 53 {192.168.75.20; };
+allow-query     { any; };
+#####classroom ##
+zone "linuxcbt.external" IN {
+    type master;
+    file "linuxcbt.external";
+    allow-update { none; };
+};
+
+# Move linuxcbt.internal zone file to /var/named/ and rename to linuxcbt.external
+sudo mv /tmp/linuxcbt.internal /var/named/linuxcbt.external
+
+#search and replace all occurrences of the word internal with external globally (in the entire file), run the following command:
+vi /var/named/linuxcbt.external
+::%s/internal/external/g
+
+$TTL 60
+@   IN SOA  linuxcbt.external. vdns-admin.linuxcbt.external. (
+               2017121506  ; serial
+               1D          ; refresh
+               1H          ; retry
+               1W          ; expire
+               3H )        ; minimum
+           IN NS   linuxcbtserv2.linuxcbt.external.
+linuxcbtserv2   IN A    172.31.97.38
+www    IN A        172.31.97.38
+       IN MX  2    linuxcbtserv1.linuxcbt.external.
+linuxcbtserv1   IN A    172.31.108.225
+@   IN NS   linuxcbtserv1.linuxcbt.external.
+#www    IN CNAME    linuxcbtserv2.linuxcbt.external.
+
+# Change ownership of linuxcbt.internal zone file to root.named
+chown root.named linuxcbt.internal
+
+# Restart named service to apply changes (if error occurs, try service named reload)
+systemctl restart named.service
+
+# Append linuxcbt.internal.ca contents to linuxcbt.internal zone file
+cat linuxcbt.internal.ca >> linuxcbt.internal
+
+# Restart named service again (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# Query localhost DNS server for A record of linuxcbtserv1.linuxcbt.external
+dig @localhost linuxcbtserv1.linuxcbt.external
+
+# Query 192.168.75.20 DNS server for linuxcbt.external zone
+dig @192.168.75.20 linuxcbt.external
+
+# Query 192.168.75.20 DNS server for www.linuxcbt.external
+dig @192.168.75.20 www.linuxcbt.external
+
+# Query 192.168.75.20 DNS server for MX record of linuxcbt.external
+dig @192.168.75.20 linuxcbt.external MX
+```
+
+

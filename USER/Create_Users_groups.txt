@@ -1,0 +1,260 @@
+# Create a new user 'assulai1' with UID 550, create home directory, copy files from /etc/skel, set shell to /bin/bash
+sudo useradd -u 1010 -m -d /home/assulai1 -k /etc/skel -s /bin/bash assulai1
+
+# Set password for user 'assulai1'
+sudo passwd assulai1
+
+# Create a new user 'user1'
+useradd user1
+
+# Display information about user1 from /etc/passwd
+grep user1 /etc/passwd
+
+# Display default useradd configuration
+useradd -D
+
+# Change default home directory base to /usr/home
+useradd -D -b /usr/home
+
+# Display default useradd configuration again
+useradd -D
+
+# Reset default home directory base to /home
+useradd -D
+
+# Display default useradd configuration
+useradd -D
+
+# Set minimum password age to 7 days, maximum to 30 days, warning at 6 days before expiration, and expire on 2021-21-21 for user 'assulai1'
+sudo chage -m 7 -M 30 -W 6 -E 2017-21-21 assulai1
+
+# Convert password file to shadow passwords again
+sudo pwconv
+
+# Display password expiration information for user 'assulai1'
+sudo chage -l assulai1
+
+# Reset password expiration date to 2017-21-21 for user 'assulai1'
+chage -m 7 -M 30 -W 6 -E 2017-21-21 assulai1
+
+# Display password expiration information for user 'assulai1'
+chage -l assulai1
+
+# Set minimum password age to 5 days for user 'assulai1'
+chage -m 5 assulai1
+
+# Expire password for user 'assulai'
+chage -d 0 assulai
+
+# Expire password for user 'assulai1'
+chage -d 0 assulai1
+
+# Set password to never expire for user 'assulai1'
+chage -E -1 assulai1
+
+# Display password expiration information for user 'assulai1'
+chage -l assulai1
+
+# Display information about user 'assulai' from /etc/passwd
+sudo grep assulai /etc/passwd
+
+# Modify user 'assulai1': move home directory to /home/assulai, set shell to /bin/bash, copy files from /etc/skel, and rename to 'assulai'
+usermod -m -d /home/assulai -s /bin/bash -k /etc/skel -l assulai assulai1
+
+# Modify user 'assulai1': move home directory to /home/assulai, set shell to /bin/bash, copy files from /etc/skel, and rename to 'assulai1'
+usermod -m -d /home/assulai -s /bin/bash -k /etc/skel -l assulai1 assulai
+
+# Modify user 'assulai1': move home directory to /home/assulai and rename to 'assulai'
+usermod -m -d /home/assulai -l assulai1 assulai
+
+# Modify user 'assulai': move home directory to /home/assulai and rename to 'assulai1'
+usermod -m -d /home/assulai -l assulai assulai1
+
+# Display information about user 'assulai' from /etc/passwd
+grep assulai /etc/passwd
+
+# Expire password for user 'assulai' on 2019-12-31
+usermod -e 2019-12-31 assulai
+
+# Display information about user 'assulai' from /etc/passwd
+grep assulai /etc/passwd
+
+# Display password expiration information for user 'assulai'
+chage -l assulai
+```
+Here are the commands related to user and group management with added comments:
+
+
+# Change shell for current user
+chsh
+
+# Exit the current session
+exit
+
+# Change finger information for current user
+chfn
+
+# Search for 'linux' in /etc/passwd
+grep linux /etc/passwd
+
+# Search for 'root' in /etc/passwd
+grep root /etc/passwd
+
+# Print real and effective user IDs
+id
+
+# Add user 'assulai' to group 'dba'
+usermod -G dba assulai
+
+# Change primary group of user 'assulai' to 'root'
+usermod -G root assulai
+
+# Add secondary group 'user1' to user 'assulai'
+usermod -a -G user1 assulai
+
+# Lock account for user 'user1'
+usermod -L user1
+
+# Unlock account for user 'user1'
+usermod -U user1
+
+# Switch to current user's home directory
+su ~
+
+# Switch to user 'assulai's home directory
+su ~assulai
+
+# Switch to user 'assulai1's home directory
+su assulai1
+
+# Switch to user 'user1's home directory
+su suduser1
+
+# Delete group 'dba1'
+groupdel dba1
+
+# Display non-comment lines from /etc/login.defs
+grep -v ^# /etc/login.defs
+
+# Display contents of /etc/bashrc
+cat /etc/bashrc
+
+# Display contents of /etc/profile
+cat /etc/profile
+
+# Display contents of /etc/profile.d/ directory
+cat /etc/profile.d/*
+
+# List files in /etc/profile.d/ directory
+ls -l /etc/profile.d/
+
+# Display contents of ~/.bashrc file (user's bash configuration)
+cat ~/.bashrc
+
+# Display contents of ~/.bash_profile file (user's bash profile)
+cat ~/.bash_profile
+
+# Display contents of ~/.bash_logout file (user's bash logout script)
+cat ~/.bash_logout
+
+# Create group 'linuxadm' with GID 5000
+groupadd -g 5000 linuxadm
+
+# Create group 'sale' with GID 5000 (overriding existing group)
+groupadd -o -g 5000 sale
+
+# Rename group 'sale' to 'mgmt'
+groupmod -n mgmt sale
+
+# Change GID of group 'linuxadm' to 6000
+groupmod -g 6000 linuxadm
+
+# Add user 'user1' to group 'linuxadm'
+usermod -a -G linuxadm user1
+
+# Add user 'user1' to group 'linuxadm' (alternative syntax)
+usermod -a -G linuxadm user1
+
+# Add user 'user1' to group 'mgmt'
+gpasswd -a user1 mgmt
+
+# Create user 'bghori' with UID 535, create home directory /home/bghori
+useradd -u 535 -m -d /home/bghori bghori
+
+# Delete user 'bghori' and remove home directory recursively
+userdel -r bghori
+
+# Search for user 'bghori' in /etc/passwd
+grep bghori /etc/passwd
+
+# Show listing of last logged in users
+last
+
+# Show listing of reboots
+last reboot
+
+# Display contents of /var/log/wtmp file using utmpdump
+utmpdump /var/log/wtmp
+
+# Display failed login attempts
+faillog
+
+# Display failed login attempts (alternative)
+faillog 
+
+# Display failed login attempts for user 'user1'
+faillog -u user1
+
+# Display users currently logged in
+who
+
+# Display last login times for all users
+lastlog
+
+# Create group 'sysadmin' with GID 1000
+groupadd -g 1000 sysadmin
+
+# Search for group 'sysadmin' in /etc/group
+grep sysadmin /etc/group
+
+# Create group 'dba' with GID 1001
+groupadd -g 1001 dba
+
+# Create group 'dba1' with GID 2000 and specify its name using -n
+groupadd -g 2000 -n dba1 dba
+
+# Rename group 'dba1' to 'dba' and change its GID to 2000
+groupadd -g 2000 -n dba dba1
+
+# Change GID of group 'dba1' to 2000 and rename it to 'dba'
+groupmod -g 2000 -n dba1 dba
+
+# Search for group 'dba' in /etc/group
+grep dba /etc/group
+
+# Add user 'user1' as the administrator of group 'dba1'
+gpasswd -A user1 dba1
+
+# Convert group file to shadow format (if applicable)
+grpconv
+
+# Add user 'user1' as the administrator of group 'dba1' (alternative syntax)
+gpasswd -A user1 dba1
+
+# Add user 'user2' to group 'dba1'
+gpasswd -a user2 dba1
+
+# Remove user 'user2' from group 'dba1'
+gpasswd -d user2 dba1
+
+# Set members of group 'dba1' to 'user1, assulai, linuxcbt'
+gpasswd -M user1,assulai,linuxcbt dba1
+
+# Change the password for group 'dba1'
+gpasswd dba1
+
+# Remove the password from group 'dba1'
+gpasswd -r dba1
+
+# Switch to a new group 'dba1'
+newgrp dba1

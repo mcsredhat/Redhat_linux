@@ -1,0 +1,388 @@
+### Samba client ###
+
+### linuxcbtserv2 ###
+
+# Check if Samba is already installed by querying installed packages
+rpm -qa | grep samba
+
+# Install Samba and Samba client packages using YUM package manager
+sudo yum install samba samba-client
+
+# Discover SMB/CIFS hosts on the network
+sudo findsmb
+
+# List all SELinux booleans related to Samba
+getsebool -a | grep samba
+
+# Set SELinux boolean to allow Samba to create home directories
+sudo setsebool -P samba_create_home_dirs on
+
+# List available SMB/CIFS shares on the network
+smbtree
+
+# Connect to SMB/CIFS share //linuxcbt2k16/c$ using administrator credentials
+smbclient -U administrator //linuxcbt2k16/c$
+
+# Display help information for smbclient
+smbclient --help
+
+# Connect to Windows remote desktop using rdesktop with fullscreen and IP address specified
+rdesktop -f -a 192.168.75.105
+
+
+### linuxcbt2K16 ###
+
+# List all shares on the Windows server
+net share
+
+# Open Computer Management console
+compmgmt.msc
+
+# Create a new share named "temp2"
+# (Steps assumed to be performed manually in the GUI)
+
+# List all shares on the Windows server again to verify new share creation
+net share
+
+
+### linuxcbtserv2 ###
+
+# List available SMB/CIFS shares on the network again
+smbtree
+
+# Open the previously created SMB/CIFS share "temp2" on linuxcbt2k16 using administrator credentials
+smbclient -U administrator //linuxcbt2k16/temp2
+
+# List files and directories in the "temp2" share
+ls
+
+# Change directory to root (\)
+cd \
+
+# List files and directories in root directory
+ls
+
+# Display smbclient command help
+help
+
+# Exit smbclient session
+exit
+
+# Display smbget command help
+smbget --help
+
+# Download file "DB_Backup_all_messages_tables.only" from the "temp2" share using username "smbtaradministrator"
+smbget -u smbtaradministrator smb://linuxcbt2k16/temp2/DB_Backup_all_messages_tables.only
+
+# List details of the downloaded file
+ls -l
+
+# Download file "DB_Backup_all_messages_tables.only" from the "temp2" share to local directory
+smbget -O -u administrator smb://linuxcbt2k16/temp2/DB_Backup_all_messages_tables.only
+
+# Extract files from "temp2.tar" using smbstar, specifying server, share, username, target file, and password
+smbtar -s linuxcbt2k16 -x temp2 -u linuxcbt -t temp2.tar -p root(password)
+
+# List files in the current directory sorted by time in reverse order
+ls -ltr
+
+# View contents of "temp2.tar" using tar command
+tar -tvf temp2.tar
+
+# Compress "temp2.tar" into "temp2.tar.gz" using gzip
+gzip -c temp2.tar > temp2.tar.gz
+
+# List files in current directory with long listing format, sorted by time in reverse order
+ls -ltr
+```
+Here are the commands with added comments for setting up SAMBA server (`linuxcbtserv2`):
+
+
+#### SAMBA SERVER ####
+
+# Check if Samba is already installed by querying installed packages
+rpm -qa | grep samba
+
+# Install Samba package using YUM package manager
+yum install samba -y
+
+# Query specific details about the installed Samba package
+rpm -qa samba
+
+# List all SELinux booleans related to Samba
+getsebool -a | grep samba
+
+# Set SELinux boolean to allow Samba to create home directories
+setsebool -P samba_create_home_dirs on
+
+# View the log rotation configuration for Samba
+less /etc/logrotate.d/samba
+
+# View the PAM configuration for Samba
+less /etc/pam.d/samba
+
+# Navigate to Samba configuration directory
+cd /etc/samba
+
+# List files and directories in Samba configuration directory
+ls -l
+
+# Display contents of smbusers file
+cat smbusers
+
+# Search for 'nobody' entry in /etc/passwd file
+grep nobody /etc/passwd
+
+# Check status of the Samba service
+systemctl status smb
+
+# List available SMB/CIFS shares on the network
+smbtree
+
+# List SELinux context of the home directory of user 'linuxcbt'
+ls -ldZ ~linuxcbt
+
+# Edit Samba configuration file smb.conf using vi editor
+vi smb.conf
+
+# Configure Samba workgroup to 'LINUXGENIUS'
+workgroup = LINUXGENIUS
+
+# Add firewall rules to allow Samba ports (139/tcp and 445/tcp)
+firewall-cmd --permanent --add-port=139/tcp
+firewall-cmd --permanent --add-port=445/tcp
+
+# Reload firewall rules
+firewall-cmd --reload
+
+# Restart iptables service (assuming this command is correctly formatted)
+service iptables restart
+
+# Start the Samba service
+systemctl start smb
+
+# Enable Samba service to start automatically on boot
+systemctl enable smb
+
+# List listening TCP connections using netstat
+netstat -ntlp
+
+# List listening UDP connections using netstat
+netstat -nulp
+
+# List running processes containing 'nm'
+ps -ef | grep nm
+
+# List available SMB/CIFS shares on the network again
+smbtree
+
+# Display help information for hostname command
+hostname --help
+
+# List files and directories in current directory with detailed information
+ls -l
+
+# Display help information for smbpasswd command
+smbpasswd --help
+
+# Add user 'linuxcbt' to Samba password database
+smbpasswd -a linuxcbt
+
+# Search for 'linuxcbt' entry in /etc/passwd file
+grep linuxcbt /etc/passwd
+
+# Connect to Windows remote desktop using rdesktop with fullscreen and IP address specified
+rdesktop -f -a 192.168.75.105
+
+
+### windows2K16 ###
+
+# Connect to Active Directory with username 'linuxcbt' and password
+ad\linuxcbt password
+
+# Open Command Prompt on Windows server
+open cmd
+
+# View available shared resources on the network
+net view
+
+# Access share '\\linuxcbtserv2' from Windows Explorer
+start \\linuxcbtserv2
+
+# Install and configure PuTTY for SSH access to linuxcbtserv2
+# Add IP address and hostname for linuxcbtserv2 in PuTTY configuration
+
+# Edit Samba configuration file to add a new share configuration
+vi /etc/samba/samba.conf
+
+#### ClassRoom ####
+
+# Define a new Samba share named 'projectx' with specific configurations
+[projectx]
+comment = share projectx
+path = /projectx
+guest ok = no
+writable = yes
+#share modes = no
+browseable = yes
+
+# Restart Samba service to apply configuration changes
+systemctl restart smb
+
+# List available SMB/CIFS shares on the network again
+smbtree
+
+# Create directory '/projectx' for the new Samba share
+mkdir /projectx
+
+# List details of the newly created directory '/projectx'
+ls -ld /projectx/
+
+# List log files in '/var/log/samba' directory sorted by time in reverse order
+ls -ltr /var/log/samba
+
+# Display last lines of '/var/log/samba/linuxcbt2k16' log file
+tail /var/log/samba/linuxcbt2k16
+
+# Set full permissions (777) on '/projectx' directory
+chmod 777 /projectx/
+
+# List SELinux context of '/projectx' directory
+ls -ldZ /projectx/
+
+# Change SELinux context type of '/projectx' directory to 'samba_share_t'
+chcon -t samba_share_t /projectx/
+
+# Copy all files from '/home/linuxcbt/' to '/projectx/'
+cp /home/linuxcbt/* /projectx/
+
+# List files and directories in '/projectx/' directory
+ls -l /projectx/
+
+# Change directory to '/projectx/'
+cd /projectx/
+
+# List files and directories in '/projectx/' directory sorted by time in reverse order
+ls -ltr
+
+# Change directory to '/etc/samba/'
+cd /etc/samba/
+```
+Here's the configuration steps for setting up Winbind on Linux (`linuxcbtserv2`):
+
+
+### Winbind configuration ###
+
+# Install samba-winbind package
+yum -y install samba-winbind
+
+# Query installed files for samba-winbind package
+rpm -ql samba-winbind
+
+# Navigate to /etc directory
+cd /etc
+
+# Edit pam_winbind configuration file to configure Winbind authentication
+vi security/pam_winbind.conf
+krb5_auth = yes
+# create homedirectory on the fly
+mkhomedir = yes
+
+# Check for installed krb5 packages
+rpm -qa | grep krb5
+
+# List location of krb5.conf file
+ls /etc/krb5.conf
+
+# Edit krb5.conf file to configure Kerberos settings
+vi /etc/krb5.conf
+[libdefaults]
+default_realm = AD.LINUXCBT.INTERNAL
+##disable the dns_lookup_realm
+##disable the dns_lookup_kdc
+
+[realms]
+AD.LINUXCBT.INTERNAL = {
+    kdc = linuxcbt2k16.ad.linuxcbt.internal
+    admin_server = linuxcbt2k16
+}
+##disable the other lines
+
+[domain_realm]
+.linuxcbt2k16.ad.linuxcbt.internal = AD.LINUXCBT.INTERNAL
+##disable the other lines
+
+# Edit /etc/hosts file to add hostname and IP mapping
+vi /etc/hosts
+192.168.75.105 linuxcbt2k16.ad.linuxcbt.internal linuxcbt2k16
+
+# Edit /etc/nsswitch.conf to configure name service switch
+vi /etc/nsswitch.conf
+passwd:     files winbind
+shadow:     files
+group:      files winbind
+
+# Edit system-auth file in /etc/pam.d/ to configure PAM for Winbind
+vi /etc/pam.d/system-auth
+auth        sufficient    pam_winbind.so
+account     required      pam_winbind.so
+password    sufficient    pam_winbind.so
+
+# List files in /etc/pam.d/ directory
+ls /etc/pam.d/
+
+# Edit Samba configuration file smb.conf
+vi /etc/samba/smb.conf
+workgroup = AD
+#security = user
+#### CLassRoom linuxcbt winbind configuration
+security = ads 
+realm = AD.LINUXCBT.INTERNAL
+idmap uid = 10000-20000
+idmap gid = 10000-20000
+template shell = /bin/bash
+template homedir /home/%D/%U
+
+# Start the Winbind service
+systemctl start winbind
+
+# Join the AD domain using net ads join with Administrator credentials
+net ads join -U administrator
+
+# Reload Winbind configuration
+systemctl reload winbind
+
+# Check Winbind service status using chkconfig
+chkconfig --list winbind
+
+# List all users fetched from Active Directory
+wbinfo -u
+
+# List all groups fetched from Active Directory
+wbinfo -g
+
+# Navigate to /etc/pam.d directory
+cd /etc/pam.d
+
+# List permissions of files in /etc/pam.d directory
+ls -ll
+
+# Display contents of system-auth-ac file
+cat system-auth-ac
+
+# List files in current directory
+ls
+
+# List available SMB/CIFS shares on the network
+smbtree
+
+# List all users fetched from Active Directory using wbinfo
+wbinfo -u
+
+# List available SMB/CIFS shares on the network again
+smbtree
+
+# List all groups fetched from Active Directory using wbinfo
+wbinfo -g
+```
+

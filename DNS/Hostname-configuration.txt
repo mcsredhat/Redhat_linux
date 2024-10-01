@@ -1,0 +1,27 @@
+1. Change the Hostname
+Update the system's hostname using the hostnamectl command:
+
+
+sudo hostnamectl set-hostname linuxcbtserv2.linuxcbt.internal
+sudo hostnamectl set-hostname linuxcbtserv1.linuxcbt.internal
+
+2. Edit /etc/hosts
+Ensure that the /etc/hosts file maps the new hostname to the appropriate IP address:
+
+
+sudo vi /etc/hosts
+Add or update the line as follows:
+
+
+172.31.19.202  linuxcbtserv2.linuxcbt.internal   linuxcbtserv2
+172.31.19.202  linuxcbtserv1.linuxcbt.internal   linuxcbtserv1
+Replace 192.168.x.x with the correct IP address of your server.
+
+3. Verify the Change
+To verify that the FQDN has been successfully updated, use:
+hostnamectl status
+hostname -f
+4. Reboot (optional)
+While not strictly necessary, rebooting ensures that all services recognize the new hostname:
+
+sudo reboot

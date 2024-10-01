@@ -1,0 +1,158 @@
+### Vsftp server for specific user ###
+
+# Check if VSFTPD package is installed
+rpm -qa | grep vsftpd
+
+# Check SELinux boolean settings related to FTP
+getsebool -a | grep ftp
+
+# Set SELinux booleans to allow specific FTP behaviors
+sudo setsebool -P allow_ftpd_anon_write on   # Allow anonymous write access
+sudo setsebool -P allow_ftpd_use_cifs on    # Allow FTP to use CIFS
+sudo setsebool -P allow_ftpd_use_nfs on     # Allow FTP to use NFS
+sudo setsebool -P ftpd_connect_db on        # Allow FTP to connect to databases
+sudo setsebool -P httpd_enable_ftp_server on  # Allow HTTPD to enable FTP server
+sudo setsebool -P tftp_anon_write on        # Allow TFTP anonymous write
+
+# Configure firewall to allow FTP ports 20 and 21 (passive and active mode)
+firewall-cmd --permanent --add-port=20-21/tcp   # For firewalld
+iptables -I INPUT -m tcp -p tcp --dport 20 -j ACCEPT  # For iptables
+iptables -I INPUT -m tcp -p tcp --dport 21 -j ACCEPT  # For iptables
+
+# Reload firewall settings to apply changes
+firewall-cmd --reload    # For firewalld
+service iptables save && service iptables restart   # For iptables
+
+# Enable VSFTPD service to start on boot
+sudo systemctl enable vsftpd   # Modern systems use systemctl
+chkconfig vsftpd on       # Older systems use chkconfig
+
+# Check status of VSFTPD service
+systemctl status vsftpd   # Modern systems use systemctl
+service vsftpd status     # Older systems use service
+
+# Append current vsftpd.conf configuration to vsmod.txt for reference
+sudo cat /etc/vsftpd/vsftpd.conf >> vsmod.txt
+
+# Edit vsftpd.conf to configure FTP server settings
+sudo vi /etc/vsftpd/vsftpd.conf
+
+# Within vi editor, configure vsftpd.conf with the following parameters:
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+xferlog_std_format=YES
+dual_log_enable=YES
+allow_writeable_chroot=YES
+pam_service_name=vsftpd
+userlist_enable=NO
+tcp_wrappers=NO
+
+# Save and exit vi editor (:wq for vi)
+
+# Test FTP connection to localhost
+ftp localhost
+
+# Log in with the specified user credentials
+# (Assuming "linuxcbt" is the username and "password" is the password)
+linuxcbt
+password
+
+# Test basic FTP commands
+pwd         # Print working directory
+ls          # List directory contents
+pwd         # Print working directory again
+ls          # List directory contents again
+
+# Upload a file using mput command (e.g., file1)
+mput file1
+y           # Confirm upload if prompted
+
+# Check the uploaded file's permissions
+ls -l file1
+```
+
+### Vsftpd for anonymous access ###
+
+# Check if VSFTPD package is installed
+rpm -qa | grep vsftpd
+
+# Edit vsftpd.conf to configure anonymous FTP settings
+vi /etc/vsftpd/vsftpd.conf
+
+# Configure vsftpd.conf for anonymous access with specific settings:
+anonymous_enable=YES           # Allow anonymous login
+local_enable=NO                # Disable local user login
+write_enable=YES               # Enable write permissions
+local_umask=022                # Set default umask for files
+anon_upload_enable=YES         # Allow anonymous users to upload files
+dirmessage_enable=YES          # Enable display of directory messages
+           
+xferlog_enable=YES             # Enable transfer logging
+connect_from_port_20=YES       # Use port 20 for active mode FTP
+chown_uploads=YES              # Set ownership of uploaded files
+chown_username=bin             # Set ownership to user "bin"
+xferlog_std_format=YES         # Use standard xferlog format
+listen=YES                     # Listen for incoming connections
+pam_service_name=vsftpd        # PAM service name
+dual_log_enable=YES            # Enable logging to xferlog and syslog
+userlist_enable=NO             # Disable userlist restrictions
+tcp_wrappers=NO                # Disable TCP wrappers
+
+# Check SELinux boolean settings related to FTP
+getsebool -a | grep ftp
+
+# Set SELinux boolean to allow anonymous FTP write access
+setsebool -P allow_ftpd_anon_write on
+
+# Set SELinux context for /var/ftp to allow public content read/write
+sudo chcon -Rvt public_content_rw_t /var/ftp
+
+# List directory contents of /var/ftp with SELinux context information
+ls -Z /var/ftp
+
+# Add SELinux file context mapping for /var/ftp
+sudo semanage fcontext -a -t public_content_rw_t /var/ftp
+
+# Configure firewall to allow FTP ports 20 and 21 (passive and active mode)
+firewall-cmd --permanent --add-port=20-21/tcp   # For firewalld
+iptables -I INPUT -p tcp -m tcp --dport 20 -j ACCEPT  # For iptables
+iptables -I INPUT -p tcp -m tcp --dport 21 -j ACCEPT  # For iptables
+
+# Reload firewall settings to apply changes
+firewall-cmd --reload    # For firewalld
+service iptables save && service iptables restart   # For iptables
+
+# Restart VSFTPD service to apply configuration changes
+systemctl restart vsftpd.service   # Modern systems use systemctl
+service vsftpd restart             # Older systems use service
+
+# Test FTP connection to localhost
+ftp localhost
+
+# Optionally, test FTP connection to another server using lftp
+lftp 192.168.75.21 -u linuxcbt1     # Connect to server with specified username
+lftp linuxcbtserv2                  # Connect to server with default anonymous login
+```
+
+### Explanation:
+
+1. **Check VSFTPD Package**: Verifies if VSFTPD (Very Secure FTP Daemon) is installed on the system.
+
+2. **Edit vsftpd.conf**: Opens the VSFTPD configuration file (`/etc/vsftpd/vsftpd.conf`) for editing to configure anonymous FTP settings.
+
+3. **Configure vsftpd.conf**: Sets various parameters in `vsftpd.conf` to enable anonymous access, allow uploads, specify directory and logging settings, and configure ownership.
+
+4. **SELinux Settings**: Checks SELinux booleans related to FTP and sets `allow_ftpd_anon_write` to allow anonymous write access. Also sets SELinux context (`public_content_rw_t`) for `/var/ftp`.
+
+5. **Firewall Configuration**: Opens TCP ports 20 (FTP data transfer) and 21 (FTP control connection) using `firewall-cmd` for `firewalld` or `iptables` for traditional firewall setups.
+
+6. **Service Management**: Restarts VSFTPD service (`systemctl restart` or `service restart`) to apply the configuration changes.
+
+7. **FTP Testing**: Tests FTP connectivity locally (`ftp localhost`) and optionally connects to remote FTP servers using `lftp` with specified credentials.
+
+

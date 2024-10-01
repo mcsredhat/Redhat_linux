@@ -1,7 +1,7 @@
 ### SSH server ###
 
 # Check if OpenSSH package is installed
-rpm -qa | grep openssh
+rpm -qa | grep openssh # if not installed use (yum -y install openssh)
 
 # Check the status of SSH service using chkconfig (old) or systemctl (new)
 chkconfig --list sshd    # For older systems
@@ -37,26 +37,4 @@ ssh-copy-id -i ~/.ssh/id_dsa.pub linuxcbtserv1
 # Connect to linuxcbtserv1 using SSH (key-based authentication)
 ssh linuxcbtserv1
 ```
-
-### Explanation:
-
-1. **Check OpenSSH Package**: Verifies if OpenSSH package (`openssh`) is installed on the system.
-
-2. **Check SSH Service Status**: Uses `chkconfig` or `systemctl` to list the status of the SSH daemon (`sshd`). This command checks if SSH service is enabled and running.
-
-3. **Start SSH Service**: Starts the SSH service using `systemctl` (modern approach) or `service` (alternative).
-
-4. **SSH Connection**: Initiates an SSH connection to the server at IP address `192.168.75.20`. This assumes SSH service is running on that server.
-
-5. **Remove Existing DSA Key**: Removes any existing DSA key from the `/root/.ssh/` directory. This step is optional if you're generating a new key.
-
-6. **Generate DSA Key Pair**: Creates a new DSA key pair (`id_dsa` and `id_dsa.pub`) for key-based authentication.
-
-7. **Display Keys**: Prints the contents of the private key (`~/.ssh/id_dsa`) and the corresponding public key (`~/.ssh/id_dsa.pub`). The private key should be kept secure and never shared.
-
-8. **Set SELinux Context**: Optionally sets the SELinux context (`user_home_dir_t`) for the user's home directory (`/home/linuxcbt`). SELinux contexts may need adjustment depending on your system's security policy.
-
-9. **Copy Public Key**: Uses `ssh-copy-id` to copy the public key (`~/.ssh/id_dsa.pub`) to the `authorized_keys` file on the remote server (`linuxcbtserv1`). This enables passwordless authentication for the user `linuxcbt` on `linuxcbtserv1`.
-
-10. **SSH Connection (Key-based)**: Connects to `linuxcbtserv1` using SSH, leveraging the newly generated DSA key pair for authentication. This demonstrates successful key-based and passwordless authentication.
 

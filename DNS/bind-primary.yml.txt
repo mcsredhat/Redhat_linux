@@ -1,0 +1,190 @@
+---
+- name: Configure BIND Primary Server (linuxcbtserv2)
+  hosts: primary
+  become: yes
+  vars:
+    zone_file: "linuxcbt.internal"
+    zone_name: "linuxcbt.internal"
+    primary_server_ip: "{{ ansible_default_ipv4.address }}"  # Automatically get the primary server's IP address
+    secondary_server_ip: "CHANGE_THIS_TO_SECONDARY_SERVER_IP"
+    username: "CHANGE_THIS_TO_USERNAME"  # Set the username for SSH
+    zone_file_path: "/var/named/{{ zone_file }}"
+    hostname: "{{ ansible_hostname }}"
+
+  tasks:
+    - name: Install BIND packages
+      yum:
+        name:
+          - bind
+          - bind-utils
+        state: present
+
+    - name: Backup named.conf
+      copy:
+        src: /etc/named.conf
+        dest: /etc/named.conf.backup
+        remote_src: yes
+
+    - name: Define zone in /etc/named.conf
+      blockinfile:
+        path: /etc/named.conf
+        block: |
+          zone "{{ zone_name }}" IN {
+              type master;
+              file "{{ zone_file }}";
+              allow-update { none; };
+          };
+
+    - name: Check named.conf configuration
+      command: named-checkconf /etc/named.conf
+      ignore_errors: yes  # Optional: continue even if there is an error
+
+    - name: Restart named (BIND) service
+      systemd:
+        name: named
+        state: restarted
+
+    - name: Copy named.localhost to create new zone file
+      copy:
+        src: /var/named/named.localhost
+        dest: "{{ zone_file_path }}"
+        remote_src: yes
+
+    - name: Update the zone file with DNS records
+      blockinfile:
+        path: "{{ zone_file_path }}"
+        block: |
+          $TTL 60
+          @   IN SOA  linuxcbt.internal. vdns-admin.linuxcbt.internal. (
+                     2017121506  ; serial
+                     1D          ; refresh
+                     1H          ; retry
+                     1W          ; expire
+                     3H )        ; minimum
+          @          IN NS   {{ hostname }}.linuxcbt.internal.
+          @          IN NS   linuxcbtserv1.linuxcbt.internal.
+          @          IN MX 2 linuxcbtserv1.linuxcbt.internal.
+
+          {{ hostname }}   IN A     {{ primary_server_ip }}
+          linuxcbtserv1   IN A     {{ secondary_server_ip }}
+          www             IN CNAME {{ hostname }}.linuxcbt.internal.
+
+    - name: Check zone file configuration
+      command: named-checkzone {{ zone_name }} /var/named/{{ zone_file }}
+
+    - name: Change ownership of the zone file
+      file:
+        path: "{{ zone_file_path }}"
+        owner: root
+        group: named
+        mode: '0644'
+
+    - name: Restart named service
+      systemd:
+        name: named
+        state: restarted
+
+    - name: Open port 53 for DNS (TCP and UDP)
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: enabled
+      loop:
+        - "53/tcp"
+        - "53/udp"
+
+    - name: Reload firewall
+      firewalld:
+        state: reloaded
+
+    - name: Test DNS configuration (NS records)
+      command: dig @localhost {{ zone_name }} NS
+      register: ns_record
+
+    - debug:
+        var: ns_record.stdout
+
+    - name: Test DNS configuration (MX, CNAME, A records)
+      shell: |
+        dig @localhost {{ zone_name }} MX
+        dig @localhost {{ zone_name }} CNAME
+        dig @localhost www.{{ zone_name }}
+        dig @localhost linuxcbtserv1.{{ zone_name }}
+      register: dns_test
+
+    - debug:
+        var: dns_test.stdout
+
+  - name: Configure BIND Secondary Server (linuxcbtserv1)
+    hosts: secondary
+    become: yes
+    vars:
+      primary_server_ip: "{{ primary_server_ip }}"
+      secondary_server_ip: "{{ secondary_server_ip }}"
+    
+    tasks:
+      - name: Install BIND on Secondary
+        yum:
+          name:
+            - bind
+            - bind-utils
+          state: present
+
+      - name: Configure named.conf for external zone
+        blockinfile:
+          path: /etc/named.conf
+          block: |
+            zone "linuxcbt.external" IN {
+                type master;
+                file "linuxcbt.external";
+                allow-update { none; };
+            };
+
+      - name: Check named.conf on secondary
+        command: named-checkconf /etc/named.conf
+        ignore_errors: yes
+
+      - name: Create the zone file for external domain
+        blockinfile:
+          path: /var/named/linuxcbt.external
+          block: |
+            $TTL 60
+            @   IN SOA  linuxcbt.external. vdns-admin.linuxcbt.external. (
+                     2017121506  ; serial
+                     1D          ; refresh
+                     1H          ; retry
+                     1W          ; expire
+                     3H )        ; minimum
+            @          IN NS    linuxcbtserv2.linuxcbt.external.
+            @          IN NS    linuxcbtserv1.linuxcbt.external.
+            @          IN MX 2  linuxcbtserv1.linuxcbt.external.
+
+            linuxcbtserv2   IN A     {{ primary_server_ip }}
+            linuxcbtserv1   IN A     {{ secondary_server_ip }}
+            www             IN CNAME linuxcbtserv2.linuxcbt.external.
+
+      - name: Check zone file for external domain
+        command: named-checkzone linuxcbt.external /var/named/linuxcbt.external
+
+      - name: Change ownership of zone file
+        file:
+          path: /var/named/linuxcbt.external
+          owner: root
+          group: named
+          mode: '0644'
+
+      - name: Restart BIND service on secondary
+        systemd:
+          name: named
+          state: restarted
+
+      - name: Test DNS configuration on secondary
+        shell: |
+          dig @localhost linuxcbtserv1.linuxcbt.external
+          dig @{{ secondary_server_ip }} linuxcbt.external
+          dig @{{ secondary_server_ip }} www.linuxcbt.external
+          dig @{{ secondary_server_ip }} linuxcbt.external MX
+        register: dns_secondary_test
+
+      - debug:
+          var: dns_secondary_test.stdout

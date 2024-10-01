@@ -7,103 +7,119 @@ rpm -qa | grep php
 yum search mysql
 
 # Install PHP MySQL extension
-yum -y install php-mysql
+sudo yum install -y php-mysqlnd
 
 # Query information about the installed php-mysql package
-rpm -qi php-mysql
+rpm -qi php-mysqlnd
 
 # List files installed by php-mysql package
-rpm -ql php-mysql
+rpm -ql php-mysqlnd 
 
 # View MySQL configuration for PHP
-less /etc/php.d/mysql.ini
-less /etc/php.d/mysqli.ini
+sudo less /etc/php.d/mysqlnd.ini
+sudo less /etc/php.d/mysqli.ini
+
+sudo vi ~/.my.cnf
+[client]
+user = root
+password = abc123
+
+sudo chmod 600 ~/.my.cnf
 
 # Access MySQL database and execute a query to select all records from 'contacts' table
+sudo mysql -u root -p -e 'select * from contacts' addressBook
+
 mysql -pabc123 -e 'select * from contacts' addressBook
 
 # List detailed information about /var/www/html/ directory
 ls -ld /var/www/html/
 
 # Create a new directory for the PHP script
-mkdir /var/www/html/addressbook
+sudo mkdir -p /var/www/html/addressbook
 
 # Edit the PHP script to display database records (addressbook.php)
-vi /var/www/html/addressbook/addressbook.php
+sudo vi /var/www/html/addressbook/addressbook.php
 
 <?php 
-#initiate instance of MYSQLI module
-# this step is toutmount to using mysql from the CLI to connect to the server
-$mysqli = new mysqli(`127.0.0.1`,`root`,`abc123`,`addressBook`);
-# connection check routine
-If (mysali_connect_errno())
-{printf (“connection failed:%s\n”, mysql_connect_error());
-Exit();
+// Initiate instance of MYSQLI module
+// This step is equivalent to using mysql from the CLI to connect to the server
+$mysqli = new mysqli('127.0.0.1', 'root', 'abc123', 'addressBook');
+
+// Connection check routine
+if (mysqli_connect_errno()) {
+    printf("Connection failed: %s\n", mysqli_connect_error());
+    exit();
 }
- # define the query that is to be executed 
-$query1 = `SELECT * from contacts`;
-Echo `<table><tr>
-<td>Firest Name</td>
+
+// Define the query that is to be executed
+$query1 = 'SELECT * FROM contacts';
+
+// Display the table headers
+echo '<table>
+<tr>
+<td>First Name</td>
 <td>Last Name</td>
 <td>Business Phone 1</td>
 <td>E-Mail</td>
-</tr>;
-#Excute the query
-If ($result = $mysqli->query($query1))
-{ while ($row =$result->fetch_assoc())
-$fname=$row [“fname”];
-$lname=$row [“lname”];
-$bus_phone1=$row [“bus_phone1”];
-$email=$row [“email”];
-#open row
-Echo `<tr>`;
-#open cells
-Echo `<td>, $fname,</td>`;
-Echo `<td>, $lname,</td>`;
-Echo `<td>, $bus_phone1,</td>`;
-Echo `<td>, $email,</td>`;
-#close row
-Echo `</tr>`;
-}}#closes entire records 
-# close the table state
-Echo `</table>`;
-#end
+</tr>';
+
+// Execute the query
+if ($result = $mysqli->query($query1)) {
+    while ($row = $result->fetch_assoc()) {
+        $fname = $row['fname'];
+        $lname = $row['lname'];
+        $bus_phone1 = $row['bus_phone1'];
+        $email = $row['email'];
+
+        // Open row and print cells with data
+        echo '<tr>';
+        echo '<td>' . $fname . '</td>';
+        echo '<td>' . $lname . '</td>';
+        echo '<td>' . $bus_phone1 . '</td>';
+        echo '<td>' . $email . '</td>';
+        echo '</tr>';
+    }
+}
+
+// Close the table
+echo '</table>';
 ?>
 
 # Change ownership of the directory to 'linuxcbt' user
-chown linuxcbt /var/www/html/addressbook/
+sudo chown cloud_user /var/www/html/addressbook/
 
 # Open a web browser and navigate to http://localhost/addressbook/addressbook.php
 # This step should display the PHP script output
 
 # Access MySQL database interactively and show tables in 'addressBook' database
-mysql -pabc123 -h 127.0.0.1 addressBook
+sudo mysql -u root -pabc123 -h 127.0.0.1 addressBook
 mysql> show tables;
 mysql> exit
 
 # Restart Apache HTTP server to apply any configuration changes
-systemctl restart httpd
+sudo systemctl restart httpd
 
 # Check loaded Apache modules
 httpd -M
 
 # View Apache error log for any issues
-tail /etc/httpd/logs/error_log
+sudo tail /etc/httpd/logs/error_log
 
 # View the PHP script error log
-cd /var/www/html/addressbook/addressbook.php
-tail /etc/httpd/logs/error_log
+cd /var/www/html/addressbook/
+ls 
+sudo tail /etc/httpd/logs/error_log
 
 # Check if MySQL is listening on port 3306
-netstat -ntl | grep 3306
+sudo netstat -ntl | grep 3306
 
 # View MySQL configuration file
-less /etc/my.cnf 
+sudo less /etc/my.cnf 
 
 # Check SELinux booleans related to MySQL and HTTPD
-getsebool -a | grep mysql
-setsebool -P mysql_connect_any on
-setsebool -P allow_user_mysql_connect on
+sudo getsebool -a | grep mysql
+sudo setsebool -P mysql_connect_any on
+sudo setsebool -P allow_user_mysql_connect on
 getsebool -a | grep -i mysql
 getsebool -a | grep httpd
 setsebool -P httpd_can_network_connect_db on
@@ -114,16 +130,38 @@ setsebool -P httpd_can_network_connect_db on
 # Display the content of the PHP script file
 cat /var/www/html/addressbook/addressbook.php
 
+sudo chmod 755 /var/www/html/addressbook
+sudo chmod 644 /var/www/html/addressbook/addressbook.php
+sudo chown -R apache:apache /var/www/html/addressbook
+ sudo vi /etc/httpd/conf/httpd.conf
+
+<Directory "/var/www/html/addressbook">
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
+
+sudo setenforce 0
+sudo chcon -R -t httpd_sys_content_t /var/www/html/addressbook
+sudo systemctl restart httpd
+
+
+
 # Access MySQL client without specifying a database (interactive mode)
 mysql -pabc123
 mysql> \q
 
 # Disable SELinux booleans after testing (if needed)
-setsebool -P mysql_connect_any off
-setsebool -P allow_user_mysql_connect off
+sudo setsebool -P mysql_connect_any off
+sudo setsebool -P allow_user_mysql_connect off
 
 # Restart Apache HTTP server after SELinux changes
-systemctl restart httpd
+sudo systemctl restart httpd
 
+#display the contents of the web page using cmd
+sudo yum install -y lynx wget curl
+curl http://localhost/addressbook/addressbook.php
+wget -qO- http://localhost/addressbook/addressbook.php
+lynx http://localhost/addressbook/addressbook.php
 # Open the PHP script in a browser again to verify after SELinux changes
 # http://localhost/addressbook/addressbook.php

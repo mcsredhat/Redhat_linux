@@ -1,0 +1,204 @@
+### Checking BIND DNS Installation ###
+
+
+### Check if named package is installed ###
+rpm -qa | grep named
+
+### Check if bind package is installed ###
+rpm -qa | grep bind
+
+### List configuration files for bind ###
+rpm -qlc bind
+
+### Resolve hostnames using DNS ###
+host www.linuxcbt.com
+host www.linuxcbt.internal
+
+### Display detailed information about the BIND package ###
+rpm -qi bind
+
+### View log rotation configuration for named ###
+less /etc/logrotate.d/named
+
+### View main configuration file for named ###
+less /etc/named.conf
+
+### List files in /etc sorted by modification time ###
+ls -lt /etc
+
+### View RFC 1912 zone configuration file ###
+less /etc/named.rfc1912.zones
+
+### List systemd service configuration for named ###
+chkconfig --list named
+
+### Check status of named service ###
+service named status
+
+### List contents of /var/named directory ###
+ls /var/named/
+
+### View contents of named.ca file ###
+less /var/named/named.ca
+
+### View contents of named.loopback file ###
+less /var/named/named.loopback
+
+### View contents of named.empty file ###
+less /var/named/named.empty
+
+### View contents of named.localhost file ###
+less /var/named/named.localhost
+
+### List contents of /var/named/dynamic directory ###
+ls /var/named/dynamic/
+
+### List detailed contents of /var/named/dynamic directory ###
+ls -l /var/named/dynamic/
+
+### List contents of /var/named/data directory ###
+ls -l /var/named/data/
+
+### List contents of /var/named/slaves directory ###
+ls -l /var/named/slaves/
+```
+
+### Setting up Caching-Only DNS Server (Unbound) on linuxcbtserv2 ###
+
+### Check if named package is installed ###
+rpm -qa | grep named
+
+### Check if bind package is installed ###
+rpm -qa | grep bind
+
+### List configuration files for bind ###
+rpm -qlc bind
+
+### Install Unbound ###
+yum -y install unbound
+
+### Enable named service to start at boot ###
+Systemctl enable named
+# For ntpd, use:
+# chkconfig named on
+
+### Start named service ###
+Systemctl start named
+# For ntpd, use:
+# service named start
+
+### Check running processes for named ###
+ps -ef | grep named
+
+### Add firewall rule to allow DNS traffic on TCP port 53 ###
+firewall-cmd --zone=public --add-port=53/tcp --permanent
+# Alternatively, for iptables:
+# iptables -I INPUT -p tcp -m tcp --dport 53 -j ACCEPT
+
+### Add firewall rule to allow DNS service ###
+firewall-cmd --permanent --add-service=dns
+
+### Reload firewall rules to apply changes ###
+firewall-cmd --reload
+# Alternatively, for iptables:
+# service iptables save && service iptables restart
+
+### Check SELinux boolean settings for named ###
+getsebool -a | grep named
+
+### Set SELinux boolean to allow named to write master zones ###
+setsebool -P named_write_master_zones on
+
+### Check SELinux boolean settings for bind ###
+getsebool -a | grep bind
+
+### Set SELinux boolean to allow HTTPD mod_auth_ntlm_winbind ###
+setsebool -P allow_httpd_mod_auth_ntlm_winbind on
+
+### Set SELinux boolean to allow ypbind ###
+setsebool -P allow_ypbind on
+
+### Query DNS server at localhost ###
+dig @localhost
+
+### Query DNS server at localhost for www.linuxcbt.com ###
+dig @localhost www.linuxcbt.com
+
+### Perform nslookup on server 192.168.75.21 for www.linuxcbt.com ###
+nslookup > server 192.168.75.21
+> www.linuxcbt.com
+
+### Check open UDP port 53 using netstat ###
+netstat -nul | grep 53
+
+### Check open TCP port 53 using netstat ###
+netstat -ntl | grep 53
+
+### List all active network connections ###
+netstat -ant
+
+### Edit named configuration file to listen on localhost only ###
+vi /etc/named.conf
+# Add or modify the following lines:
+# listen-on port 53 { 127.0.0.1; };
+# listen-on-v6 port 53 { ::1; };
+
+### Restart named service to apply configuration changes ###
+systemctl restart named
+service named restart
+
+### Check open UDP port 53 after configuration ###
+netstat -nul | grep 53
+
+### Edit named configuration file to allow queries from any IP ###
+vi /etc/named.conf
+# Add or modify the following line under 'options' section:
+# allow-query { any; };
+
+### Restart named service after allowing queries from any IP ###
+systemctl restart named
+service named restart
+
+### Check open UDP port 53 after allowing queries from any IP ###
+netstat -nul | grep 53
+
+### SSH to server at 192.168.75.20 ###
+ssh 192.168.75.20
+```
+
+### Using linuxcbtserv1 as a DNS Client ###
+
+
+### Perform DNS query for www.linuxcbt.com on server 192.168.75.21 ###
+dig @192.168.75.21 www.linuxcbt.com
+
+### Perform nslookup on server 192.168.75.21 for www.linuxcbt.com ###
+nslookup > server 192.168.75.21
+> www.linuxcbt.com
+
+### Perform DNS query for www.linuxcbt.com on server 192.168.75.21 ###
+dig @192.168.75.21 www.linuxcbt.com
+
+### Perform DNS query for linuxcbtserv2.linuxcbt.internal on server 192.168.75.21 ###
+dig @192.168.75.21 linuxcbtserv2.linuxcbt.internal
+
+### Add firewall rule to allow DNS traffic on TCP port 53 ###
+firewall-cmd --zone=public --add-port=53/tcp --permanent
+# Alternatively, for iptables:
+# iptables -I INPUT -p tcp -m tcp --dport 53 -j ACCEPT
+
+### Add firewall rule to allow DNS service ###
+firewall-cmd --permanent --add-service=dns
+
+### Reload firewall rules to apply changes ###
+firewall-cmd --reload
+# Alternatively, for iptables:
+# service iptables save && service iptables restart
+
+### Perform DNS query for linuxcbtserv2.linuxcbt.internal on server 192.168.75.21 ###
+dig @192.168.75.21 linuxcbtserv2.linuxcbt.internal
+
+### Query NS records for linuxcbt.internal domain ###
+dig @192.168.75.21 linuxcbt.internal NSSure, here are the commands with added comments explaining each step:
+
+

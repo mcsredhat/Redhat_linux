@@ -1,0 +1,80 @@
+---
+- hosts: linuxcbtserv1
+  become: yes
+  vars:
+    primary_ip: "{{ ansible_default_ipv4.address }}"  # Dynamically fetch the primary IP address
+    slave_ip: "172.31.108.225"  # Change this as needed for your slave server
+
+  tasks:
+
+    - name: Backup /etc/named.conf before modification
+      copy:
+        src: /etc/named.conf
+        dest: /etc/named.conf.bak
+        remote_src: yes
+      when: not backup.exists
+
+    - name: Check if zone "linuxcbt.internal" exists in /etc/named.conf
+      command: grep 'zone "linuxcbt.internal"' /etc/named.conf
+      register: zone_check
+      ignore_errors: yes
+
+    - name: Add slave zone configuration to /etc/named.conf
+      blockinfile:
+        path: /etc/named.conf
+        marker: "### Added by Ansible ###"
+        block: |
+          zone "linuxcbt.internal" IN {
+              type slave;
+              file "/var/named/linuxcbt.internal";
+              masters { {{ slave_ip }}; };
+          }
+      when: zone_check.rc != 0
+
+    - name: Restart named service on linuxcbtserv1
+      systemd:
+        name: named
+        state: restarted
+
+    - name: Check the named service logs for errors
+      shell: tail -n 20 /var/named/data/named.run
+      register: named_logs
+
+    - debug:
+        msg: "{{ named_logs.stdout }}"
+
+    - name: Query localhost for 'www.linuxcbt.internal'
+      command: dig @localhost www.linuxcbt.internal
+      register: dig_localhost
+    - debug:
+        msg: "{{ dig_localhost.stdout }}"
+
+    - name: Query 192.168.75.20 DNS server for 'www.linuxcbt.internal'
+      command: dig @192.168.75.20 www.linuxcbt.internal
+      register: dig_dns_server
+    - debug:
+        msg: "{{ dig_dns_server.stdout }}"
+
+    - name: Query 192.168.75.20 DNS server for MX record of 'linuxcbt.external'
+      command: dig @192.168.75.20 linuxcbt.external MX
+      register: dig_mx
+    - debug:
+        msg: "{{ dig_mx.stdout }}"
+
+    - name: List files in the 'slave' directory
+      command: ls -l /var/named/slave/
+      register: slave_files
+    - debug:
+        msg: "{{ slave_files.stdout }}"
+
+    - name: List files in the 'dynamic' directory
+      command: ls -l /var/named/dynamic/
+      register: dynamic_files
+    - debug:
+        msg: "{{ dynamic_files.stdout }}"
+
+    - name: List files in the 'data' directory
+      command: ls -l /var/named/data/
+      register: data_files
+    - debug:
+        msg: "{{ data_files.stdout }}"

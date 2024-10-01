@@ -134,7 +134,7 @@
 46. `wc /etc/profile`
     - Count lines, words, and bytes in `/etc/profile`.
 
-47. `wc -n /etc/profile`
+47. `wc -c/etc/profile`
     - Invalid option; should be `-c` for bytes.
 
 48. `wc -l /etc/profile`
@@ -154,15 +154,6 @@
 
 53. `cd srv`
     - Change to the `srv` directory.
-
-54. `ls`
-    - List files and directories in the `srv` directory.
-
-55. `cd`
-    - Change to the home directory.
-
-56. `file .bash_profile`
-    - Determine the file type of `.bash_profile`.
 
 57. `file /usr/bin/who`
     - Determine the file type of `/usr/bin/who`.
@@ -242,8 +233,6 @@
 82. `strings /bin/cat`
     - Print the printable character sequences in the `/bin/cat` binary.
 
-83. `string /home/linuxcbt/.bash_profile`
-    - Invalid command; should be `strings`.
 
 84. `strings /home/linuxcbt/.bash_profile`
     - Print the printable character sequences in `/home/linuxcbt/.bash_profile`.
@@ -379,6 +368,12 @@
 
 126. `ll /etc | grep -E "drwx|xin"`
      - List detailed information about directories and files in `/etc` matching `drwx` or `xin`.
+grep -E 'root|user' /etc/passwd
+
+grep -v root /etc/passwd /etc/group | grep user
+
+grep -E 'root|user' /etc/passwd /etc/group
+
 
 ####################### diff & find command line #####################
 
@@ -400,11 +395,15 @@
 132. `find /home -user linuxcbt -group root`
      - Find files in `/home` owned by `linuxcbt` and belonging to the `root` group.
 
+find /etc -user root -group root -print
+
 133. `find / -name core -not -user root`
      - Find files named `core` not owned by `root`.
 
-134. `find /etc/rc.d -mine +120`
-     - Invalid usage; should be `-mmin` for minutes or `-mtime` for days.
+find / -type f -size -1k
+
+134. `find /etc/rc.d -mmin +120`
+     - should be `-mmin` for minutes or `-mtime` for days.
 
 135. `find /etc/rc.d -mtime +120`
      - Find files in `/etc/rc.d` modified more than 120 days ago.

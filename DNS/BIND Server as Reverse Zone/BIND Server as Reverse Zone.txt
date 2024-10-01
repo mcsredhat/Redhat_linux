@@ -1,0 +1,121 @@
+### BIND Server as Reverse Zone ###
+
+###linuxcbtserv1###
+# Edit /etc/named.conf to configure the reverse zone linuxcbt.internal
+vi /etc/named.conf
+#####classroom####
+zone "linuxcbt.internal" IN {
+    type slave;
+    masters {192.168.75.20;};
+    file "slaves/linuxcbt.internal";
+    allow-update { none; };
+};
+
+# Check named configuration syntax
+named-checkconf /etc/named.conf
+
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# List files in the slaves directory
+ls -l slaves/
+
+# Display contents of linuxcbt.internal zone file
+cat slaves/linuxcbt.internal
+
+# Query 192.168.75.20 DNS server for sftp.linuxcbt.internal
+dig @192.168.75.20 sftp.linuxcbt.internal
+
+###linuxcbtserv2###
+# Edit /etc/named.conf to configure the reverse zone linuxcbt.external
+vi /etc/named.conf
+#####classroom####
+zone "linuxcbt.external" IN {
+    type slave;
+    masters {192.168.75.20;};
+    file "/var/named/slaves/linuxcbt.external";
+    allow-update { none; };
+};
+
+# Restart named service to apply changes (if systemctl restart named.service fails, try service named reload)
+systemctl restart named.service
+
+# List files in the slaves directory
+ls -l slaves/
+
+# Query localhost DNS server for www.linuxcbt.external
+dig @localhost www.linuxcbt.external
+
+#### Reverse Zone for 192.168.75.0/24 Subnet ###!!!!!!
+
+###linuxcbtserv2##
+# Navigate to /etc directory
+cd /etc
+
+# Display contents of named.rfc1912.zones file
+cat named.rfc1912.zones
+
+# Edit /etc/named.conf to configure the reverse zone for 192.168.75.0/24 subnet
+vi /etc/named.conf
+###classroom###
+zone "75.168.192.in-addr.arpa" IN {
+    type master;
+    file "192.168.75.zone";
+    allow-update { none; };
+};
+
+# Navigate to /var/named directory
+cd /var/named
+
+# Display contents of named.loopback file
+cat named.loopback
+
+# Display contents of named.localhost file
+cat named.localhost
+
+# Copy named.localhost file to 192.168.75.zone
+cp -v named.localhost 192.168.75.zone
+
+
+# Edit 172.31.zone file to configure PTR records
+vi 172.31.zone
+$TTL 1800
+@ IN SOA linuxcbtserv2.linuxcbt.internal. dns-admin.linuxcbt.internal. (
+                    2017121601 ; serial
+                    1D         ; refresh
+                    1H         ; retry
+                    1W         ; expire
+                    3H )       ; minimum
+@ IN NS linuxcbtserv2.linuxcbt.internal.
+@ IN NS linuxcbtserv1.linuxcbt.internal.
+20 IN PTR linuxcbtserv1.linuxcbt.internal.
+21 IN PTR linuxcbtserv2.linuxcbt.internal.
+
+# Check named configuration syntax
+sudo named-checkconf /etc/named.conf
+sudo named-checkzone 31.172.in-addr.arpa /var/named/172.31.zone
+
+# Change ownership of 172.31.zone file to root.named
+chown root.named 172.31.zone
+sudo chmod 644 /var/named/172.31.zone
+sudo restorecon -v /var/named/172.31.zone
+ls -Z /var/named/172.31.zone
+sudo chcon -t named_zone_t /var/named/172.31.zone
+
+# Restart named service to apply changes
+systemctl restart named.service
+
+# View the end of named service logs to check for any errors or warnings
+tail data/named.run
+
+# Query localhost DNS server for reverse lookup of 192.168.75.21
+dig @localhost -x 172.31.x.x
+
+# Query localhost DNS server for reverse lookup of 192.168.75.20
+dig @localhost -x 192.168
+
+Here's the revised set of commands with detailed comments:
+

@@ -1,0 +1,156 @@
+#!/bin/bash
+
+# Script for setting up a Caching-Only DNS Server (Unbound) on linuxcbtserv2
+# Author: Professional Programmer
+# Date: YYYY-MM-DD
+
+# Function to check command execution status
+check_status() {
+    if [ $? -ne 0 ]; then
+        echo "Error executing command: $1"
+        exit 1
+    fi
+}
+
+
+### Install netstat ###
+echo "Installing netstat..."
+yum install -y net-tools
+check_status "yum -y install net-tools "
+
+### Install firewalld ###
+echo "Installing Unbound..."
+yum -y install firewalld
+check_status "yum -y install firewalld"
+
+### Install Unbound ###
+echo "Installing Unbound..."
+yum -y install unbound
+check_status "yum -y install unbound"
+
+echo "Installing bind..."
+sudo yum install -y bind bind-utils
+
+### Enable named service to start at boot ###
+echo "Enabling 'named' service to start at boot..."
+systemctl enable named
+check_status "systemctl enable named"
+
+### Start named service ###
+echo "Starting 'named' service..."
+systemctl start named
+check_status "systemctl start named"
+
+### Check running processes for named ###
+echo "Checking running processes for 'named'..."
+ps -ef | grep named
+
+### Add firewall rule to allow DNS traffic on TCP port 53 ###
+echo "Adding firewall rule to allow DNS traffic on TCP port 53..."
+firewall-cmd --zone=public --add-port=53/tcp --permanent
+check_status "firewall-cmd --zone=public --add-port=53/tcp --permanent"
+
+### Add firewall rule to allow DNS service ###
+echo "Adding firewall rule to allow DNS service..."
+firewall-cmd --permanent --add-service=dns
+check_status "firewall-cmd --permanent --add-service=dns"
+
+### Reload firewall rules to apply changes ###
+echo "Reloading firewall rules..."
+firewall-cmd --reload
+check_status "firewall-cmd --reload"
+
+### Check SELinux boolean settings for named ###
+echo "Checking SELinux boolean settings for 'named'..."
+getsebool -a | grep named
+
+### Set SELinux boolean to allow named to write master zones ###
+echo "Setting SELinux boolean to allow 'named' to write master zones..."
+setsebool -P named_write_master_zones on
+check_status "setsebool -P named_write_master_zones on"
+
+### Check SELinux boolean settings for bind ###
+echo "Checking SELinux boolean settings for 'bind'..."
+getsebool -a | grep bind
+
+### Set SELinux boolean to allow HTTPD mod_auth_ntlm_winbind ###
+echo "Setting SELinux boolean to allow HTTPD mod_auth_ntlm_winbind..."
+setsebool -P allow_httpd_mod_auth_ntlm_winbind on
+check_status "setsebool -P allow_httpd_mod_auth_ntlm_winbind on"
+
+### Set SELinux boolean to allow ypbind ###
+echo "Setting SELinux boolean to allow ypbind..."
+setsebool -P allow_ypbind on
+check_status "setsebool -P allow_ypbind on"
+
+### Query DNS server at localhost ###
+echo "Querying DNS server at localhost..."
+dig @localhost
+
+### Query DNS server at localhost for www.linuxcbt.com ###
+echo "Querying DNS server at localhost for www.linuxcbt.com..."
+dig @localhost www.8f87d0b9661c.mylabserver.com
+
+### Perform nslookup on server IP ADDRESS for www.linuxcbt.com ###
+echo "Performing nslookup on server 3.14.84.248..."
+nslookup <<EOF
+server 3.14.84.248
+
+EOF
+
+### Check open UDP port 53 using netstat ###
+echo "Checking open UDP port 53..."
+netstat -nul | grep 53
+
+### Check open TCP port 53 using netstat ###
+echo "Checking open TCP port 53..."
+netstat -ntl | grep 53
+
+### List all active network connections ###
+echo "Listing all active network connections..."
+netstat -ant
+
+### Edit named configuration file to listen on localhost only ###
+# Add or modify the following lines:
+# listen-on port 53 { 127.0.0.1; };
+# listen-on-v6 port 53 { ::1; };
+echo "Configuring 'named' to listen on localhost only..."
+sed -i '/^options {/a\    listen-on port 53 { 127.0.0.1; };\n    listen-on-v6 port 53 { ::1; };' /etc/named.conf
+check_status "sed -i to update /etc/named.conf"
+
+### Restart named service to apply configuration changes ###
+echo "Restarting 'named' service after configuration changes..."
+systemctl restart named
+check_status "systemctl restart named"
+
+### Check open UDP port 53 after configuration ###
+echo "Checking open UDP port 53 after configuration..."
+netstat -nul | grep 53
+
+### Edit named configuration file to allow queries from any IP ###
+echo "Configuring 'named' to allow queries from any IP..."
+sed -i '/^options {/a\    allow-query { any; };' /etc/named.conf
+check_status "sed -i to update /etc/named.conf"
+
+### Restart named service after allowing queries from any IP ###
+echo "Restarting 'named' service after allowing queries from any IP..."
+systemctl restart named
+check_status "systemctl restart named"
+
+### Check open UDP port 53 after allowing queries from any IP ###
+echo "Checking open UDP port 53 after allowing queries from any IP..."
+netstat -nul | grep 53
+
+### SSH to server at 192.168.75.20 ###
+echo "SSH into server at 192.168.75.20..."
+ssh 192.168.75.20
+check_status "ssh 192.168.75.20"
+
+echo "DNS Caching-Only server setup completed successfully!"
+
+
+
+
+
+
+                                                                                                                                        

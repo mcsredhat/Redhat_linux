@@ -1,0 +1,119 @@
+---
+- name: Setup BIND DNS Server
+  hosts: all
+  become: yes
+  vars:
+    dns_packages:
+      - net-tools
+      - firewalld
+      - bind
+      - bind-utils
+    selinux_bools:
+      - { name: "named_write_master_zones", state: "on" }
+
+  tasks:
+    - name: Install required packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ dns_packages }}"
+
+    - name: Ensure firewalld is started and enabled
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Add DNS port (TCP 53) to firewalld
+      firewalld:
+        port: 53/tcp
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+    - name: Allow DNS service in firewalld
+      firewalld:
+        service: dns
+        permanent: yes
+        state: enabled
+        immediate: yes
+
+    - name: Reload firewalld to apply changes
+      firewalld:
+        state: reloaded
+
+    - name: Ensure named service is started and enabled
+      service:
+        name: named
+        state: started
+        enabled: yes
+
+    - name: Check if /etc/named.conf already contains allow-query
+      command: grep 'allow-query { any; };' /etc/named.conf
+      register: allow_query_check
+      failed_when: allow_query_check.rc == 2
+      ignore_errors: yes
+
+    - name: Modify /etc/named.conf to listen on localhost and allow queries from any IP (if not already configured)
+      block:
+        - name: Backup the current named.conf
+          copy:
+            src: /etc/named.conf
+            dest: /etc/named.conf.bak
+            backup: yes
+          when: allow_query_check.rc == 1
+
+        - name: Update named.conf to allow queries from any IP
+          lineinfile:
+            path: /etc/named.conf
+            insertafter: '^options {'
+            line: '    allow-query { any; };'
+          when: allow_query_check.rc == 1
+
+        - name: Update named.conf to listen on localhost and IPv6 localhost
+          lineinfile:
+            path: /etc/named.conf
+            insertafter: '^options {'
+            line: '    listen-on port 53 { 127.0.0.1; };\n    listen-on-v6 port 53 { ::1; };'
+          when: allow_query_check.rc == 1
+
+    - name: Set SELinux booleans for named
+      seboolean:
+        name: "{{ item.name }}"
+        state: "{{ item.state }}"
+        persistent: yes
+      loop: "{{ selinux_bools }}"
+
+    - name: Restart named to apply configuration changes
+      service:
+        name: named
+        state: restarted
+
+    - name: Verify DNS service with dig localhost
+      command: dig @localhost
+      register: dig_localhost
+      failed_when: dig_localhost.rc != 0
+
+    - name: Verify www.example.com DNS lookup
+      command: dig @localhost www.example.com
+      register: dig_example
+      failed_when: dig_example.rc != 0
+
+    - name: Ensure TCP port 53 is open
+      shell: netstat -ntl | grep 53
+      register: tcp_port_53
+      failed_when: tcp_port_53.rc != 0
+
+    - name: Ensure UDP port 53 is open
+      shell: netstat -nul | grep 53
+      register: udp_port_53
+      failed_when: udp_port_53.rc != 0
+
+    - name: Display the results of the DNS queries and port checks
+      debug:
+        msg:
+          - "Localhost dig result: {{ dig_localhost.stdout }}"
+          - "Example.com dig result: {{ dig_example.stdout }}"
+          - "TCP port 53 status: {{ tcp_port_53.stdout }}"
+          - "UDP port 53 status: {{ udp_port_53.stdout }}"
+

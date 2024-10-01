@@ -1,0 +1,109 @@
+---
+- hosts: linuxcbtserv1
+  become: yes
+  tasks:
+    # Step 1: Ensure BIND (named) is installed
+    - name: Ensure BIND (named) is installed
+      package:
+        name: bind
+        state: present
+
+    # Step 2: Get the primary IP address of the server
+    - name: Get the server's primary IP address
+      command: ip addr show
+      register: ip_output
+
+    - name: Extract primary IP address
+      set_fact:
+        ip_address: "{{ ip_output.stdout | regex_search('inet ([0-9.]+)/', '\\1') }}"
+
+    # Step 3: Get the network address from the primary IP
+    - name: Get the network address (first three octets)
+      set_fact:
+        network_address: "{{ ip_address | regex_replace('\\.[0-9]+$', '') }}"
+
+    # Step 4: Calculate the reverse zone based on the network address
+    - name: Calculate the reverse zone
+      set_fact:
+        reverse_zone: "{{ network_address.split('.')[2] }}.{{ network_address.split('.')[1] }}.{{ network_address.split('.')[0] }}.in-addr.arpa"
+
+    # Step 5: Configure forward and reverse zones in /etc/named.conf
+    - name: Backup /etc/named.conf
+      copy:
+        src: /etc/named.conf
+        dest: /etc/named.conf.bak
+        remote_src: yes
+      when: not backup_exists
+      register: backup_exists
+
+    - name: Ensure forward zone for linuxcbt.internal is configured in /etc/named.conf
+      blockinfile:
+        path: /etc/named.conf
+        marker: "### Added by Ansible - Forward Zone ###"
+        block: |
+          zone "linuxcbt.internal" IN {
+              type slave;
+              masters { {{ ip_address }}; };
+              file "slaves/linuxcbt.internal";
+              allow-update { none; };
+          }
+
+    - name: Ensure reverse zone for linuxcbtserv1 is configured in /etc/named.conf
+      blockinfile:
+        path: /etc/named.conf
+        marker: "### Added by Ansible - Reverse Zone ###"
+        block: |
+          zone "{{ reverse_zone }}" IN {
+              type master;
+              file "/var/named/{{ reverse_zone }}.zone";
+              allow-update { none; };
+          }
+
+    # Step 6: Create the reverse zone file with PTR records
+    - name: Check if reverse zone file exists
+      stat:
+        path: "/var/named/{{ reverse_zone }}.zone"
+      register: reverse_zone_file
+
+    - name: Create reverse zone file with PTR records if not present
+      blockinfile:
+        path: "/var/named/{{ reverse_zone }}.zone"
+        marker: "### Added by Ansible - Reverse Zone File ###"
+        create: yes
+        block: |
+          $TTL 1800
+          @ IN SOA linuxcbtserv1.linuxcbt.internal. dns-admin.linuxcbt.internal. (
+                      2017121601 ; serial
+                      1D         ; refresh
+                      1H         ; retry
+                      1W         ; expire
+                      3H )       ; minimum
+          @ IN NS linuxcbtserv1.linuxcbt.internal.
+          @ IN NS linuxcbtserv2.linuxcbt.internal.
+          {{ ip_address.split('.')[3] }} IN PTR linuxcbtserv1.linuxcbt.internal.
+
+      when: not reverse_zone_file.stat.exists
+
+    # Step 7: Apply file permissions and SELinux context
+    - name: Set ownership for reverse zone file
+      file:
+        path: "/var/named/{{ reverse_zone }}.zone"
+        owner: root
+        group: named
+        mode: '0644'
+
+    - name: Restore SELinux context on reverse zone file
+      command: restorecon -v /var/named/{{ reverse_zone }}.zone
+
+    - name: Set SELinux context for named_zone_t on reverse zone file
+      command: chcon -t named_zone_t /var/named/{{ reverse_zone }}.zone
+
+    # Step 8: Restart BIND service to apply changes
+    - name: Restart named service
+      systemd:
+        name: named
+        state: restarted
+
+    - name: Display completion message
+      debug:
+        msg: "BIND configuration for linuxcbtserv1 is complete."

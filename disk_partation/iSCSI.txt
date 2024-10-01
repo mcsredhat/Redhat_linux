@@ -1,0 +1,143 @@
+linuxcbtserv1 (172.31.24.206) will act as the iSCSI Target (the machine that shares the storage).
+linuxcbtserv2 (172.31.19.202) will act as the iSCSI Initiator (the machine that accesses the shared storage).
+
+### Check for iSCSI related packages ###
+sudo yum install iscsi-initiator-utils targetcli -y
+
+rpm -qa | grep iscsi
+
+### Enable and start iscsid service ###
+ping 172.31.44.111 #linuxcbtserv1
+ping 172.31.44.225 #linuxcbtserv2
+ip route show
+sudo setenforce 0
+
+### Display help for iscsiadm command ###
+iscsiadm --help
+
+############# Configuration SCSI Target on linuxcbtserv1 #############
+sudo yum install iscsi-initiator-utils targetcli -y
+sudo systemctl start target
+sudo systemctl enable target
+sudo systemctl status target
+ sudo systemctl enable firewalld
+ sudo systemctl start firewalld
+sudo firewall-cmd --permanent --add-port=3260/tcp
+sudo firewall-cmd --reload
+
+### Create a new partition on /dev/nvme1n* ###
+sud fdisk -l     # Check existing disks
+sudo fdisk /dev/nvme1n1        # Start fdisk on /dev/sdb
+n                     # Create a new partition
+p                     # Primary partition
+[press enter]         # Use default starting sector
++1G 
+l                  # Allocate 1GB size
+t                     # Change partition type
+8E                   # Change type to Linux swap / Solaris
+p                     # Print partition table
+w                     # Write changes and exit
+partprobe             # Inform kernel of partition changes
+
+### Prepare the partition for LVM ###
+sudo fdisk -l 
+sudo pvcreate /dev/nvme1n1p1 /dev/nvme2n1p1    # Initialize /dev/sdb1 as a physical volume for LVM
+sudo vgcreate vg_iscsi /dev/nvme1n1p1    # Create a volume group named vg_iscsi using /dev/sdb1
+sudo lvcreate -l 100%FREE -n lv_iscsi vg_iscsi # Create a logical volume lv_iscsi using all available space in vg_iscsi
+
+### Install targetcli and configure iSCSI target ###
+rpm -qa | grep targetcli   # Install targetcli package
+sudo targetcli                   # Start targetcli command-line interface
+cd backstores/block              # Navigate to backstores configuration
+create name=iscsi_disk1_server dev=/dev/vg_iscsi/lv_iscsi    # Create iSCSI disk using the logical volume lv_iscsi
+ls
+cd /iscsi                   # Navigate to iSCSI configuration
+create iqn.2016-02.local.itzgeek.server:disk1    # Create iSCSI Qualified Name (IQN)
+cd /iscsi/iqn.2016-02.local.itzgeek.server:disk1/tpg1/acls
+create iqn.2016-02.local.itzgeek.server:node1node2    # Create iSCSI access control list (ACL)
+
+cd /iscsi/iqn.2016-02.local.itzgeek.server:disk1/tpg1/luns
+ create /backstores/block/iscsi_disk1_server
+cd /iscsi/iqn.2016-02.local.itzgeek.server:disk1/tpg1 
+ set attribute authentication=1
+set auth userid=cloud_user
+set auth password=password123
+cd /                        # Navigate to root directory
+ls                         # List contents (optional)
+saveconfig                 # Save configuration changes
+exit                       # Exit targetcli
+
+### Enable and restart target service ###
+sudo systemctl enable target.service    # Enable target service to start on boot
+sudo systemctl restart target.service   # Restart target service immediately
+
+### Configure firewall to allow iSCSI traffic ###
+sudo firewall-cmd --permanent --add-port=3260/tcp    # Open TCP port 3260 for iSCSI traffic
+sudo firewall-cmd --reload                           # Reload firewall rules
+
+########## Configure iSCSI Initiator (on linuxcbtserv2) ###########
+
+### Install iscsi-initiator-utils package ###
+sudo yum install iscsi-initiator-utils targetcli -y   # Install iSCSI initiator utils package
+sudo systemctl enable iscsid.service    # Enable iscsid service to start on boot
+sudo systemctl start iscsid.service     # Start iscsid service immediately
+sudo systemctl status iscsid.service    # Check status of iscsid service
+sudo systemctl enable firewalld
+sudo systemctl start firewalld
+sudo firewall-cmd --permanent --add-port=3260/tcp
+sudo firewall-cmd --reload
+
+### Configure initiator name in initiatorname.iscsi file ###
+sudo vi /etc/iscsi/initiatorname.iscsi
+# Set InitiatorName=iqn.2016-02.local.itzgeek.server:node1node2
+InitiatorName=iqn.2016-02.local.itzgeek.server:node1node2    # Set iSCSI initiator name
+
+### Restart iscsid.service to apply changes ###
+sudo systemctl restart iscsid.service    # Restart iscsid.service
+
+### Enable iscsid.service to start on boot ###
+sudo systemctl enable iscsid.service    # Enable iscsid.service to start on boot
+
+sudo iscsiadm -m node -o delete
+
+
+### Discover iSCSI targets on the iSCSI server ###
+sudo iscsiadm -m discovery -t st -p 172.31.44.111   # Discover iSCSI targets on IP address 172.31.19.202
+
+### Log into the iSCSI target ###
+sudo iscsiadm -m node -T iqn.2016-02.local.itzgeek.server:disk1 -p 172.31.44.111 --op update -n node.session.auth.authmethod -v CHAP
+sudo iscsiadm -m node -T iqn.2016-02.local.itzgeek.server:disk1 -p 172.31.44.111 --op update -n node.session.auth.username -v cloud_user
+sudo iscsiadm -m node -T iqn.2016-02.local.itzgeek.server:disk1 -p 172.31.44.111 --op update -n node.session.auth.password -v 'password123'
+
+sudo iscsiadm -m node -T iqn.2016-02.local.itzgeek.server:disk1 -p 172.31.44.111 -l    # Log into the iSCSI target
+
+sudo iscsiadm -m session
+
+### Check system logs for any iSCSI related messages ###
+cat /var/log/messages
+
+### Verify newly added disk partitions ###
+cat /proc/partitions
+
+### Create filesystem (XFS) on /dev/sdb ###
+sudo mkfs.xfs /dev/nvme1n1p1    # Create XFS filesystem on /dev/sdb
+
+### Mount the iSCSI disk ###
+sudo mount /dev/nvme1n1p1 /mnt    # Mount /dev/sdb to /mnt
+
+### Check mounted filesystem ###
+df -hT    # Display disk space usage
+
+### Get UUID of /dev/sdb for /etc/fstab entry ###
+blkid /dev/nvme1n1p1
+
+### Add /etc/fstab entry for persistent mount ###
+vi /etc/fstab
+# Add line: UUID=<UUID from blkid> /mnt xfs _netdev 0 0
+
+### Unmount /mnt to prepare for iSCSI target logout ###
+umount /mnt
+
+### Logout of the iSCSI target ###
+iscsiadm -m node -T iqn.2016-02.local.itzgeek.server:disk1 -p 172.31.19.202 -u    # Logout from the iSCSI target
+```

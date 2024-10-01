@@ -1,0 +1,118 @@
+### MySQL Installation and Basic Commands
+
+
+# Check if MySQL packages are installed
+rpm -qa | grep mysql
+
+# Search for MySQL packages available in the repository
+yum search mysql
+
+# Install MySQL server
+sudo yum -y install mysql-server
+
+# Verify installed files for mysql-server package
+sudo rpm -ql mysql-server
+
+# Check the configuration file for MySQL (my.cnf)
+less /etc/my.cnf
+
+# Enable MySQL service to start on boot
+sudo systemctl enable mysqld
+
+# Start MySQL service
+sudo systemctl start mysqld
+```
+
+### MySQL Login and Basic Operations
+
+
+# Log into MySQL server as root user
+sudo mysql -u root -p
+
+password : press enter
+
+# Once logged in, you can perform MySQL operations:
+
+# Show existing databases
+mysql> show databases;
+
+# Select a specific database to use
+mysql> use mysql;
+
+# Show tables in the selected database
+mysql> show tables;
+
+# Describe a table structure
+mysql> describe user;
+
+# View users and their privileges
+mysql> select User, Host, Password from user;
+
+# Exit MySQL shell
+mysql> \q
+```
+
+### Managing MySQL Users and Passwords
+
+
+# Change MySQL root password
+/usr/bin/mysqladmin -u root password 'abc123'
+
+# Log into MySQL with new root password
+mysql -u root -p  # password = press enter
+
+# Set password for root user for specific host
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'abc123';
+
+# Show users and their passwords after password changes
+mysql> SELECT User, Host FROM mysql.user WHERE User = 'root';
+
+# Flush privileges to apply changes
+mysql> flush privileges;
+
+# Exit MySQL shell
+mysql> \q
+```
+
+### Creating and Managing Databases and Tables
+
+
+# Log into MySQL as root
+mysql -u root -p # password= abc123
+
+# Create a new database
+mysql> create database addressBook;
+
+# Switch to the newly created database
+mysql> use addressBook;
+
+# Create a table 'contacts' with specified fields
+mysql> create table contacts (
+    fname char(20),
+    lname char(20),
+    bus_phone char(20),
+    email char(30),
+    PRIMARY KEY(email)
+);
+
+# Show tables in the current database
+mysql> show tables;
+
+# Describe structure of 'contacts' table
+mysql> describe contacts;
+
+# Insert records into 'contacts' table
+mysql> INSERT INTO contacts VALUES ('faraj', 'assulai', '0766450357', 'farajassulai@gmail.com');
+
+# Select all records from 'contacts' table
+mysql> select * from contacts;
+
+# Update a record in 'contacts' table
+mysql> update contacts set email = 'mcsredhat@gmail.com' where fname = 'faraj';
+
+# Delete a record from 'contacts' table
+mysql> delete from contacts where email = 'mcsredhat@gmail.com';
+
+# Exit MySQL shell
+mysql> \q
+```
