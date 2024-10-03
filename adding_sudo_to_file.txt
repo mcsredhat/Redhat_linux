@@ -1,0 +1,10 @@
+
+"C:\Users\F-A\Desktop\DevOps\Redhat_linux\SELinux.txt"
+
+(Get-Content "C:\Users\F-A\Desktop\DevOps\Redhat_linux\SELinux.txt") | ForEach-Object {
+    if (-not [string]::IsNullOrWhiteSpace($_) -and $_ -notmatch '^\s*#') { 
+        "sudo $_"
+    } else { 
+        $_ 
+    }
+} | Set-Content "C:\Users\F-A\Desktop\DevOps\Redhat_linux\SELinux.txt"

@@ -1,40 +1,40 @@
 ### SSH server ###
 
 # Check if OpenSSH package is installed
-rpm -qa | grep openssh # if not installed use (yum -y install openssh)
+sudo rpm -qa | grep openssh # if not installed use (yum -y install openssh)
 
 # Check the status of SSH service using chkconfig (old) or systemctl (new)
-chkconfig --list sshd    # For older systems
-systemctl start sshd.service   # Start SSH service using systemctl (modern)
-service sshd start       # Start SSH service using service (alternative)
-systemctl status sshd.service   # Check status of SSH service using systemctl (modern)
-service sshd status      # Check status of SSH service using service (alternative)
+sudo chkconfig --list sshd    # For older systems
+sudo systemctl start sshd.service   # Start SSH service using systemctl (modern)
+sudo service sshd start       # Start SSH service using service (alternative)
+sudo systemctl status sshd.service   # Check status of SSH service using systemctl (modern)
+sudo service sshd status      # Check status of SSH service using service (alternative)
 
 # Connect to SSH server at 192.168.75.20
-ssh 192.168.75.20
+sudo ssh 192.168.75.20
 
 
 ### Key-based and passwordless authentication ###
 
 # Remove existing DSA key (optional step if key already exists)
-rm -rf /root/.ssh/id_dsa
+sudo rm -rf /root/.ssh/id_dsa
 
 # Generate DSA key pair (you can choose another type like RSA or ED25519)
-ssh-keygen -t dsa
+sudo ssh-keygen -t dsa
 
 # Display the private key
-cat ~/.ssh/id_dsa
+sudo cat ~/.ssh/id_dsa
 
 # Display the public key
-cat ~/.ssh/id_dsa.pub 
+sudo cat ~/.ssh/id_dsa.pub 
 
 # Set SELinux context for the user's home directory (optional step)
-chcon -t user_home_dir_t /home/linuxcbt
+sudo chcon -t user_home_dir_t /home/linuxcbt
 
 # Copy public key to remote server linuxcbtserv1 for passwordless authentication
-ssh-copy-id -i ~/.ssh/id_dsa.pub linuxcbtserv1
+sudo ssh-copy-id -i ~/.ssh/id_dsa.pub linuxcbtserv1
 
 # Connect to linuxcbtserv1 using SSH (key-based authentication)
-ssh linuxcbtserv1
-```
+sudo ssh linuxcbtserv1
+
 

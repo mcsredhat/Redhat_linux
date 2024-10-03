@@ -1,200 +1,203 @@
-# Display SELinux status including mode, policy version, and mode from config file
-sestatus -v
-
-# Display which SELinux mode is currently enforced (Enforcing, Permissive, or Disabled)
-which setenforce
-
-# Display help information for the setenforce command
-setenforce --help
-
-# List SELinux configuration file under /etc/sysconfig
-ls -l /etc/sysconfig/selinux
-
-# List SELinux directory under /selinux
-ls -l /selinux/
-
-# View the SELinux configuration file for detailed settings
-less /etc/selinux/config
-
-# Display the SELinux security context of the current user
-id -Z
-
-# List files in the /root directory with their SELinux security context
-ll -Z /root/
-
-# Change directory to /var/www/html
-cd /var/www/html
-
-# List files in /var/www/html and display their SELinux security context
-ls -Lz
-
-# Temporarily set SELinux enforcement to Permissive mode
-setenforce 0
-
-# Display SELinux status to verify it's in Permissive mode
-sestatus
-
-# List all SELinux booleans related to httpd and grep for httpd_can_network_connect_db
-getsebool -a | grep httpd
-
-# Set the httpd_can_network_connect_db boolean to off
-setsebool httpd_can_network_connect_db off
-
-# Verify the change by listing httpd-related SELinux booleans again
-getsebool -a | grep httpd
-
-# Temporarily set SELinux enforcement back to Enforcing mode
-setenforce 1
-
-# Display SELinux status to verify it's back in Enforcing mode
-sestatus
-
-# Set the httpd_can_network_connect_db boolean back to on
-setsebool httpd_can_network_connect_db on
-
-# Verify the change by listing httpd-related SELinux booleans again
-getsebool -a | grep httpd
-
-# Display all processes running with their associated SELinux security contexts
-ps -Ez | grep httpd
-
-# List files in /var/www/html and display their SELinux security context
-ls -Lz
-
-# Change directory to the home directory of the 'linuxcbt' user
-cd ~linuxcbt
-
-# Create a directory named 'temp2' in the home directory of 'linuxcbt'
-mkdir temp2
-
-# Create a file named 'test.txt' in the 'temp2' directory
-touch test.txt
-
-# Move the 'test.txt' file from 'temp2' directory to /var/www/html
-mv temp2/test.txt /var/www/html/
-
-# List 'test.txt' file in /var/www/html
-ls -l tes*
-
-# Display detailed SELinux security context of 'test.txt'
-ll -Z tes*
-
-# Temporarily set SELinux enforcement to Permissive mode
-setenforce 0
-
-# Display SELinux status to verify it's in Permissive mode
-sestatus
-
-# Access 'test.txt' file in the browser to test permissions
-# http://localhost/test.txt
-
-# Temporarily set SELinux enforcement to Permissive mode again (duplicate command)
-setenforce 0
-
-# Display SELinux status to verify it's in Permissive mode again
-sestatus
-
-# Access 'test.txt' file in the browser again to test permissions
-# http://localhost/test.txt
-
-# Create a directory named 'temp2' and a file named 'test2.txt' in it under the home directory of 'linuxcbt'
-mkdir ~linuxcbt/temp2 && touch ~linuxcbt/temp2/test2.txt
-
-# Move the 'test2.txt' file from 'temp2' directory to /var/www/html
-mv -v ~linuxcbt/temp2/test2.txt /var/www/html
-
-# List 'test2.txt' file in /var/www/html
-ll -l tes*
-
-# Display detailed SELinux security context of 'test2.txt'
-ll -Z tes*
-
-# Display SELinux file context information for files specified in file_contexts
-cat /etc/selinux/targeted/contexts/files/file_contexts
-
-# Display all processes with their associated security contexts
-ps -efZ
-
-# Display the current SELinux enforcement mode
-getenforce
-
-# Temporarily set SELinux enforcement to Permissive mode
-setenforce 0
-
-# Edit the SELinux configuration file to permanently set SELINUX=disabled
-vi /etc/selinux/config
-# Change SELINUX=enforcing to SELINUX=disabled
-
-# Edit the GRUB configuration file to disable SELinux at boot time
-vi /boot/grub/grub.conf
-# Add selinux=0 to the kernel command line
-
-# Display SELinux status to verify current mode
-sestatus
-
-# Display SELinux configuration file details
-cat /etc/selinux/config
-
-# Display SELinux security context of /root/anaconda-ks.cfg file
-ll -Z /root/anaconda-ks.cfg
-
-# Change SELinux security context of /root/anaconda-ks.cfg to public_content_t with user_u type
-chcon -vu user_u -t public_content_t /root/anaconda-ks.cfg
-
-# Add a file context mapping for /root/anaconda-ks.cfg to public_content_t
-semanage fcontext -a -s user_u -t public_content_t /root/anaconda-ks.cfg
-
-# Display SELinux security context of /root/anaconda-ks.cfg directory
-ll -dZ /root/anaconda-ks.cfg
-
-# Change SELinux security context of /etc/passwd to match /etc/group
-chcon -v --reference /etc/passwd /etc/group
-
-# Copy /etc/group to /tmp and preserve SELinux context
-cp --preserve=context /etc/group /tmp
-
-# Display SELinux security context of /etc/group in /tmp
-ll -Z /etc/group
-
-# Display SELinux security context of /tmp/group
-ll -Z /tmp/group
-
-# Change SELinux security context of /root directory to public_content_t with user_u type
-chcon -vu user_u -t public_content_t /root
-
-# Add a file context mapping for /root directory to public_content_t
-semanage fcontext -a -s user_u -t public_content_t /root
-
-# Display SELinux security context of /root directory
-ll -dZ /root
-
-# Restore default SELinux file contexts for /root directory
-restorecon -F /root/
-
-# Display SELinux security context of /root directory again
-ll -dZ /root
-
-# List all SELinux booleans related to httpd
-getsebool -a | grep httpd
-
-# Set the allow_httpd_anon_write boolean to on permanently
-setsebool -P allow_httpd_anon_write on
-
-# List all available SELinux booleans under /selinux/booleans/
-ll /selinux/booleans/
-
-# Set the use_lpd_server boolean to 1 (on) temporarily
-setsebool use_lpd_server 1
-
-# Toggle the use_lpd_server boolean to switch its value
-togglesebool use_lpd_server
-
-# Toggle the use_lpd_server boolean again to switch its value back
-togglesebool use_lpd_server
-
-# Display current value of the use_lpd_server boolean
-getsebool use_lpd_server
-
-# Display all SELinux booleans and grep for use_lpd_server
-getsebool -a | grep use_lpd_server
-```
+ # Display SELinux status including mode, policy version, and mode from config file
+sudo  sestatus -v
+ 
+ # Display which SELinux mode is currently enforced (Enforcing, Permissive, or Disabled)
+sudo  which setenforce
+ 
+ # Display help information for the setenforce command
+sudo  setenforce --help
+ 
+ # List SELinux configuration file under /etc/sysconfig
+sudo  ls -l /etc/sysconfig/selinux
+ 
+ # List SELinux directory under /selinux
+sudo  ls -l /selinux/
+ 
+ # View the SELinux configuration file for detailed settings
+sudo  less /etc/selinux/config
+ 
+ # Display the SELinux security context of the current user
+sudo  id -Z
+ 
+ # List files in the /root directory with their SELinux security context
+sudo  ll -Z /root/
+ 
+ # Change directory to /var/www/html
+sudo  cd /var/www/html
+ 
+ # List files in /var/www/html and display their SELinux security context
+sudo  ls -Lz
+ 
+ # Temporarily set SELinux enforcement to Permissive mode
+sudo  setenforce 0
+ 
+ # Display SELinux status to verify it's in Permissive mode
+sudo  sestatus
+ 
+ # List all SELinux booleans related to httpd and grep for httpd_can_network_connect_db
+sudo  getsebool -a | grep httpd
+ 
+ # Set the httpd_can_network_connect_db boolean to off
+sudo  setsebool httpd_can_network_connect_db off
+ 
+ # Verify the change by listing httpd-related SELinux booleans again
+sudo  getsebool -a | grep httpd
+ 
+ # Temporarily set SELinux enforcement back to Enforcing mode
+sudo  setenforce 1
+ 
+ # Display SELinux status to verify it's back in Enforcing mode
+sudo  sestatus
+ 
+ # Set the httpd_can_network_connect_db boolean back to on
+sudo  setsebool httpd_can_network_connect_db on
+ 
+ # Verify the change by listing httpd-related SELinux booleans again
+sudo  getsebool -a | grep httpd
+ 
+ # Display all processes running with their associated SELinux security contexts
+sudo  ps -Ez | grep httpd
+ 
+ # List files in /var/www/html and display their SELinux security context
+sudo  ls -Lz
+ 
+ # Change directory to the home directory of the 'linuxcbt' user
+sudo  cd ~linuxcbt
+ 
+ # Create a directory named 'temp2' in the home directory of 'linuxcbt'
+sudo  mkdir temp2
+ 
+ # Create a file named 'test.txt' in the 'temp2' directory
+sudo  touch test.txt
+ 
+ # Move the 'test.txt' file from 'temp2' directory to /var/www/html
+sudo  mv temp2/test.txt /var/www/html/
+ 
+ # List 'test.txt' file in /var/www/html
+sudo  ls -l tes*
+ 
+ # Display detailed SELinux security context of 'test.txt'
+sudo  ll -Z tes*
+sudo  sudo restorecon /var/www/html/test.txt
+ 
+ # Temporarily set SELinux enforcement to Permissive mode
+sudo  setenforce 0
+ 
+ # Display SELinux status to verify it's in Permissive mode
+sudo  sestatus
+ 
+ # Access 'test.txt' file in the browser to test permissions
+ # http://localhost/test.txt
+ 
+ # Temporarily set SELinux enforcement to Permissive mode again (duplicate command)
+sudo  setenforce 0
+ 
+ # Display SELinux status to verify it's in Permissive mode again
+sudo  sestatus
+ 
+ # Access 'test.txt' file in the browser again to test permissions
+ # http://localhost/test.txt
+ 
+ # Create a directory named 'temp2' and a file named 'test2.txt' in it under the home directory of 'linuxcbt'
+sudo  mkdir ~linuxcbt/temp2 && touch ~linuxcbt/temp2/test2.txt
+ 
+ # Move the 'test2.txt' file from 'temp2' directory to /var/www/html
+sudo  mv -v ~linuxcbt/temp2/test2.txt /var/www/html
+sudo  sudo restorecon /var/www/html/test.txt
+ 
+ # List 'test2.txt' file in /var/www/html
+sudo  ll -l tes*
+ 
+ # Display detailed SELinux security context of 'test2.txt'
+sudo  ll -Z tes*
+ 
+ # Display SELinux file context information for files specified in file_contexts
+sudo  cat /etc/selinux/targeted/contexts/files/file_contexts
+ 
+ # Display all processes with their associated security contexts
+sudo  ps -efZ
+ 
+ # Display the current SELinux enforcement mode
+sudo  getenforce
+ 
+ # Temporarily set SELinux enforcement to Permissive mode
+sudo  setenforce 0
+ 
+ # Edit the SELinux configuration file to permanently set SELINUX=disabled
+sudo  vi /etc/selinux/config
+ # Change SELINUX=enforcing to SELINUX=disabled
+ 
+ # Edit the GRUB configuration file to disable SELinux at boot time
+sudo  vi /boot/grub/grub.conf
+sudo  or vi /boot/grub2 /grub.cfg
+ # Add selinux=0 to the kernel command line
+ 
+ # Display SELinux status to verify current mode
+sudo  sestatus
+sudo  :
+ # Display SELinux configuration file details
+sudo  sudo cat /etc/selinux/config
+ 
+ # Display SELinux security context of /root/anaconda-ks.cfg file
+sudo  sudo ls -lZ /root/anaconda-ks.cfg
+ 
+ # Change SELinux security context of /root/anaconda-ks.cfg to public_content_t with user_u type
+sudo  sudo chcon -vu user_u -t public_content_t /root/anaconda-ks.cfg
+ 
+ # Add a file context mapping for /root/anaconda-ks.cfg to public_content_t
+sudo  semanage fcontext -a -s user_u -t public_content_t /root/anaconda-ks.cfg
+ 
+ # Display SELinux security context of /root/anaconda-ks.cfg directory
+sudo  ll -dZ /root/anaconda-ks.cfg
+ 
+ # Change SELinux security context of /etc/passwd to match /etc/group
+sudo  chcon -v --reference /etc/passwd /etc/group
+ 
+ # Copy /etc/group to /tmp and preserve SELinux context
+sudo  cp --preserve=context /etc/group /tmp
+ 
+ # Display SELinux security context of /etc/group in /tmp
+sudo  ll -Z /etc/group
+ 
+ # Display SELinux security context of /tmp/group
+sudo  ll -Z /tmp/group
+ 
+ # Change SELinux security context of /root directory to public_content_t with user_u type
+sudo  chcon -vu user_u -t public_content_t /root
+ 
+ # Add a file context mapping for /root directory to public_content_t
+sudo  semanage fcontext -a -s user_u -t public_content_t /root
+ 
+ # Display SELinux security context of /root directory
+sudo  ll -dZ /root
+ 
+ # Restore default SELinux file contexts for /root directory
+sudo  restorecon -F /root/
+ 
+ # Display SELinux security context of /root directory again
+sudo  ll -dZ /root
+ 
+ # List all SELinux booleans related to httpd
+sudo  getsebool -a | grep httpd
+ 
+ # Set the allow_httpd_anon_write boolean to on permanently
+sudo  setsebool -P allow_httpd_anon_write on
+ 
+ # List all available SELinux booleans under /selinux/booleans/
+sudo  ll /selinux/booleans/
+ 
+ # Set the use_lpd_server boolean to 1 (on) temporarily
+sudo  setsebool use_lpd_server 1
+ 
+ # Toggle the use_lpd_server boolean to switch its value
+sudo  togglesebool use_lpd_server
+ 
+ # Toggle the use_lpd_server boolean again to switch its value back
+sudo  togglesebool use_lpd_server
+ 
+ # Display current value of the use_lpd_server boolean
+sudo  getsebool use_lpd_server
+ 
+ # Display all SELinux booleans and grep for use_lpd_server
+sudo  getsebool -a | grep use_lpd_server
+sudo  ```
