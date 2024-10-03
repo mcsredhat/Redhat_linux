@@ -1,0 +1,122 @@
+
+
+
+### RAID ###
+sudo fdisk -l 
+
+# Partition /dev/nvme*
+fdisk /dev/nvme*n*
+# Enter the following interactive commands:
+n        # Create a new partition
+e        # Extended partition type
+(press enter) # Partition number
+(press enter)# Press Enter to accept default start sector
+(press enter)# Press Enter to accept default end sector
+n        # Create a new logical partition
+p        # Print partition table to verify
+l        # Logical partition type
+default  # Press Enter to accept default start sector        
++400M      # Allocate 400M space for the partition
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+**after repeat to create the disk partition many times will look like the following down where partitions 5,6,7,8 are part of extended partitions /dev/nvme2n1 and /dev/nvme2n2  ****
+/dev/nvme2n1
+
+/dev/nvme2n1p1      1026048 4194303 3168256  2G  5 Extended
+/dev/nvme2n1p5      1028096 1847295  819200  400M 83 Linux
+/dev/nvme2n1p6      1849344 2668543  819200  400M 83 Linux
+/dev/nvme2n1p7      2670592 3489791  819200  400M 83 Linux
+/dev/nvme2n1p8      3491840 4194303  702464  343M 83 Linux
+
+/dev/nvme1n1
+/dev/nvme1n1p1       821248 4194303 3373056  2G  5 Extended
+/dev/nvme1n1p5       823296 1642495  819200  400M 83 Linux
+/dev/nvme1n1p6      1644544 2463743  819200  400M 83 Linux
+/dev/nvme1n1p7      2465792 3489791 1024000  500M 83 Linux
+/dev/nvme1n1p8      3491840 4194303  702464  343M 83 Linux
+
+
+# Create RAID 0 (striping) array /dev/md0 with 2 devices (/dev/nvme0n1p5, /dev/nvme2n1p5)
+sudo mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/nvme2n1p5 /dev/nvme0n1p5
+
+# Format /dev/md0 with ext4 filesystem
+sudo mkfs.ext4 /dev/md0
+
+# Create mount point for /dev/md0
+sudo mkdir /md0
+
+# Mount /dev/md0 to /md0
+sudo mount /dev/md0 /md0
+
+# Mount all filesystems listed in /etc/fstab
+sudo mount -a
+sudo chmod 777 /md0
+
+# Append sequence of numbers to file /md- and list files in /md0 directory
+sudo seq 1000000 >> /md0/output.txt 
+sudo ls –l /md0
+
+# Display partitions of all disks
+sudo fdisk -l
+
+# display the content of raid disk
+sudo mdadm --detail /dev/md0
+cat /proc/mdstat
+
+
+# Create RAID 1 (mirroring) array /dev/md1 with 2 devices (/dev/nvme0n1p6, /dev/nvme2n1p6)
+sudo mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/nvme0n1p6 /dev/nvme2n1p6 
+
+# Format /dev/md1 with ext4 filesystem (correcting the command syntax)
+sudo mkfs.ext4 /dev/md1
+
+# Create mount point for /dev/md1
+sudo mkdir /md1
+
+# Mount /dev/md1 to /md1
+sudo mount /dev/md1 /md1
+
+# Mount all filesystems listed in /etc/fstab
+sudo mount -a
+sudo chmod 777 /md1
+
+# Append sequence of numbers to /md1 file and list files in /md1 directory
+seq 1000000 >> /md1/ouptut.txt && ls –l /md1
+
+# Display partitions of all disks
+sudo fdisk -l
+
+# display the content of raid disk
+sudo mdadm --detail /dev/md1
+cat /proc/mdstat
+
+
+# Create RAID 5 array /dev/md5 with 4 devices (/dev/nvme0n1p7, /dev/nvme0n1p8, /dev/nvme2n1p7, /dev/nvme2n1p8)
+sudo mdadm --create /dev/md5 --level=5 --raid-devices=4 /dev/nvme0n1p7 /dev/nvme0n1p8 /dev/nvme2n1p7 /dev/nvme2n1p8
+
+# Format /dev/md5 with ext4 filesystem (correcting the command syntax)
+sudo mkfs.ext4 /dev/md5
+
+# Create mount point for /dev/md5
+sudo mkdir /md5
+
+# Mount /dev/md5 to /md5 and mount all filesystems listed in /etc/fstab
+sudo mount /dev/md5 /md5 
+sudo mount –a
+sudo chmod 777 /md5
+
+# Append sequence of numbers to /md5 file and list files in /md5 directory
+sudo seq 1000000 >> /md5/output.txt 
+sudo ls –l /md5
+
+# Display partitions of all disks
+sudo fdisk -l
+
+# display the content of raid disk
+sudo mdadm --detail /dev/md5
+cat /proc/mdstat
+

@@ -1,0 +1,89 @@
+### Access Control List (ACL) ###
+
+
+# Display ACL of file1
+getfacl file1
+
+# Create file1
+touch file1
+
+# Display ACL of file1
+getfacl file1
+
+# Partition /dev/sdb
+fdisk /dev/sdb
+
+# Update partition table
+partprobe
+
+# Format /dev/sdb9 with ext4 filesystem
+mkfs.ext4 /dev/sdb9
+
+# Create directory /home
+mkdir /home
+
+# Mount /dev/sdb9 to /home with ext4 filesystem
+mount /dev/sb9 /home
+
+# Remount /dev/sdb9 to /home with ext4 filesystem
+mount -t ext4 /dev/sb9 /home
+
+# Remount /dev/sdb9 to /home with ext4 filesystem enabling ACL
+mount -o remount,acl /home
+
+# Enable ACL on /dev/sdb9
+tune2fs /dev/sdb9 -o acl
+
+# Set ACL for user2 on file1
+setfacl -m u:user2:7 file1
+
+# Display ACL of file1
+getfacl file1
+
+# Set ACL for linuxcbt on /home
+setfacl -m u:linuxcbt:7 /home
+
+# Display ACL of /home
+getfacl /home
+
+# Set ACL for user1 on /home with read and write permissions
+setfacl -m u:user1:rw /home
+
+# Display ACL of /home
+getfacl /home/
+
+# Remove ACL entry for user1 on /home
+setfacl -x u:user1 /home
+
+# Display ACL of /home
+getfacl /home
+
+# Remove all ACL entries from file1
+setfacl -b file1
+
+# Display ACL of file1
+getfacl file1
+
+# Set complex ACL on /home with default permissions
+setfacl -m u::rwx,g::6,u:linuxcbt:7,g:user2:7,o:4 /home
+
+# Display ACL of /home
+getfacl /home/
+
+# List files in current directory
+ls
+
+# Set default ACL for user1 and user2 on /home/lost+found/
+setfacl -m d:u:user1:6,d:user2:4 /home/lost+found/
+
+# Display ACL of /home/lost+found/
+getfacl /home/lost+found/
+
+# Remove default ACL entries from /home/
+setfacl -m d:u:user1:6,d:user2:7,d:g:linuxcbt:6,d:g:user2:4,d:o:6 /home/
+
+# Display ACL of /home/
+getfacl /home/
+```
+It seems like you've provided a detailed set of commands for configuring disk quotas, but some parts of the instructions are a bit unclear or contain syntax errors. Let's correct and clarify them step by step:
+

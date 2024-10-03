@@ -1,0 +1,61 @@
+### Logical Volume Management ###
+
+# Partition /dev/nvme1n1p for LVM
+sudo fdisk /dev/nvme1n1p
+# Enter the following interactive commands:
+n        # Create a new partition
+p        # Primary partition
+        # Press Enter to accept default start sector
++1G      # Allocate 1GB space for the partition
+t        # Change partition type
+82e      # Set partition type to Linux swap (LVM)
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+# Create physical volumes (PVs) on /dev/sdb1 and /dev/sdb2
+pvcreate /dev/nvme1n1p1 /dev/nvme2n1p1 
+
+# Display physical volume information
+pvdisplay
+
+# Create volume group (VG) 'volgroupvar' using /dev/sdb1 and /dev/sdb2
+sudo vgcreate volgroupvar /dev/nvme1n1p1 /dev/nvme2n1p1 
+
+# Display volume group information including logical volumes (LVs)
+sudo vgdisplay -v
+
+# Create logical volume (LV) 'logvolvar' of size 3GB in volume group 'volgroupvar'
+sudo lvcreate -L 3GB -n logvolvar volgroupvar
+
+# Create logical volume (LV) 'logvolvar' with size specified in extents (alternative syntax)
+sudo lvcreate -l 3GB -n logvolvar volgroupvar
+
+# Create directory for mounting LV
+sudo mkdir /lvmvar1
+
+# Format logical volume /dev/volgroupvar/logvolvar with ext4 filesystem
+sudo mkfs.ext4 -j /dev/volgroupvar/logvolvar
+
+# Mount logical volume /dev/volgroupvar/logvolvar to /lvmvar1
+mount /dev/volgroupvar/logvolvar /lvmvar1
+
+# Mount all filesystems listed in /etc/fstab
+mount -a
+
+# Display currently mounted filesystems
+mount
+
+# Resize logical volume /dev/volgroupvar/logvolvar to 1GB
+sudo lvresize -L 1GB /dev/volgroupvar/logvolvar
+
+# Rename logical volume 'logvolvar' to 'logvolopt' in volume group 'volgroupvar'
+sudo lvrename volgroupvar logvolvar logvolopt
+
+# Rename volume group 'volgroupvar' to 'volgroupopt'
+sudo vgrename volgroupvar volgroupopt
+```
+
+

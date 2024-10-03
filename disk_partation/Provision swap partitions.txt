@@ -1,0 +1,40 @@
+### Provision swap partitions ###
+
+# Partition /dev/nvme1n1p to create swap partition
+fdisk /dev/nvme1n1p
+# Enter the following interactive commands:
+n        # Create a new partition
+p        # Primary partition
+4        # Partition number
+t        # Change partition type
+4        # Partition number
+82       # Linux swap
+p        # Print partition table to verify
+w        # Write changes to disk and exit
+
+# Update partition table
+partprobe
+
+# Format /dev/sda4 as swap
+mkswap /dev/nvme1n1p
+
+# Display swap usage summary
+swapon -s
+
+# Display partitions of all disks
+fdisk -l
+
+# Activate swap partition /dev/sda4
+swapon -v /dev/nvme1n1p
+
+# Deactivate swap partition /dev/sda4
+swapoff /dev/sda4
+
+# Create a 1GB swap file /swapfile1G filled with zeros
+dd if=/dev/zero of=/swapfile1G bs=1024 count=1048576
+
+# Format /swapfile1G as swap
+mkswap /swapfile1G
+
+# Activate swap file /swapfile1G
+swapon -v /swapfile1G

@@ -1,0 +1,27 @@
+##delete the RAID Array###
+#delete raid array 0#
+sudo umount /md0
+sudo mdadm --stop /dev/md0
+sudo mdadm --remove /dev/md0
+sudo mdadm --zero-superblock  /dev/nvme2n1p5 
+sudo mdadm --zero-superblock  /dev/nvme0n1p5
+
+#delete raid array 1#
+sudo umount /md1
+sudo mdadm --stop /dev/md1
+sudo mdadm --remove /dev/md1
+sudo mdadm --zero-superblock  /dev/nvme2n1p6 
+sudo mdadm --zero-superblock  /dev/nvme0n1p6
+
+#delete raid array 5#
+sudo umount /md5
+sudo mdadm --stop /dev/md5
+sudo mdadm --remove /dev/md5
+sudo mdadm --zero-superblock  /dev/nvme2n1p7 
+sudo mdadm --zero-superblock  /dev/nvme2n1p8
+sudo mdadm --zero-superblock  /dev/nvme0n1p7
+sudo mdadm --zero-superblock  /dev/nvme0n1p8
+
+ sudo mdadm --remove /dev/md5
+mdadm: error opening /dev/md5: No such file or directory
+

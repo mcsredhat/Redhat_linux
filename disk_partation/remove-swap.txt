@@ -1,0 +1,17 @@
+# Display partitions of all disks
+fdisk -l
+
+# Activate swap partition /dev/sda4
+swapon -v /dev/nvme1n1p
+
+# Deactivate swap partition /dev/sda4
+swapoff /dev/sda4
+
+# Create a 1GB swap file /swapfile1G filled with zeros
+dd if=/dev/zero of=/swapfile1G bs=1024 count=1048576
+
+# Format /swapfile1G as swap
+mkswap /swapfile1G
+
+# Activate swap file /swapfile1G
+swapon -v /swapfile1G

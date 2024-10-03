@@ -1,0 +1,215 @@
+### Disk Quota Configuration ###
+
+1. **Partition and Format Disk:**
+   
+   
+   # Partition /dev/sdc
+   fdisk /dev/sdc
+   # Enter the following interactive commands:
+   n        # Create a new partition
+   p        # Primary partition type
+   1        # Partition number
+   (press Enter to accept default values for start and end sectors)
+   p        # Print partition table to verify
+   w        # Write changes to disk and exit
+
+   # Update partition table
+   partprobe
+
+   # Format /dev/sdb1 with ext4 filesystem
+   mkfs.ext4 /dev/sdb1
+   ```
+
+2. **Create Mount Point and Mount Partition:**
+   
+   
+   # Create mount point for /dev/sdb1
+   mkdir /rhcelab
+
+   # Mount /dev/sdb1 to /rhcelab
+   mount /dev/sdb1 /rhcelab
+   ```
+
+3. **User and Group Setup:**
+
+   Assuming you've already added users `a`, `b`, `c`, `d`, `linuxcbt`, and `assulai` to the system with their respective passwords.
+
+4. **Edit /etc/fstab to Enable Quotas:**
+   
+   Edit `/etc/fstab` to include quota options for `/rhcelab`:
+
+   
+   vi /etc/fstab
+   # Add or modify the entry for /rhcelab to include usrquota and grpquota options:
+   /dev/sdb1   /rhcelab   ext4   defaults,usrquota,grpquota   1 2
+   ```
+
+   Or remount `/rhcelab` to enable quotas:
+
+   
+   mount -o remount,acl,usrquota,grpquota /rhcelab
+   ```
+
+5. **Initialize Quota Database:**
+   
+   
+   # Check and initialize the quota database for /rhcelab
+   quotacheck -cgu /rhcelab
+   ```
+
+6. **Set User Quotas:**
+   
+   
+   # Set quotas for user 'a'
+   edquota -u a
+
+   # Example of setting quotas using setquota:
+   setquota -u a 100000 200000 0 0 /rhcelab
+
+   # Set quotas for user 'b'
+   edquota -u b
+   setquota -u b 200000 200000 0 0 /rhcelab
+   ```
+
+7. **Set Group Quotas:**
+   
+   
+   # Set quotas for group 'quotatest'
+   edquota -g quotatest
+
+   # Example of setting quotas using setquota for group:
+   setquota -g quotatest 1000000 1500000 0 0 /rhcelab
+   ```
+
+8. **Adjust Time-Based Quotas:**
+   
+   Time-based quotas can be set using the `-T` flag with `edquota` for users and groups.
+
+9. **Manage Quotas and Usage:**
+   
+   
+   # Enable quotas on /rhcelab
+   quotaon -ugv /rhcelab
+
+   # Check quotas for user 'a'
+   quota a
+
+   # Check quotas for user 'b'
+   quota b
+
+   # Check quotas for group 'quotatest'
+   quota -g quotatest
+
+   # Display quota usage for all users and groups
+   repquota -a
+
+   # Create directories under /rhcelab for users and groups
+   mkdir /rhcelab/user-a /rhcelab/user-b /rhcelab/group-quotatest
+
+   # Set ownership and permissions for directories
+   chown -R a:a /rhcelab/user-a
+   chown -R b:b /rhcelab/user-b
+   chgrp -R quotatest /rhcelab/group-quotatest
+   
+Let's continue from where we left off with configuring and testing disk quotas for users and groups on your system.
+
+### Continuing Disk Quota Configuration and Testing ###
+
+1. **List Contents of `/rhcelab`:**
+
+   After setting up the directories and files, let's list the contents to ensure everything is in place.
+
+   
+   ls -l /rhcelab
+   ```
+
+2. **User `a` Operations:**
+
+   Switch to user `a`, create directories, and create files to test disk quota limits.
+
+   
+   su a
+   cd /rhcelab
+   mkdir d1 d2 d3 d4 d6
+   touch f5 f1 f2 f4
+   ```
+
+3. **Exceed Disk Quota with File Creation:**
+
+   Attempt to create a file (`f6`) that exceeds the allocated quota for user `a`. This will simulate a scenario where the disk quota is exceeded.
+
+   
+   touch f6
+   # You mentioned an error message here, which indicates the disk quota exceeded.
+   ```
+
+4. **Check Disk Usage (`du`) and Quota (`quota`) for User `a`:**
+
+   Before and after attempting to exceed the quota, check the disk usage and quota status for user `a`.
+
+   
+   du -h *
+   # This will show the disk usage of files and directories in human-readable format.
+
+   # Check quota for user 'a'
+   quota a
+   ```
+
+5. **Switch Users and Perform Operations:**
+
+   Exit from user `a` and switch users to perform further operations and check quotas.
+
+   
+   exit  # Exit from user 'a'
+   
+   # Switch users to perform more operations
+   su a
+   cd /rhcelab/user-a
+   date
+   exit
+   ```
+
+6. **Final Quota Check for User `a`:**
+
+   After performing operations and potentially removing files to free up space, check the quota status again for user `a`.
+
+   
+   su a
+   exit  # Exit from user 'a'
+   
+   # Check quota for user 'a' again
+   quota a
+   ```
+
+7. **Configure Group Quota (`quotatest`):**
+
+   Configure and test group quotas (`quotatest`) by assigning permissions and performing operations that exceed the group quota.
+
+   
+   # Check group 'quotatest' and user IDs for 'c' and 'd'
+   grep quotatest /etc/group
+   id c
+   id d
+
+   # Set permissions on /rhcelab/group-quotatest directory
+   chmod -R 770 /rhcelab/group-quotatest
+   ls -l /rhcelab
+
+   # Create test files for group 'quotatest'
+   touch /rhcelab/test_{1..80}.txt
+
+   # Switch to user 'c' and 'd' to perform operations
+   su c
+   cd /rhcelab/group-quotatest
+   dd if=/dev/zero of=c-file-1 count=80 bs=1M
+   exit
+   
+   su d
+   cd /rhcelab/group-quotatest
+   dd if=/dev/zero of=d-file-1 count=300 bs=1M
+   ls
+   exit
+
+   # Check quota usage for group 'quotatest'
+   quota -g quotatest
+   ```
