@@ -181,10 +181,10 @@ $TTL 60
                1W          ; expire
                3H )        ; minimum
            IN NS   linuxcbtserv2.linuxcbt.external.
-linuxcbtserv2   IN A    172.31.97.38
-www    IN A        172.31.97.38
+linuxcbtserv2   IN A    172.31.35.154
+www    IN A        172.31.35.154
        IN MX  2    linuxcbtserv1.linuxcbt.external.
-linuxcbtserv1   IN A    172.31.108.225
+linuxcbtserv1   IN A    172.31.44.229
 @   IN NS   linuxcbtserv1.linuxcbt.external.
 #www    IN CNAME    linuxcbtserv2.linuxcbt.external.
 

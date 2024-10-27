@@ -170,7 +170,7 @@ ssh 192.168.75.20
 
 
 ### Perform DNS query for www.linuxcbt.com on server 192.168.75.21 ###
-dig @192.168.75.21 www.linuxcbt.com
+  @192.168.75.21 www.linuxcbt.com
 
 ### Perform nslookup on server 192.168.75.21 for www.linuxcbt.com ###
 nslookup > server 192.168.75.21

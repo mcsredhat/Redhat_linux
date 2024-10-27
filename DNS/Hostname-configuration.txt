@@ -12,9 +12,9 @@ Ensure that the /etc/hosts file maps the new hostname to the appropriate IP addr
 sudo vi /etc/hosts
 Add or update the line as follows:
 
-
-172.31.19.202  linuxcbtserv2.linuxcbt.internal   linuxcbtserv2
-172.31.19.202  linuxcbtserv1.linuxcbt.internal   linuxcbtserv1
+172.31.43.107  linuxcbtserv3.linuxcbt.internal   linuxcbtserv3
+172.31.35.154  linuxcbtserv2.linuxcbt.internal   linuxcbtserv2
+172.31.44.229  linuxcbtserv1.linuxcbt.internal   linuxcbtserv1
 Replace 192.168.x.x with the correct IP address of your server.
 
 3. Verify the Change
