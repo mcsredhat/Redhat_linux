@@ -73,6 +73,10 @@ zone "linuxcbt.external" IN {
 ###linuxcbtserv1###
 # Navigate to /var/named directory
 cd /var/named/
+cp /var/named/linuxcbt.internal /var/named/linucbt.external 
+####SELinux Configuration###
+sudo restorecon -v /var/named/linuxcbt.internal
+sudo chcon -t named_zone_t /var/named/linuxcbt.internal
 
 # Edit linuxcbt.external zone file
 vi linuxcbt.external

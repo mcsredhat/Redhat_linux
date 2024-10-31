@@ -1,0 +1,137 @@
+#### 1. Install Required Packages
+
+sudo yum install -y httpd mod_ssl openssl openssl-devel ca-certificates \
+php php-cli php-mysqlnd php-gd php-xml php-mbstring php-curl php-zip php-soap
+
+#### 2. Enable and Start Services
+sudo systemctl enable httpd
+sudo systemctl start httpd
+sudo systemctl start named
+sudo systemctl enable firewalld
+sudo systemctl start firewalld
+
+#### 3. Configure Firewall
+Allow HTTP and HTTPS traffic through the firewall.
+
+# Add firewall rules for HTTP and HTTPS
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --permanent --add-port=443/tcp
+sudo firewall-cmd --permanent --add-port=53/tcp
+sudo firewall-cmd --permanent --add-port=53/udp
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --permanent --add-service=dns
+
+# Reload firewall to apply changes
+sudo firewall-cmd --reload
+sudo cp /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.bak
+sudo cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
+SELinux Boolean Status
+ 
+#### 4. Configure SELinux Boolean Status
+
+Set SELinux booleans as needed for the Apache server. Ensure these commands reflect your needs; not all may be necessary based on your specific application.
+
+sudo setsebool -P httpd_can_network_connect on
+sudo setsebool -P httpd_execmem on
+sudo setsebool -P httpd_use_nfs on
+sudo setsebool -P httpd_read_user_content on
+sudo setsebool -P httpd_can_network_relabel on
+sudo setsebool -P httpd_enable_cgi on
+
+#############
+vi /etc/hosts
+172.31.43.107  linuxcbtserv3.linuxcbt.internal   linuxcbtserv3
+172.31.44.229 site1.linuxcbt.internal
+172.31.35.154  linuxcbtserv2.linuxcbt.internal   linuxcbtserv2
+172.31.44.229  linuxcbtserv1.linuxcbt.internal   linuxcbtserv1
+##################
+# Edit resolv.conf to define domain and nameservers
+vi /etc/resolv.conf
+search linuxcbt.internal
+nameserver 172.31.44.229
+nameserver 172.31.35.154
+nameserver 172.31.108.225
+###############################
+#### 3. Create Virtual Host Configuration File
+
+# Navigate back to the conf.d directory
+cd /etc/httpd/conf.d/
+
+# Create a new virtual host configuration file for site1.linuxcbt.internal
+vi /etc/httpd/conf.d/site1.linuxcbt.internal.conf
+
+# Add the following configuration for site1.linuxcbt.internal
+<VirtualHost *:80>
+    ServerAdmin ansible@linuxcbtserv2.linuxcbt.internal
+    ServerName site1.linuxcbt.internal
+    DocumentRoot /var/www/site1.linuxcbt.internal
+    <Directory /var/www/site1.linuxcbt.internal>
+        Order allow,deny
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+sudo apachectl configtest
+###################
+vi /etc/named/conf 
+
+zone "linuxcbt.internal" IN {
+    type master;
+    file "/var/named/linuxcbt.internal";
+};
+###################
+
+# Edit the DNS zone file for linuxcbt.internal
+vi /var/named/linuxcbt.internal
+$TTL 60
+@   IN SOA  linuxcbt.internal. vdns-admin.linuxcbt.internal. (
+               2017121506  ; serial
+               1D          ; refresh
+               1H          ; retry
+               1W          ; expire
+               3H )        ; minimum
+           IN NS   linuxcbtserv2.linuxcbt.internal.
+            IN NS   linuxcbtserv2.linuxcbt.internal.
+           IN NS   linuxcbtserv3.linuxcbt.internal.
+linuxcbtserv1   IN A    172.31.108.225
+linuxcbtserv2   IN A    172.31.97.38
+linuxcbtserv3   IN A    172.31.43.107
+www    IN A        172.31.97.38
+www    IN A        172.31.43.107
+       IN MX  2    linuxcbtserv1.linuxcbt.internal.
+linuxcbtserv1   IN A    172.31.108.225
+linuxcbtserv2   IN A    172.31.97.38
+linuxcbtserv3   IN A    172.31.43.107
+@   IN NS   linuxcbtserv1.linuxcbt.internal.
+@   IN NS   linuxcbtserv2.linuxcbt.internal.
+@   IN NS   linuxcbtserv3.linuxcbt.internal.
+site1   IN  A   172.31.108.225
+=======================================
+###check the zone configuration ## 
+# Change ownership of the zone file to root.named
+sudo chown named:named /var/named/linuxcbt.internal
+sudo chmod 640 /var/named/linuxcbt.internal
+sudo named-checkzone linuxcbt.internal /var/named/linuxcbt.internal
+sudo named-checkconf /etc/named.conf
+####SELinux Configuration###
+sudo restorecon -v /var/named/linuxcbt.internal
+sudo chcon -t named_zone_t /var/named/linuxcbt.internal
+#############################
+mkdir -p /var/www/site1.linuxcbt.internal
+sudo chown -R apache:apache /var/www/site1.linuxcbt.internal
+sudo chmod -R 755 /var/www/site1.linuxcbt.internal
+# Create a simple PHP file and the line into file "<center>TESTING PHP PROCESSING</center>" into /var/www/site1.linuxcbt.internal
+vi /var/www/site1.linuxcbt.internal/index.php
+<?php
+ "<center>TESTING PHP PROCESSING</center>";
+   ?>
+# Restart the named (BIND) service
+Systemctl restart named.service
+systemctl reload httpd.service
+sudo apachectl configtest
+httpd -S
+# Open the PHP file in a web browser
+# curl -I http://site1.linuxcbt.internal
+# elinks http://site1.linuxcbt.internal
+
