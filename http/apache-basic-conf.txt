@@ -36,7 +36,6 @@ sudo setsebool -P httpd_can_network_connect on
 sudo setsebool -P httpd_execmem on
 sudo setsebool -P httpd_use_nfs on
 sudo setsebool -P httpd_read_user_content on
-sudo setsebool -P httpd_can_network_relabel on
 sudo setsebool -P httpd_enable_cgi on
 
 #############

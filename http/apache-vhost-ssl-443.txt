@@ -205,6 +205,9 @@ AuthType Basic
 AuthName "Restricted Area"
 AuthUserFile /etc/.htpasswd
 Require valid-user
+###################"
+sudo cp /etc/pki/tls/certs/site1.linuxcbt.internal.crt /etc/pki/ca-trust/source/anchors/
+sudo update-ca-trust
 
 #### Test the Configuration
 
