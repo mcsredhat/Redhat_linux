@@ -1,11 +1,11 @@
 # Red Hat Linux Repository
 
-This repository contains documentation, configuration files, and resources for Red Hat Linux systems. The content is organized in a progressive manner, starting with fundamentals and advancing to more complex configurations.
+This repository contains documentation, configuration files, and resources for Red Hat Linux systems. The content is organized progressively, starting with fundamentals and advancing to more complex configurations.
 
 ## Fundamentals
 
 ### Basic Command Line
-Essential Linux commands, shell navigation, file operations, and text manipulation for beginners.
+For beginners, essential Linux commands, shell navigation, file operations, and text manipulation.
 
 ### VI Editor
 Complete guide to using the VI/VIM text editor with commands, navigation, editing modes, and productivity shortcuts.
@@ -98,12 +98,6 @@ Study materials, practice exercises, and exam preparation for Red Hat Certified 
 
 ## Usage
 
-Each topic includes detailed documentation with examples and best practices. Navigate through the repository in the suggested order for a structured learning path, or use the table of contents to find specific topics of interest.
+Each topic includes detailed documentation with examples and best practices. For a structured learning path, navigate through the repository in the suggested order, or use the table of contents to find specific topics of interest.
 
-## Contributing
 
-Please follow the contribution guidelines when adding new content or modifying existing documents.
-
-## License
-
-This documentation is provided under the [appropriate license information].
