@@ -10,11 +10,12 @@ yum search mysql
 # Install MySQL server
 sudo yum -y install mysql-server
 
-# Verify installed files for mysql-server package
-sudo rpm -ql mysql-server
+# Allow MySQL service through the firewall
+sudo firewall-cmd --permanent --add-service=mysql
+sudo firewall-cmd --reload
 
-# Check the configuration file for MySQL (my.cnf)
-less /etc/my.cnf
+# Enable MySQL to connect to the network
+sudo setsebool -P mysql_connect_any 1
 
 # Enable MySQL service to start on boot
 sudo systemctl enable mysqld
@@ -26,8 +27,8 @@ sudo systemctl start mysqld
 ### MySQL Login and Basic Operations
 
 
-# Log into MySQL server as root user
-sudo mysql -u root -p
+# Log into MySQL server as ansible user
+sudo mysql -u ansible -p 
 
 password : press enter
 
@@ -55,17 +56,17 @@ mysql> \q
 ### Managing MySQL Users and Passwords
 
 
-# Change MySQL root password
-/usr/bin/mysqladmin -u root password 'abc123'
+# Change MySQL ansible password
+/usr/bin/mysqladmin -u ansible password 'abc123'
 
-# Log into MySQL with new root password
-mysql -u root -p  # password = press enter
+# Log into MySQL with new ansible password
+mysql -u ansible -p  # password = press enter
 
-# Set password for root user for specific host
-mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'abc123';
+# Set password for ansible user for specific host
+mysql> ALTER USER 'ansible'@'localhost' IDENTIFIED BY 'abc123';
 
 # Show users and their passwords after password changes
-mysql> SELECT User, Host FROM mysql.user WHERE User = 'root';
+mysql> SELECT User, Host FROM mysql.user WHERE User = 'ansible';
 
 # Flush privileges to apply changes
 mysql> flush privileges;
@@ -77,8 +78,8 @@ mysql> \q
 ### Creating and Managing Databases and Tables
 
 
-# Log into MySQL as root
-mysql -u root -p # password= abc123
+# Log into MySQL as ansible
+mysql -u qnsible -p # password= abc123
 
 # Create a new database
 mysql> create database addressBook;
